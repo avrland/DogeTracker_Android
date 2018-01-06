@@ -40,4 +40,6 @@ public class wallet_list extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     } //Letting come back home
+
+    //TODO make adding wallet view
 }

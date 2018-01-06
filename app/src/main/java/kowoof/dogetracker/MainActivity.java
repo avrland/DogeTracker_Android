@@ -99,8 +99,9 @@ public class MainActivity extends AppCompatActivity
         Context context = getApplicationContext();
         CharSequence text = messege_toast;
         int duration = Toast.LENGTH_SHORT;
-
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
+    //TODO add getting exchange rates implementation
+    //TODO add regular rates refresh feature, with button too
 }
