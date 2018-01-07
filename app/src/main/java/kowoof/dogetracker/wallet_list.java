@@ -83,7 +83,10 @@ public class wallet_list extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO here we need to add going to wallet view after clicking name of that wallet
-                Toast.makeText(wallet_list.this, String.valueOf(id), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(wallet_list.this, String.valueOf(position), Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getApplicationContext(), wallet_view.class);
+                i.putExtra("id", position); //show wallet_view what wallet I wanna see
+                startActivity(i);
             }
         });
     }
