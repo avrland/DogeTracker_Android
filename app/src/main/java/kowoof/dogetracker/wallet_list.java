@@ -31,7 +31,7 @@ public class wallet_list extends AppCompatActivity {
         setContentView(R.layout.activity_wallet_list);
 
         // Make toolbar great again, I wanted to add here total amount of doges
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("My wallets");
         toolbar.setSubtitle("Total: 1337Đ ~ 20,05$"); //TODO make this line working

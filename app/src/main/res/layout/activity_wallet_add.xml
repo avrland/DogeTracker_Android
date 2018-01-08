@@ -21,7 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_wallet_add" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -31,4 +31,5 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/checkbox_on_background" />
 
+    <include layout="@layout/content_wallet_add" />
 </android.support.design.widget.CoordinatorLayout>
