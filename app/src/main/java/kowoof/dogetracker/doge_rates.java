@@ -5,7 +5,8 @@ package kowoof.dogetracker;
  */
 
 public class doge_rates {
-        String doge_rate, hour_change, daily_change, weekly_change, market_cap, volume, total_supply;
+        String doge_rate, hour_change, daily_change, weekly_change, market_cap, volume,
+                total_supply;
 
 
 }
