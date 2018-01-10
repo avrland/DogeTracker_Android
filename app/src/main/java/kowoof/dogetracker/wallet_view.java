@@ -1,5 +1,7 @@
 package kowoof.dogetracker;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -7,6 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class wallet_view extends AppCompatActivity {
 
@@ -32,6 +44,10 @@ public class wallet_view extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        //QR code download&set section
+        ImageView qrcode = (ImageView) findViewById(R.id.imageView2);
+        Picasso.with(this).load("https://dogechain.info/api/v1/address/qrcode/D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq").into(qrcode);
     }
 
     // Letting come back home
@@ -45,4 +61,6 @@ public class wallet_view extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
 }
+
