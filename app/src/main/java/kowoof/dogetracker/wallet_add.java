@@ -2,6 +2,7 @@ package kowoof.dogetracker;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,8 +30,7 @@ public class wallet_add extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //TODO add address checking here
                 finish();
             }
         });
@@ -54,10 +54,19 @@ public class wallet_add extends AppCompatActivity {
         String pasted_wallet_address = item.getText().toString();
         EditText editText = (EditText)findViewById(R.id.editText);
         editText.setText(pasted_wallet_address);
-        Toast.makeText(this,"Pasted!", Toast.LENGTH_SHORT).show();
+        make_toast("Pasted.");
     }
 
     public void scan_qr_code(View view) {
-        Toast.makeText(this,"Not implemented.", Toast.LENGTH_SHORT).show();
+        make_toast("Not implemented.");
+    }
+
+    //toast function to get it a little bit shorter
+    public void make_toast(String messege_toast){
+        Context context = getApplicationContext();
+        CharSequence text = messege_toast;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 }

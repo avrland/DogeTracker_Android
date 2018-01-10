@@ -1,12 +1,17 @@
 package kowoof.dogetracker;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,18 +26,18 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class wallet_view extends AppCompatActivity {
-
+    private static Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Bundle b = getIntent().getExtras();
         int id = b.getInt("id");
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_wallet_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(String.valueOf(id));
-        toolbar.setSubtitle("Total: 1337Đ ~ 20,05$"); //TODO make this line working
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -40,8 +45,25 @@ public class wallet_view extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(wallet_view.this);
+                builder.setCancelable(true);
+                builder.setTitle("Are you sure?");
+                builder.setMessage("Remove wallet: wallet name");
+                builder.setPositiveButton("Confirm",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 
