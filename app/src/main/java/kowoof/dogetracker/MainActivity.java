@@ -19,6 +19,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +102,9 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public void refresh_rates(View view) {
 
+    }
     //toast function to get it a little bit shorter
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
@@ -108,6 +113,8 @@ public class MainActivity extends AppCompatActivity
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
+
+
     //TODO add getting exchange rates implementation
     //TODO add regular rates refresh feature, with button too
 }
