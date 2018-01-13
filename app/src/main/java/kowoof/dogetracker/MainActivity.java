@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -35,29 +37,45 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    ProgressDialog dialog;
+
+    //We create doge_rates object and handler to make getting exchange rates wow
     doge_rates current_doge_rates = new doge_rates();
-    Handler myHandler;
+    Handler handler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Prepare main view section
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("DogeTracker");
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        myHandler = new Handler();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-//        refresh_rates(); //TODO AUTO REFRESH with every startup
+        //End of preparing main view section
+
+        //We create handler to wait for get exchange rates
+        handler = new Handler(){
+
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg); //don't know it's really needed now
+                update_rates();
+            }
+
+        };
+        //Refresh exchange rates every startup
+        refresh_rates();
     }
+
+    //We close drawer here with pressing back button
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -65,6 +83,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //Opening drawer here
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -72,6 +91,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //Options from right toolbar, I don't use it now (maybe someday)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -108,33 +128,32 @@ public class MainActivity extends AppCompatActivity
             make_toast("Not implemented yet.");
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //Refresh button - selects response for clicking refresh - refresh_rates
+    //Refresh rates - calling get_rates from doge_rates class
+    //Update_rates - update rates in view
     public void refresh_button(View view) {
             refresh_rates();
     }
     public void refresh_rates(){
-         //Getting current date and time
-        DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
-        String date = df.format(Calendar.getInstance().getTime());
         //Getting current dogecoin rates from coinmarketcap
-        current_doge_rates.get_rates(this);
-//        if(current_doge_rates.doge_rate == null){
-//            current_doge_rates.get_rates(this);
-//            current_doge_rates.get_rates(this);
-//        }
-
-        //Finding textView items from layout
-        TextView doge_rates_text = (TextView)findViewById(R.id.doge_rate);
-        TextView hour_change_text = (TextView)findViewById(R.id.hour_change);
-        TextView daily_change_text = (TextView)findViewById(R.id.daily_change);
-        TextView weekly_change_text = (TextView)findViewById(R.id.weekly_change);
-        TextView market_cap_text = (TextView)findViewById(R.id.market_cap);
-        TextView volume_text = (TextView)findViewById(R.id.volume);
-        TextView total_supply_text = (TextView)findViewById(R.id.total_supply);
-        TextView last_update_text = (TextView)findViewById(R.id.last_update);
+        current_doge_rates.get_rates(this, handler);
+    }
+    void update_rates(){
+        DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
+        final String date = df.format(Calendar.getInstance().getTime());
+        TextView doge_rates_text = findViewById(R.id.doge_rate);
+        TextView hour_change_text = findViewById(R.id.hour_change);
+        TextView daily_change_text = findViewById(R.id.daily_change);
+        TextView weekly_change_text = findViewById(R.id.weekly_change);
+        TextView market_cap_text = findViewById(R.id.market_cap);
+        TextView volume_text = findViewById(R.id.volume);
+        TextView total_supply_text = findViewById(R.id.total_supply);
+        TextView last_update_text = findViewById(R.id.last_update);
 
         doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + "$");
         hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
@@ -145,6 +164,7 @@ public class MainActivity extends AppCompatActivity
         total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + "Đ");
         last_update_text.setText("Last update: " + date);
     }
+
     //toast function to get it a little bit shorter
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
@@ -154,8 +174,4 @@ public class MainActivity extends AppCompatActivity
         toast.show();
 
     }
-
-
-    //TODO add getting exchange rates implementation
-    //TODO add regular rates refresh feature, with button too
 }

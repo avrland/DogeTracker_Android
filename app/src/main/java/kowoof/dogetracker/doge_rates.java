@@ -2,8 +2,9 @@ package kowoof.dogetracker;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -16,14 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLConnection;
-import java.util.ArrayList;
-
 /**
  * Created by Marcin on 10.01.2018.
  */
@@ -31,10 +24,11 @@ import java.util.ArrayList;
 public class doge_rates {
         String doge_rate, hour_change, daily_change, weekly_change, market_cap, volume,
                 total_supply;
-        ProgressDialog dialog;
-        String url = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
+        private ProgressDialog dialog;
+        private String url = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
 
-        public void get_rates(final Context current_context){
+        //We download here json response, leaving a information everything is ready to update view
+        public void get_rates(final Context current_context, final Handler do_it_now){
             dialog = new ProgressDialog(current_context);
             dialog.setMessage("Loading....");
             dialog.show();
@@ -43,19 +37,26 @@ public class doge_rates {
                 @Override
                 public void onResponse(String string) {
                     parseJsonData(string);
+                    dialog.dismiss();
+                    //We're ready, leave messenge for handler to refresh_rates in view
+                    //It doesn't matter now what kind of messege we send.
+                    Message news = new Message();
+                    news.arg1 = 1;
+                    do_it_now.sendMessage(news);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(current_context, "Some error occurred!!", Toast.LENGTH_SHORT).show();
+                    //If something went wrong, we leave messege with error
+                    Toast.makeText(current_context, "Connection error.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });
             RequestQueue rQueue = Volley.newRequestQueue(current_context);
             rQueue.add(request);
-            dialog.dismiss();
         }
-    void parseJsonData(String jsonString) {
+        //Parse Json exchange rates data
+        private void parseJsonData(String jsonString) {
         try {
             JSONArray jsonarray = new JSONArray(jsonString);
             for(int i=0; i < jsonarray.length(); i++) {
@@ -68,11 +69,10 @@ public class doge_rates {
                 volume          = jsonobject.getString("24h_volume_usd");
                 total_supply    = jsonobject.getString("total_supply");
             }
+            Log.e("Test: ", doge_rate);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        dialog.dismiss();
-    }
+        }
 
 }
