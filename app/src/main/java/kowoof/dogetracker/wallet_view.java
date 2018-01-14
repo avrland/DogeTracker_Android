@@ -41,7 +41,6 @@ public class wallet_view extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         //Get feedback from wallet_list activity
         Bundle b = getIntent().getExtras();
-        int id = b.getInt("id");
         wallet_name = b.getString("wallet_name");
         wallet_address = b.getString("wallet_address");
 
