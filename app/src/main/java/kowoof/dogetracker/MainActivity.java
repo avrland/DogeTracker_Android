@@ -3,6 +3,7 @@ package kowoof.dogetracker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -155,6 +156,10 @@ public class MainActivity extends AppCompatActivity
         TextView total_supply_text = findViewById(R.id.total_supply);
         TextView last_update_text = findViewById(R.id.last_update);
 
+        green_or_red(current_doge_rates.hour_change, hour_change_text);
+        green_or_red(current_doge_rates.daily_change, daily_change_text);
+        green_or_red(current_doge_rates.weekly_change, weekly_change_text);
+
         doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + "$");
         hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
         daily_change_text.setText("24h: " + current_doge_rates.daily_change + "%");
@@ -165,6 +170,14 @@ public class MainActivity extends AppCompatActivity
         last_update_text.setText("Last update: " + date);
     }
 
+    //Check if percent rate are collapsing or raising
+    public void green_or_red(String percent_rate, TextView percent_rate_textview){
+        if(percent_rate.contains("-")){
+            percent_rate_textview.setTextColor(Color.RED);
+        } else {
+            percent_rate_textview.setTextColor(Color.GREEN);
+        }
+    }
     //toast function to get it a little bit shorter
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
@@ -172,6 +185,6 @@ public class MainActivity extends AppCompatActivity
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
-
     }
+
 }
