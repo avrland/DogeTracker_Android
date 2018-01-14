@@ -9,8 +9,8 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 
 ## Features coming in v1.0
 * tracking your multiple dogecoin wallets
-* show your total doges amount in doges and $
-* see all doge exchange rates in app
+* show your total doges amount in doges and $ (using dogechain.info api)
+* see all doge exchange rates in app (using coinmarketcap.com api) - DONE!
 
 ## Support, ideas, pull request and more
 Head over to https://www.reddit.com/r/DogeTracker/ for if you seek support or have an idea. Here on Github you can also create an issue or make a pull request
