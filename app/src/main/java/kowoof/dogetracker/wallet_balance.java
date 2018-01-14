@@ -56,7 +56,6 @@ public class wallet_balance {
     }
     //Parse Json exchange rates data
     private void parseJsonData(String jsonString) {
-        Log.e("JSON:", jsonString);
         try {
             JSONObject jsonobject = new JSONObject(jsonString);
             balance      = jsonobject.getString("balance");

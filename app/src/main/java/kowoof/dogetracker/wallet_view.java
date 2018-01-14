@@ -48,7 +48,7 @@ public class wallet_view extends AppCompatActivity {
         //Prepare view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Wallet view");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
