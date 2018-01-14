@@ -33,6 +33,24 @@ public class wallet_list extends AppCompatActivity {
     ListView list;
     wallet_list_create adapter;
 
+    static String result = "[\n" +
+            "  {\n" +
+            "    \"title\": \"First doge\",\n" +
+            "    \"notice\": \"many value\",\n" +
+            "    \"address\": \"D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq\"\n" +
+            "  },\n" +
+            "  {\n" +
+            "    \"title\": \"Second doge\",\n" +
+            "    \"notice\": \"many value\",\n" +
+            "    \"address\": \"D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq\"\n" +
+            "  },\n" +
+            "  {\n" +
+            "    \"title\": \"Third doge\",\n" +
+            "    \"notice\": \"many value\",\n" +
+            "    \"address\": \"D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq\"\n" +
+            "  }\n" +
+            "]";
+    String wallet_name, wallet_address;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +86,10 @@ public class wallet_list extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO here we need to add going to wallet view after clicking name of that wallet
-                //Toast.makeText(wallet_list.this, String.valueOf(position), Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getApplicationContext(), wallet_view.class);
-                i.putExtra("id", position); //show wallet_view what wallet I wanna see
+                read_wallet(position);
+                i.putExtra("wallet_name", wallet_name); //show wallet_view what wallet I wanna see
+                i.putExtra("wallet_address", wallet_address); //show wallet_view what wallet I wanna see
                 startActivity(i);
             }
         });
@@ -78,92 +97,42 @@ public class wallet_list extends AppCompatActivity {
 
     //testing with test json populating listView
     void populate_list(){
-            String result = "[\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  },\n" +
-                    "  \"First wallet\",\n" +
-                    "  {\n" +
-                    "    \"title\": \"First doge\",\n" +
-                    "    \"notice\": \"many value\"\n" +
-                    "  }\n" +
-                    "]";
-            String response = result.toString();
-            try {
-                JSONArray new_array = new JSONArray(response);
+        String response = result.toString();
+        try {
+            JSONArray new_array = new JSONArray(response);
 
-                for (int i = 0, count = new_array.length(); i < count; i++) {
-                    try {
-                        JSONObject jsonObject = new_array.getJSONObject(i);
-                        title_array.add(jsonObject.getString("title").toString());
-                        notice_array.add(jsonObject.getString("notice").toString());
+            for (int i = 0, count = new_array.length(); i < count; i++) {
+                try {
+                    JSONObject jsonObject = new_array.getJSONObject(i);
+                    title_array.add(jsonObject.getString("title").toString());
+                    notice_array.add(jsonObject.getString("notice").toString());
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-
-                adapter = new wallet_list_create(wallet_list.this, title_array, notice_array);
-                list.setAdapter(adapter);
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
+            adapter = new wallet_list_create(wallet_list.this, title_array, notice_array);
+            list.setAdapter(adapter);
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+    }
+
+    //testing with test json populating listView
+    void read_wallet(int number){
+        String response = result.toString();
+        try {
+            JSONArray new_array = new JSONArray(response);
+            JSONObject jsonObject = new_array.getJSONObject(number);
+            wallet_name = jsonObject.getString("title").toString();
+            wallet_address = jsonObject.getString("address").toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     // Letting come back home
     @Override
