@@ -4,14 +4,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class wallet_add extends AppCompatActivity {
@@ -25,8 +24,10 @@ public class wallet_add extends AppCompatActivity {
         getSupportActionBar().setTitle("Add wallet");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        EditText wallet_name_editText = findViewById(R.id.editText2);
+        wallet_name_editText.requestFocus();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,7 +53,7 @@ public class wallet_add extends AppCompatActivity {
         ClipData abc = clipboard.getPrimaryClip();
         ClipData.Item item = abc.getItemAt(0);
         String pasted_wallet_address = item.getText().toString();
-        EditText editText = (EditText)findViewById(R.id.editText);
+        EditText editText = findViewById(R.id.editText);
         editText.setText(pasted_wallet_address);
         make_toast("Pasted.");
     }
@@ -60,6 +61,8 @@ public class wallet_add extends AppCompatActivity {
     public void scan_qr_code(View view) {
         make_toast("Not implemented.");
     }
+
+
 
     //toast function to get it a little bit shorter
     public void make_toast(String messege_toast){

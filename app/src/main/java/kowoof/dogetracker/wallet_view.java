@@ -66,7 +66,7 @@ public class wallet_view extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(wallet_view.this);
                 builder.setCancelable(true);
                 builder.setTitle("Are you sure?");
-                builder.setMessage("Remove wallet: wallet name");
+                builder.setMessage("Remove wallet: " + wallet_name);
                 builder.setPositiveButton("Confirm",
                         new DialogInterface.OnClickListener() {
                             @Override
