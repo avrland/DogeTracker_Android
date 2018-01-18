@@ -8,18 +8,25 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class wallet_add extends AppCompatActivity {
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class wallet_add extends AppCompatActivity {
+    wallet added_wallet = new wallet();
+    JSONObject jsonObj = new JSONObject();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Add wallet");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,8 +69,6 @@ public class wallet_add extends AppCompatActivity {
         make_toast("Not implemented.");
     }
 
-
-
     //toast function to get it a little bit shorter
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
@@ -71,5 +76,37 @@ public class wallet_add extends AppCompatActivity {
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    //Preparing json object to save
+    public void test_button(View view) {
+        EditText wallet_name_editText = findViewById(R.id.editText2);
+        added_wallet.wallet_name = wallet_name_editText.getText().toString();
+
+        EditText wallet_address_editText = findViewById(R.id.editText);
+        added_wallet.wallet_address = wallet_address_editText.getText().toString();
+
+        //jsonObj = new JSONObject();
+        try {
+            jsonObj.put("title", added_wallet.wallet_name);
+            jsonObj.put("notice", "View wallet to check balance.");
+            jsonObj.put("address", added_wallet.wallet_address);
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            String title      = jsonObj.getString("title");
+            String notice      = jsonObj.getString("notice");
+            String address     = jsonObj.getString("address");
+            Log.e("balance: ", title);
+            Log.e("notice: ", notice);
+            Log.e("address: ", address);
+            Log.e("JSON: ", jsonObj.toString());
+            make_toast("JSON OUTPUT: " + jsonObj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
