@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,25 +35,10 @@ public class wallet_list extends AppCompatActivity {
     ArrayList<String> notice_array = new ArrayList<String>();
     ListView list;
     wallet_list_create adapter;
+    wallet_memory wallet_memory_handler;
 
-    static String result = "[\n" +
-            "  {\n" +
-            "    \"title\": \"First doge\",\n" +
-            "    \"notice\": \"many value\",\n" +
-            "    \"address\": \"D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq\"\n" +
-            "  },\n" +
-            "  {\n" +
-            "    \"title\": \"Second doge\",\n" +
-            "    \"notice\": \"many value\",\n" +
-            "    \"address\": \"D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq\"\n" +
-            "  },\n" +
-            "  {\n" +
-            "    \"title\": \"Third doge\",\n" +
-            "    \"notice\": \"many value\",\n" +
-            "    \"address\": \"D8c2fhkh26bLGshWuYChyKNugMZ4nG34uq\"\n" +
-            "  }\n" +
-            "]";
     String wallet_name, wallet_address;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,18 +51,17 @@ public class wallet_list extends AppCompatActivity {
         toolbar.setSubtitle("Total: 1337Đ ~ 20,05$");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         // Add wallet button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                finish();
                 Intent i = new Intent(getApplicationContext(), wallet_add.class);
                 startActivity(i);
-                //finish();
             }
         });
-
+        wallet_memory_handler = new wallet_memory(getApplicationContext());
         //Find listView and populate it
         list = findViewById(R.id.wallets);
         populate_list();
@@ -88,25 +75,30 @@ public class wallet_list extends AppCompatActivity {
                 // TODO here we need to add going to wallet view after clicking name of that wallet
                 Intent i = new Intent(getApplicationContext(), wallet_view.class);
                 read_wallet(position);
+                i.putExtra("wallet_id", position);
                 i.putExtra("wallet_name", wallet_name); //show wallet_view what wallet I wanna see
                 i.putExtra("wallet_address", wallet_address); //show wallet_view what wallet I wanna see
                 startActivity(i);
+                finish();
             }
         });
+
     }
 
-    //testing with test json populating listView
+    public void onResume() {
+        super.onResume();
+    }
+
+    //populate list with items saved into json
     void populate_list(){
-        String response = result.toString();
         try {
-            JSONArray new_array = new JSONArray(response);
+            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
 
             for (int i = 0, count = new_array.length(); i < count; i++) {
                 try {
                     JSONObject jsonObject = new_array.getJSONObject(i);
                     title_array.add(jsonObject.getString("title").toString());
                     notice_array.add(jsonObject.getString("notice").toString());
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -119,12 +111,10 @@ public class wallet_list extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
     //testing with test json populating listView
     void read_wallet(int number){
-        String response = result.toString();
         try {
-            JSONArray new_array = new JSONArray(response);
+            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
             JSONObject jsonObject = new_array.getJSONObject(number);
             wallet_name = jsonObject.getString("title").toString();
             wallet_address = jsonObject.getString("address").toString();

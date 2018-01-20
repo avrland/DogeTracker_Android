@@ -3,6 +3,7 @@ package kowoof.dogetracker;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -16,12 +17,16 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class wallet_add extends AppCompatActivity {
-    wallet added_wallet = new wallet();
-    JSONObject jsonObj = new JSONObject();
+    //wallet added_wallet = new wallet();
+    JSONObject jsonObj;
+    wallet_memory wallet_memory_handler;
+    String added_wallet_name, added_wallet_address;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,15 +38,27 @@ public class wallet_add extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         EditText wallet_name_editText = findViewById(R.id.editText2);
         wallet_name_editText.requestFocus();
-
+        wallet_memory_handler = new wallet_memory(getApplicationContext());
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                EditText wallet_name_editText = findViewById(R.id.editText2);
+                added_wallet_name = wallet_name_editText.getText().toString();
+                EditText wallet_address_editText = findViewById(R.id.editText);
+                added_wallet_address = wallet_address_editText.getText().toString();
+                try {
+                    wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
+                } catch (JSONException e) {
+
+                }
                 //TODO add address checking here
+                Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                startActivity(i);
                 finish();
             }
         });
+
     }
 
     // Letting come back home
@@ -49,6 +66,8 @@ public class wallet_add extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
+            Intent i = new Intent(getApplicationContext(), wallet_list.class);
+            startActivity(i);
             finish(); // close this activity and return to preview activity (if there is any)
         }
 
@@ -65,7 +84,7 @@ public class wallet_add extends AppCompatActivity {
         make_toast("Pasted.");
     }
 
-    public void scan_qr_code(View view) {
+    public void scan_qr_code(View view) throws JSONException{
         make_toast("Not implemented.");
     }
 
@@ -78,35 +97,18 @@ public class wallet_add extends AppCompatActivity {
         toast.show();
     }
 
-    //Preparing json object to save
-    public void test_button(View view) {
-        EditText wallet_name_editText = findViewById(R.id.editText2);
-        added_wallet.wallet_name = wallet_name_editText.getText().toString();
-
-        EditText wallet_address_editText = findViewById(R.id.editText);
-        added_wallet.wallet_address = wallet_address_editText.getText().toString();
-
-        //jsonObj = new JSONObject();
-        try {
-            jsonObj.put("title", added_wallet.wallet_name);
-            jsonObj.put("notice", "View wallet to check balance.");
-            jsonObj.put("address", added_wallet.wallet_address);
-
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            String title      = jsonObj.getString("title");
-            String notice      = jsonObj.getString("notice");
-            String address     = jsonObj.getString("address");
-            Log.e("balance: ", title);
-            Log.e("notice: ", notice);
-            Log.e("address: ", address);
-            Log.e("JSON: ", jsonObj.toString());
-            make_toast("JSON OUTPUT: " + jsonObj.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+//    //Preparing json object to save
+//    public void test_button(View view) throws JSONException  {
+//        EditText wallet_name_editText = findViewById(R.id.editText2);
+//        added_wallet_name = wallet_name_editText.getText().toString();
+//
+//        EditText wallet_address_editText = findViewById(R.id.editText);
+//        added_wallet_address = wallet_address_editText.getText().toString();
+//        wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
+//    }
+//
+//    public void test_button2(View view) {
+//        wallet_memory_handler.current_context = getApplicationContext();
+//        wallet_memory_handler.read_all_wallets();
+//    }
 }

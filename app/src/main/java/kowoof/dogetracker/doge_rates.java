@@ -69,7 +69,6 @@ public class doge_rates {
                 volume          = jsonobject.getString("24h_volume_usd");
                 total_supply    = jsonobject.getString("total_supply");
             }
-            Log.e("Test: ", doge_rate);
         } catch (JSONException e) {
             e.printStackTrace();
         }
