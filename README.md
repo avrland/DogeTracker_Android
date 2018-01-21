@@ -11,6 +11,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * Android 6.0 or higher
 * granted camera permission for qr code reading (app will ask you when it'll be needed)
 * app optimazed for smartphones, hoverer it should run on tablets too
+
 Tested on:
 - Xiaomi Redmi Note 4 on MIUI 9 Android Nougat
 
