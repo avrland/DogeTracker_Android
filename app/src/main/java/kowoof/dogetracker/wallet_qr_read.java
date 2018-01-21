@@ -3,24 +3,18 @@ package kowoof.dogetracker;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.Toast;
+
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 
 public class wallet_qr_read extends AppCompatActivity implements QRCodeReaderView.OnQRCodeReadListener {
     private QRCodeReaderView qrCodeReaderView;
-    String readed_address;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_qr_read);
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
         qrCodeReaderView = findViewById(R.id.qrdecoderview);
         qrCodeReaderView.setOnQRCodeReadListener(this);
         // Use this function to enable/disable decoding

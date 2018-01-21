@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -33,7 +32,7 @@ public class doge_rates {
                 total_supply, last_refresh;
         private ProgressDialog dialog;
         private static String url = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
-        Context current_context;
+        private Context current_context;
 
         //we store exchange rates stuff into memory
         private static final String PREFS_FILE = "Offline_exchange_rates";
@@ -131,8 +130,7 @@ public class doge_rates {
             SharedPreferences rates = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
             DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
-            final String date = df.format(Calendar.getInstance().getTime());
-            last_refresh = date;
+            last_refresh =df.format(Calendar.getInstance().getTime());
             editor.putString(last_refresh_offline, last_refresh);
             editor.apply();
         }

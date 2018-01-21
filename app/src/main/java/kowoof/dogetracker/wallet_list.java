@@ -1,34 +1,22 @@
 package kowoof.dogetracker;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 
 public class wallet_list extends AppCompatActivity {
     ArrayList<String> title_array = new ArrayList<String>();
@@ -44,7 +32,7 @@ public class wallet_list extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_list);
 
-        // Make toolbar great again, I wanted to add here total amount of doges
+        // Make toolbar wow again, I wanted to add here total amount of doges
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("My wallets");
@@ -97,8 +85,8 @@ public class wallet_list extends AppCompatActivity {
             for (int i = 0, count = new_array.length(); i < count; i++) {
                 try {
                     JSONObject jsonObject = new_array.getJSONObject(i);
-                    title_array.add(jsonObject.getString("title").toString());
-                    notice_array.add(jsonObject.getString("notice").toString());
+                    title_array.add(jsonObject.getString("title"));
+                    notice_array.add(jsonObject.getString("notice"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -116,8 +104,8 @@ public class wallet_list extends AppCompatActivity {
         try {
             JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
             JSONObject jsonObject = new_array.getJSONObject(number);
-            wallet_name = jsonObject.getString("title").toString();
-            wallet_address = jsonObject.getString("address").toString();
+            wallet_name = jsonObject.getString("title");
+            wallet_address = jsonObject.getString("address");
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -138,9 +126,8 @@ public class wallet_list extends AppCompatActivity {
     // Last but not least, useful stuff to make app working
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
-        CharSequence text = messege_toast;
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(context, messege_toast, duration);
         toast.show();
     }
 }

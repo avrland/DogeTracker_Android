@@ -5,42 +5,27 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+
 
 public class wallet_view extends AppCompatActivity {
 
-    String wallet_name, wallet_address = new String();
+    String wallet_name, wallet_address;
     int wallet_id;
     wallet_balance current_wallet_balance = new wallet_balance();
     wallet_memory wallet_memory_handler;
@@ -48,9 +33,8 @@ public class wallet_view extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Get feedback from wallet_list activity
-        Bundle b = new Bundle();
-        b = getIntent().getExtras();
+        //Get feedback from wallet_qr_read activity
+        Bundle b = getIntent().getExtras();
         if (b != null)
         {
             wallet_name = b.getString("wallet_name");
@@ -99,7 +83,6 @@ public class wallet_view extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 });
-
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
@@ -114,6 +97,7 @@ public class wallet_view extends AppCompatActivity {
 
         };
 
+        //Get single wallet balance
         get_balance();
 
         //QR code download&set section
@@ -134,6 +118,7 @@ public class wallet_view extends AppCompatActivity {
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // handle Android back click here
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent i = new Intent(getApplicationContext(), wallet_list.class);
             startActivity(i);
@@ -144,18 +129,7 @@ public class wallet_view extends AppCompatActivity {
     }
     public void get_balance(){
         current_wallet_balance.get_wallet_balance(this, handler, wallet_address);
-//        JSONArray new_array = new JSONArray();
-//        try {
-//                new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
-//                JSONObject jsonObject = new_array.getJSONObject(wallet_id);
-//                jsonObject.getString("address");
-//                Log.e("wallet_balance",  current_wallet_balance.balance);
-//               // jsonObject.put("notice", current_wallet_balance.balance);
-//        } catch (JSONException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        //wallet_memory_handler.update_saved_wallets(new_array.toString());
+
     }
     public void show_balance(){
         TextView wallet_balance_text = findViewById(R.id.balance);
@@ -168,12 +142,11 @@ public class wallet_view extends AppCompatActivity {
         clipboard.setPrimaryClip(clip);
         make_toast("Address copied to clipboard.");
     }
-    // Last but not least, useful stuff to make app working
+    //It's easier when you make toast, but I'm not sure if really
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
-        CharSequence text = messege_toast;
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(context, messege_toast, duration);
         toast.show();
     }
 }
