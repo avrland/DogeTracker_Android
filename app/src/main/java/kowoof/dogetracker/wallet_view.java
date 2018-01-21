@@ -56,8 +56,6 @@ public class wallet_view extends AppCompatActivity {
             wallet_name = b.getString("wallet_name");
             wallet_address = b.getString("wallet_address");
             wallet_id = b.getInt("wallet_id");
-        } else {
-
         }
         //Prepare view
         super.onCreate(savedInstanceState);

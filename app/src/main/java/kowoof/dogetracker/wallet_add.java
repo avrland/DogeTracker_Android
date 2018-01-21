@@ -1,12 +1,16 @@
 package kowoof.dogetracker;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -27,6 +32,8 @@ public class wallet_add extends AppCompatActivity {
     wallet_memory wallet_memory_handler;
     String added_wallet_name, added_wallet_address;
 
+
+    private QRCodeReaderView qrCodeReaderView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +50,7 @@ public class wallet_add extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO we should check here if dogecoin wallet address is valid (or into wallet_view?)
                 EditText wallet_name_editText = findViewById(R.id.editText2);
                 added_wallet_name = wallet_name_editText.getText().toString();
                 EditText wallet_address_editText = findViewById(R.id.editText);
@@ -58,7 +66,17 @@ public class wallet_add extends AppCompatActivity {
                 finish();
             }
         });
-
+        Bundle b = new Bundle();
+        b = getIntent().getExtras();
+        if(b!=null) {
+            int readed_qr = b.getInt("readed_qr_code");
+            if (readed_qr==1)
+            {
+                added_wallet_address = b.getString("wallet_address");
+                EditText editText = findViewById(R.id.editText);
+                editText.setText(added_wallet_address);
+            }
+        }
     }
 
     // Letting come back home
@@ -84,8 +102,28 @@ public class wallet_add extends AppCompatActivity {
         make_toast("Pasted.");
     }
 
-    public void scan_qr_code(View view) throws JSONException{
-        make_toast("Not implemented.");
+    public void scan_qr_code(View view) {
+        ActivityCompat.requestPermissions(wallet_add.this,
+                new String[]{Manifest.permission.CAMERA},
+                1);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Intent i = new Intent(getApplicationContext(), wallet_qr_read.class);
+                    startActivity(i);
+                } else {
+                    Toast.makeText(wallet_add.this, "Grant permission to camera to read qr code.", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 
     //toast function to get it a little bit shorter

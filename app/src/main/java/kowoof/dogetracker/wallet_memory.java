@@ -48,6 +48,15 @@ import java.util.List;
  * Created by Marcin on 20.01.2018.
  *
  * We are going to save and read wallet address here to sharedpreferences using simply string converted to JSON.
+ *
+ * We initialize this class in any Activity by passing current context argument, for example:
+ *
+ * Context current_context;
+ * wallet_memory wallet_memory_handler;
+ *     protected void onCreate(Bundle savedInstanceState) {
+ *                  //other stuff from beggining here
+ *                  wallet_memory_handler = new wallet_memory(getApplicationContext());
+ *     }
  */
 
 public class wallet_memory {
@@ -60,7 +69,6 @@ public class wallet_memory {
     Context current_context;
 
     String wallet_name, wallet_address, wallet_balance;
-    JSONArray array = new JSONArray();
 
     wallet_memory(Context context){
         current_context = context;
@@ -73,6 +81,7 @@ public class wallet_memory {
 
         return wallet_string;
     }
+    //I don't think so we need it now
     public String read_wallet(int number){
         SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         wallet_string = settings.getString(KEY_STRING, "my string");
@@ -103,7 +112,6 @@ public class wallet_memory {
 
         }
         JSONArray new_array = new JSONArray(read_all_wallets());
-        //JSONArray new_array = new JSONArray();
         new_array.put(jsonObj);
         SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         SharedPreferences.Editor editor = settings.edit();
@@ -121,6 +129,7 @@ public class wallet_memory {
         editor.apply();
     }
 
+    //addition methods to remove_wallet
     public static JSONArray remove(final int idx, final JSONArray from) {
         final List<JSONObject> objs = asList(from);
         objs.remove(idx);
@@ -131,7 +140,6 @@ public class wallet_memory {
         }
         return ja;
     }
-
     public static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
         final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);

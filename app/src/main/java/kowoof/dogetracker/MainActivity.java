@@ -1,18 +1,12 @@
 package kowoof.dogetracker;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,25 +16,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //We create doge_rates object and handler to make getting exchange rates wow
-    doge_rates current_doge_rates = new doge_rates();
+    doge_rates current_doge_rates;
     Handler handler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +49,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
-                update_rates();
+                if(msg.arg1==1)      current_doge_rates.new_refresh_time(); //if we're online, we insert current time
+                else if(msg.arg1==2) current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
+                update_rates(); //insert updated rates to layout
             }
 
         };
+        current_doge_rates = new doge_rates(this);
         //Refresh exchange rates every startup
         refresh_rates();
     }
@@ -142,11 +129,9 @@ public class MainActivity extends AppCompatActivity
     }
     public void refresh_rates(){
         //Getting current dogecoin rates from coinmarketcap
-        current_doge_rates.get_rates(this, handler);
+        current_doge_rates.get_rates(handler);
     }
-    void update_rates(){
-        DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
-        final String date = df.format(Calendar.getInstance().getTime());
+    void update_rates() {
         TextView doge_rates_text = findViewById(R.id.doge_rate);
         TextView hour_change_text = findViewById(R.id.hour_change);
         TextView daily_change_text = findViewById(R.id.daily_change);
@@ -167,9 +152,9 @@ public class MainActivity extends AppCompatActivity
         market_cap_text.setText("Market cap: " + current_doge_rates.market_cap + "$");
         volume_text.setText("Volume 24h: " + current_doge_rates.volume + "$");
         total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + "Đ");
-        last_update_text.setText("Last update: " + date);
+        last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
+        current_doge_rates.save_rates_to_offline();
     }
-
     //Check if percent rate are collapsing or raising
     public void green_or_red(String percent_rate, TextView percent_rate_textview){
         if(percent_rate.contains("-")){
