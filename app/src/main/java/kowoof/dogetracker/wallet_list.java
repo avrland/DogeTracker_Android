@@ -60,7 +60,6 @@ public class wallet_list extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                // TODO here we need to add going to wallet view after clicking name of that wallet
                 Intent i = new Intent(getApplicationContext(), wallet_view.class);
                 read_wallet(position);
                 i.putExtra("wallet_id", position);
@@ -99,7 +98,8 @@ public class wallet_list extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    //testing with test json populating listView
+
+    //read wallet name and address by position
     void read_wallet(int number){
         try {
             JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());

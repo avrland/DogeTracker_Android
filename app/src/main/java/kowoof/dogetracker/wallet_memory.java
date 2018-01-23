@@ -41,7 +41,7 @@ public class wallet_memory {
     //read all wallets to json object from sharedpreferences into class String
     public String read_all_wallets(){
         SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-        wallet_string = settings.getString(KEY_STRING, " ");
+        wallet_string = settings.getString(KEY_STRING, "[]");
         return wallet_string;
     }
     //I don't think so we need it now
