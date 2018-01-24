@@ -72,6 +72,7 @@ public class MainActivity extends DrawerActivity {
         total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + "Đ");
         last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
         current_doge_rates.save_rates_to_offline();
+
     }
     //Check if percent rate are collapsing or raising
     public void green_or_red(String percent_rate, TextView percent_rate_textview){
