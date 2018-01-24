@@ -1,5 +1,6 @@
 # DogeTracker_Android
 <img src="https://github.com/avrland/DogeTracker_Android/blob/master/app/src/main/res/mipmap-mdpi/main_icon.png?raw=true"/>
+
 DogeTracker comes from iOS to Android, wow! 
 
 Original project: https://github.com/Philipp-p/DogeTracker/
