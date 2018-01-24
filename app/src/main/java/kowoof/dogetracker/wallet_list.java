@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class wallet_list extends AppCompatActivity {
+public class wallet_list extends DrawerActivity {
     ArrayList<String> title_array = new ArrayList<String>();
     ArrayList<String> notice_array = new ArrayList<String>();
     ListView list;
@@ -34,11 +34,9 @@ public class wallet_list extends AppCompatActivity {
 
         // Make toolbar wow again, I wanted to add here total amount of doges
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("My wallets");
+        toolbar.setTitle("My wallets");
         toolbar.setSubtitle("Total: 1337Đ ~ 20,05$");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         // Add wallet button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +115,7 @@ public class wallet_list extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
+//            finish(); // close this activity and return to preview activity (if there is any)
         }
 
         return super.onOptionsItemSelected(item);
