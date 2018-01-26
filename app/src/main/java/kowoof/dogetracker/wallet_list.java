@@ -10,6 +10,7 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,10 +28,13 @@ import java.util.ArrayList;
 
 
 public class wallet_list extends DrawerActivity {
+    //We create here stuff for listView
     ArrayList<String> title_array = new ArrayList<String>();
     ArrayList<String> notice_array = new ArrayList<String>();
     ListView list;
     wallet_list_create adapter;
+
+
     wallet_memory wallet_memory_handler;
     String wallet_name, wallet_address, wallet_balance;
     Handler handler = new Handler();
@@ -64,30 +68,8 @@ public class wallet_list extends DrawerActivity {
         //Find listView and populate it
         list = findViewById(R.id.wallets);
         populate_list();
-        //We create handler to wait for get exchange rates
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
-                try {
-                    wallet_balance = local_wallet_balance_handler.balance;
-                    total_doges = total_doges + Float.parseFloat(wallet_balance);
-                    wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count );
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                count++;
-                if(count < wallets_amount){
-                    get_balances();
-                } else {
-                    count = 0;
-                    total_balance(total_doges, 1);
-                    populate_list();
-                }
-            }
 
-        };
-        //Do something when item from listView is clicked
+        //Go to specific wallet view when you click on stuff on list
         list.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
@@ -104,6 +86,81 @@ public class wallet_list extends DrawerActivity {
         });
     }
 
+
+    //Opening drawer here
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // Letting come back home
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.refresh) {
+            total_doges = 0;
+            get_balances();
+        }
+        if (id == R.id.dollars) {
+            if(doges_dollars == 1) {
+                total_balance(total_doges, 2);
+                doges_dollars = 2;
+            } else {
+                total_balance(total_doges, 1);
+                doges_dollars = 1;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onResume() {
+        super.onResume();
+    }
+
+    //populate list with items saved into json
+    void populate_list(){
+        //clear listview every time you want to fill it
+        adapter = new wallet_list_create(wallet_list.this, title_array, notice_array);
+        title_array.clear();
+        notice_array.clear();
+        list.setAdapter(adapter);
+        //prepare all balances float handler
+        float total_balance_f = 0;
+        float current_wallet_f = 0;
+
+        try {
+            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
+
+            for (int i = 0, count = new_array.length(); i < count; i++) {
+                try {
+                    JSONObject jsonObject = new_array.getJSONObject(i);
+                    title_array.add(jsonObject.getString("title"));
+                    try {
+                        current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
+                        notice_array.add(jsonObject.getString("notice") + " Đ");
+                    } catch (NumberFormatException e) {
+                        notice_array.add(jsonObject.getString("notice"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                total_balance_f += current_wallet_f;
+            }
+            adapter = new wallet_list_create(wallet_list.this, title_array, notice_array);
+            list.setAdapter(adapter);
+            total_balance(total_balance_f, 1);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        total_doges = total_balance_f;
+    }
+
+    //we count here total balance and add it to toolbar
     public void total_balance(float total, int doges_or_dollars){
         doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
         get_doge_dollar_rate.read_rates_from_offline();
@@ -120,75 +177,31 @@ public class wallet_list extends DrawerActivity {
             toolbar.setSubtitle("Total: " + total_dollar_doge_s + " $");
             doges_dollars = 2;
         }
-
-    }
-
-    //Opening drawer here
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    // Letting come back home
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-
-        }
-        int id = item.getItemId();
-
-        if (id == R.id.refresh) {
-            total_doges = 0;
-            get_balances();
-        }
-        if (id == R.id.dollars) {
-            if(doges_dollars==1){
-                total_balance(total_doges, 1);
-                doges_dollars = 2;
-            } else {
-                total_balance(total_doges, 2);
-                doges_dollars = 1;
-            }
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onResume() {
-        super.onResume();
-    }
-
-    //populate list with items saved into json
-    void populate_list(){
-        adapter = new wallet_list_create(wallet_list.this, title_array, notice_array);
-        title_array.clear();
-        notice_array.clear();
-        list.setAdapter(adapter);
-        try {
-            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
-
-            for (int i = 0, count = new_array.length(); i < count; i++) {
-                try {
-                    JSONObject jsonObject = new_array.getJSONObject(i);
-                    title_array.add(jsonObject.getString("title"));
-                    notice_array.add(jsonObject.getString("notice") + " Đ");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            //adapter = new wallet_list_create(wallet_list.this, title_array, notice_array);
-            list.setAdapter(adapter);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     //populate list with items saved into json
     void get_balances(){
+        //We create handler to wait for get exchange rates
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg); //don't know it's really needed now
+                try {
+                    wallet_balance = local_wallet_balance_handler.balance;
+                    wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count );
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                count++;
+                if(count < wallets_amount){
+                    get_balances();
+                } else {
+                    count = 0;
+                    populate_list();
+                }
+            }
+
+        };
         try {
             JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
             wallets_amount = new_array.length();
