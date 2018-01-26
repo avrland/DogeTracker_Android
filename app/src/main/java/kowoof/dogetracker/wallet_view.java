@@ -23,7 +23,9 @@ import org.json.JSONException;
 
 
 
-public class wallet_view extends AppCompatActivity {
+public class wallet_view extends DrawerActivity {
+
+    static String qr_reading_address = "https://dogechain.info/api/v1/address/qrcode/";
 
     String wallet_name, wallet_address;
     int wallet_id;
@@ -45,10 +47,9 @@ public class wallet_view extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Wallet view");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setTitle("Wallet view");
+        toolbar.setSubtitle("");
+
         TextView wallet_name_text = findViewById(R.id.wallet_name);
         TextView wallet_address_text = findViewById(R.id.wallet_address);
         wallet_name_text.setText(wallet_name);
@@ -102,7 +103,7 @@ public class wallet_view extends AppCompatActivity {
 
         //QR code download&set section
         ImageView qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load("https://dogechain.info/api/v1/address/qrcode/" + wallet_address).into(qrcode);
+        Picasso.with(this).load(qr_reading_address + wallet_address).into(qrcode);
     }
 
     // Letting come back home

@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -137,6 +138,18 @@ public class doge_rates {
         public void offline_refresh_time(){
             SharedPreferences rates = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             last_refresh    = rates.getString(last_refresh_offline, "last_refresh_offline");
+        }
+        //we add spaces to so big numbers like market cap, volume and total supply
+        public void rates_with_commas(){
+            DecimalFormat decimalFormat1 = new DecimalFormat("#,###");
+            float market_cap_f = Float.parseFloat(market_cap);
+            market_cap = decimalFormat1.format(market_cap_f);
+
+            float volume_f = Float.parseFloat(volume);
+            volume = decimalFormat1.format(volume_f);
+
+            float total_supply_f = Float.parseFloat(total_supply);
+            total_supply = decimalFormat1.format(total_supply_f);
         }
 
 }

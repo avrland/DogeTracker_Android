@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +26,6 @@ public class wallet_list extends DrawerActivity {
     ListView list;
     wallet_list_create adapter;
     wallet_memory wallet_memory_handler;
-
     String wallet_name, wallet_address;
 
     @Override
@@ -36,6 +37,8 @@ public class wallet_list extends DrawerActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("My wallets");
         toolbar.setSubtitle("Total: 1337Đ ~ 20,05$");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Add wallet button
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -48,6 +51,7 @@ public class wallet_list extends DrawerActivity {
             }
         });
         wallet_memory_handler = new wallet_memory(getApplicationContext());
+
         //Find listView and populate it
         list = findViewById(R.id.wallets);
         populate_list();
@@ -68,6 +72,29 @@ public class wallet_list extends DrawerActivity {
             }
         });
 
+    }
+
+    //Opening drawer here
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // Letting come back home
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+
+        }
+        int id = item.getItemId();
+
+        if (id == R.id.refresh) {
+            make_toast("test");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void onResume() {
@@ -110,16 +137,6 @@ public class wallet_list extends DrawerActivity {
         }
     }
 
-    // Letting come back home
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-//            finish(); // close this activity and return to preview activity (if there is any)
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     // Last but not least, useful stuff to make app working
     public void make_toast(String messege_toast){
