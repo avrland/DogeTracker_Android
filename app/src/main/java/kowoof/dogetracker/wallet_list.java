@@ -29,6 +29,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
+/**
+ * In wallet list we load current saved wallets into listView, calculating total balance
+ * We also can change balance from doges to $ by klicking R.id.dollars
+ * If we click R.id.refresh, we get new fresh balances using dogechain.info API
+ * with request made with wallet_balance object. We'll save balance with wallet_memory object.
+ */
+
 public class wallet_list extends DrawerActivity {
     //We create here stuff for listView
     ArrayList<String> title_array = new ArrayList<String>();

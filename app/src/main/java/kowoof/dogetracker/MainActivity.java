@@ -28,7 +28,6 @@ public class MainActivity extends DrawerActivity {
                 super.handleMessage(msg); //don't know it's really needed now
                 if(msg.arg1==1)      current_doge_rates.new_refresh_time(); //if we're online, we insert current time
                 else if(msg.arg1==2) current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
-                current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
                 update_rates(); //insert updated rates to layout
             }
 
@@ -59,7 +58,8 @@ public class MainActivity extends DrawerActivity {
         TextView volume_text = findViewById(R.id.volume);
         TextView total_supply_text = findViewById(R.id.total_supply);
         TextView last_update_text = findViewById(R.id.last_update);
-
+        current_doge_rates.save_rates_to_offline();
+        current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
         green_or_red(current_doge_rates.hour_change, hour_change_text);
         green_or_red(current_doge_rates.daily_change, daily_change_text);
         green_or_red(current_doge_rates.weekly_change, weekly_change_text);
@@ -71,8 +71,6 @@ public class MainActivity extends DrawerActivity {
         volume_text.setText("Volume 24h: " + current_doge_rates.volume + " $");
         total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + " Đ");
         last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
-        current_doge_rates.save_rates_to_offline();
-
     }
     //Check if percent rate are collapsing or raising
     public void green_or_red(String percent_rate, TextView percent_rate_textview){
