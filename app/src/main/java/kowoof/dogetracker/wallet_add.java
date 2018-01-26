@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +33,8 @@ public class wallet_add extends AppCompatActivity {
 
     wallet_memory wallet_memory_handler;
     String added_wallet_name, added_wallet_address;
+    Handler handler = new Handler();
+    wallet_balance current_wallet_balance = new wallet_balance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +59,8 @@ public class wallet_add extends AppCompatActivity {
                 added_wallet_name = wallet_name_editText.getText().toString();
                 EditText wallet_address_editText = findViewById(R.id.editText);
                 added_wallet_address = wallet_address_editText.getText().toString();
-                try {
-                    wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
-                } catch (JSONException e) {
-
-                }
-                //TODO add address checking here
-                Intent i = new Intent(getApplicationContext(), wallet_list.class);
-                startActivity(i);
-                finish();
+                if(added_wallet_name.trim().length() == 0) added_wallet_name = added_wallet_address;
+                current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
             }
         });
 
@@ -78,6 +75,24 @@ public class wallet_add extends AppCompatActivity {
                 editText.setText(added_wallet_address);
             }
         }
+
+
+        //We create handler to wait for get exchange rates
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg); //don't know it's really needed now
+                try {
+                    wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
+                    Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                    startActivity(i);
+                    finish();
+                } catch (JSONException e) {
+
+                }
+            }
+
+        };
     }
 
     @Override

@@ -53,6 +53,7 @@ public class wallet_view extends DrawerActivity {
         TextView wallet_name_text = findViewById(R.id.wallet_name);
         TextView wallet_address_text = findViewById(R.id.wallet_address);
         wallet_name_text.setText(wallet_name);
+        if(wallet_name == wallet_address) wallet_name_text.setText("");
         wallet_address_text.setText(wallet_address);
         wallet_memory_handler = new wallet_memory(getApplicationContext());
         //Set button for deleting wallet (just from viewer, not really lol)

@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -12,6 +14,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,7 +23,7 @@ import org.json.JSONObject;
  */
 
 public class wallet_balance {
-    String balance, success;
+    String balance, success, error;
     private ProgressDialog dialog;
     private static String url = "https://dogechain.info/api/v1/address/balance/";
 
@@ -62,4 +65,5 @@ public class wallet_balance {
             e.printStackTrace();
         }
     }
+
 }
