@@ -3,6 +3,7 @@ package kowoof.dogetracker;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,17 +37,19 @@ public class wallet_memory {
 
     String wallet_name, wallet_address, wallet_balance;
 
-    wallet_memory(Context context){
+    wallet_memory(Context context) {
         current_context = context;
     }
+
     //read all wallets to json object from sharedpreferences into class String
-    public String read_all_wallets(){
+    public String read_all_wallets() {
         SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         wallet_string = settings.getString(KEY_STRING, "[]");
         return wallet_string;
     }
+
     //I don't think so we need it now
-    public String read_wallet(int number){
+    public String read_wallet(int number) {
         SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         wallet_string = settings.getString(KEY_STRING, "my string");
         try {
@@ -64,7 +67,7 @@ public class wallet_memory {
 
     //add new wallet
     //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
-    public void add_to_wallets(String wallet_name, String wallet_address) throws JSONException{
+    public void add_to_wallets(String wallet_name, String wallet_address) throws JSONException {
 
         jsonObj = new JSONObject();
         try {
@@ -82,7 +85,9 @@ public class wallet_memory {
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
-    public void save_to_wallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException{
+
+    //save to specific place in json
+    public void save_to_wallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException {
         jsonObj = new JSONObject();
         try {
             jsonObj.put("title", wallet_name);
@@ -102,7 +107,7 @@ public class wallet_memory {
     }
 
     //remove wallet
-    public void remove_wallet(int wallet_id) throws JSONException{
+    public void remove_wallet(int wallet_id) throws JSONException {
         JSONArray new_array = new JSONArray(read_all_wallets());
         new_array = remove(wallet_id, new_array);
 
@@ -123,6 +128,7 @@ public class wallet_memory {
         }
         return ja;
     }
+
     public static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
         final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);

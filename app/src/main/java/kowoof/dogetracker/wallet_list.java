@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,12 +36,11 @@ public class wallet_list extends DrawerActivity {
     ListView list;
     wallet_list_create adapter;
 
-
-    wallet_memory wallet_memory_handler;
+    //TODO better organize this variables
+    wallet_memory wallet_memory_handler; //object for saving and reading wallets fro memory
+    wallet_balance local_wallet_balance_handler = new wallet_balance(); //object for getting wallet balances
     String wallet_name, wallet_address, wallet_balance;
-    Handler handler = new Handler();
     int count = 0, wallets_amount = 0, doges_dollars = 1;
-    wallet_balance local_wallet_balance_handler = new wallet_balance();
     float total_doges = 0;
 
     @Override
@@ -54,6 +55,13 @@ public class wallet_list extends DrawerActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //we add it the same stuff as in DrawerActivity because it's getting overwritten and hamburger button doesn't works
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
         // Add wallet button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +72,9 @@ public class wallet_list extends DrawerActivity {
                 startActivity(i);
             }
         });
+        //Give wallet memory 'handler' current context
         wallet_memory_handler = new wallet_memory(getApplicationContext());
+
         //Find listView and populate it
         list = findViewById(R.id.wallets);
         populate_list();
@@ -86,7 +96,6 @@ public class wallet_list extends DrawerActivity {
         });
     }
 
-
     //Opening drawer here
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,14 +111,17 @@ public class wallet_list extends DrawerActivity {
         int id = item.getItemId();
 
         if (id == R.id.refresh) {
+            //Refresh all wallets data
             total_doges = 0;
             get_balances();
         }
         if (id == R.id.dollars) {
             if(doges_dollars == 1) {
+                //show total balance in dollars
                 total_balance(total_doges, 2);
                 doges_dollars = 2;
             } else {
+                //show total balance in doges
                 total_balance(total_doges, 1);
                 doges_dollars = 1;
             }
@@ -160,17 +172,17 @@ public class wallet_list extends DrawerActivity {
         total_doges = total_balance_f;
     }
 
-    //we count here total balance and add it to toolbar
+    //we show here total balance on to toolbar
     public void total_balance(float total, int doges_or_dollars){
         doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
         get_doge_dollar_rate.read_rates_from_offline();
         float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
         float total_dollar_balance = dolar_doge_f * total;
         String total_dollar_doge_s = Float.toString(total_dollar_balance);
-        String total_doges = Float.toString(total);
+        String total_doges_s = Float.toString(total);
         Toolbar toolbar = findViewById(R.id.toolbar);
         if(doges_or_dollars == 1){
-            toolbar.setSubtitle("Total: " + total_doges + " Đ");
+            toolbar.setSubtitle("Total: " + total_doges_s + " Đ");
             doges_dollars = 1;
         }
         if(doges_or_dollars == 2){
@@ -179,24 +191,24 @@ public class wallet_list extends DrawerActivity {
         }
     }
 
-    //populate list with items saved into json
+    //We get here new all wallet balances, checking them one by one
     void get_balances(){
         //We create handler to wait for get exchange rates
-        handler = new Handler(){
+        Handler handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
-                    wallet_balance = local_wallet_balance_handler.balance;
-                    wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count );
+                    wallet_balance = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
+                    wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 count++;
                 if(count < wallets_amount){
-                    get_balances();
+                    get_balances(); //if there are still wallets to read, get another
                 } else {
-                    count = 0;
+                    count = 0; //if no, just fill listview
                     populate_list();
                 }
             }
@@ -209,6 +221,7 @@ public class wallet_list extends DrawerActivity {
                     JSONObject jsonObject = new_array.getJSONObject(count);
                     wallet_name = jsonObject.getString("title");
                     wallet_address = jsonObject.getString("address");
+                    //send get balance query with current address, wait in handler for response
                     local_wallet_balance_handler.get_wallet_balance(this, handler, wallet_address);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -218,7 +231,6 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
-
 
     //read wallet name and address by position
     void read_wallet(int number){
@@ -232,8 +244,6 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
-
-
 
     // Last but not least, useful stuff to make app working
     public void make_toast(String messege_toast){
