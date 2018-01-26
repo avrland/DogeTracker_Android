@@ -91,4 +91,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/doge"
         android:onClick="copy_wallet_address"/>
+
+    <TextView
+        android:id="@+id/doge_in_dollars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balance" />
 </android.support.constraint.ConstraintLayout>

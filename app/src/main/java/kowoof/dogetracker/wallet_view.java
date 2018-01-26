@@ -130,11 +130,21 @@ public class wallet_view extends DrawerActivity {
     }
     public void get_balance(){
         current_wallet_balance.get_wallet_balance(this, handler, wallet_address);
-
     }
     public void show_balance(){
         TextView wallet_balance_text = findViewById(R.id.balance);
         wallet_balance_text.setText(current_wallet_balance.balance + " Đ");
+        balance_in_dollars();
+    }
+    public void balance_in_dollars(){
+        doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
+        get_doge_dollar_rate.read_rates_from_offline();
+        float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
+        float balance_f = Float.parseFloat(current_wallet_balance.balance);
+        float total_dollar_balance = dolar_doge_f * balance_f;
+        String dollar_doge_s = Float.toString(total_dollar_balance);
+        TextView wallet_balance_text = findViewById(R.id.doge_in_dollars);
+        wallet_balance_text.setText(dollar_doge_s + " $");
     }
     //Copy wallet address by clicking qr code
     public void copy_wallet_address(View view) {
@@ -143,6 +153,7 @@ public class wallet_view extends DrawerActivity {
         clipboard.setPrimaryClip(clip);
         make_toast("Address copied to clipboard.");
     }
+
     //It's easier when you make toast, but I'm not sure if really
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
