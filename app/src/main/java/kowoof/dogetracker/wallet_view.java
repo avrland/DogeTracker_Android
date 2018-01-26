@@ -23,7 +23,9 @@ import org.json.JSONException;
 
 
 
-public class wallet_view extends AppCompatActivity {
+public class wallet_view extends DrawerActivity {
+
+    static String qr_reading_address = "https://dogechain.info/api/v1/address/qrcode/";
 
     String wallet_name, wallet_address;
     int wallet_id;
@@ -45,10 +47,9 @@ public class wallet_view extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Wallet view");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setTitle("Wallet view");
+        toolbar.setSubtitle("");
+
         TextView wallet_name_text = findViewById(R.id.wallet_name);
         TextView wallet_address_text = findViewById(R.id.wallet_address);
         wallet_name_text.setText(wallet_name);
@@ -102,7 +103,7 @@ public class wallet_view extends AppCompatActivity {
 
         //QR code download&set section
         ImageView qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load("https://dogechain.info/api/v1/address/qrcode/" + wallet_address).into(qrcode);
+        Picasso.with(this).load(qr_reading_address + wallet_address).into(qrcode);
     }
 
     // Letting come back home
@@ -129,11 +130,21 @@ public class wallet_view extends AppCompatActivity {
     }
     public void get_balance(){
         current_wallet_balance.get_wallet_balance(this, handler, wallet_address);
-
     }
     public void show_balance(){
         TextView wallet_balance_text = findViewById(R.id.balance);
         wallet_balance_text.setText(current_wallet_balance.balance + " Đ");
+        balance_in_dollars();
+    }
+    public void balance_in_dollars(){
+        doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
+        get_doge_dollar_rate.read_rates_from_offline();
+        float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
+        float balance_f = Float.parseFloat(current_wallet_balance.balance);
+        float total_dollar_balance = dolar_doge_f * balance_f;
+        String dollar_doge_s = Float.toString(total_dollar_balance);
+        TextView wallet_balance_text = findViewById(R.id.doge_in_dollars);
+        wallet_balance_text.setText(dollar_doge_s + " $");
     }
     //Copy wallet address by clicking qr code
     public void copy_wallet_address(View view) {
@@ -142,6 +153,7 @@ public class wallet_view extends AppCompatActivity {
         clipboard.setPrimaryClip(clip);
         make_toast("Address copied to clipboard.");
     }
+
     //It's easier when you make toast, but I'm not sure if really
     public void make_toast(String messege_toast){
         Context context = getApplicationContext();
