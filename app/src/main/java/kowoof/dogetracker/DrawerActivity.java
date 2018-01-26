@@ -69,11 +69,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -97,7 +92,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         } else if (id == R.id.nav_manage) {
-            make_toast("Not implemented yet.");
+            Uri uri = Uri.parse("https://www.reddit.com/r/dogetracker/");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

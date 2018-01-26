@@ -18,8 +18,8 @@
             android:title="Dogecoin Reddit" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@android:drawable/ic_menu_info_details"
-            android:title="About me" />
+            android:icon="@drawable/logo_big"
+            android:title="DogeTracker Reddit" />
     </group>
 
 </menu>

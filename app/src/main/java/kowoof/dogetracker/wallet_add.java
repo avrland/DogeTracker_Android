@@ -59,14 +59,7 @@ public class wallet_add extends AppCompatActivity {
                 added_wallet_name = wallet_name_editText.getText().toString();
                 EditText wallet_address_editText = findViewById(R.id.editText);
                 added_wallet_address = wallet_address_editText.getText().toString();
-                if(added_wallet_name.trim().length() == 0){
-                    added_wallet_name = added_wallet_address;
-                }
-//                try {
-//                    wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
-//                } catch (JSONException e) {
-//
-//                }
+                if(added_wallet_name.trim().length() == 0) added_wallet_name = added_wallet_address;
                 current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
             }
         });
@@ -90,14 +83,6 @@ public class wallet_add extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
-//                    if(current_wallet_balance.success == "1") {
-//                        wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
-//                        Intent i = new Intent(getApplicationContext(), wallet_list.class);
-//                        startActivity(i);
-//                        finish();
-//                    } else {
-//                        make_toast("Wrong address.");
-//                    }
                     wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
                     Intent i = new Intent(getApplicationContext(), wallet_list.class);
                     startActivity(i);

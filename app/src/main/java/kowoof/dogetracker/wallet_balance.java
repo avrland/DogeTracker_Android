@@ -61,7 +61,6 @@ public class wallet_balance {
             JSONObject jsonobject = new JSONObject(jsonString);
             balance      = jsonobject.getString("balance");
             success     = jsonobject.getString("success");
-            Log.e("OK:", success);
         } catch (JSONException e) {
             e.printStackTrace();
         }
