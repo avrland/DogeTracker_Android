@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -27,6 +28,7 @@ public class wallet_balance {
     //We download here json response, leaving a information everything is ready to update view
     public void get_wallet_balance(final Context current_context, final Handler do_it_now, String address){
         dialog = new ProgressDialog(current_context);
+//        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.setMessage("Loading....");
         dialog.show();
 

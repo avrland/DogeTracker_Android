@@ -88,7 +88,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startActivity(i);
             finish();
         } else if (id == R.id.nav_gallery) {
-//            make_toast("Not implemented yet.");
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);
             finish();

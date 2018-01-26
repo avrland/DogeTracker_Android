@@ -5,5 +5,12 @@
         android:id="@+id/refresh"
         android:icon="@android:drawable/ic_popup_sync"
         android:title="Refresh"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/dollars"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:orderInCategory="100"
+        android:title="Dollars"
         app:showAsAction="ifRoom" />
 </menu>

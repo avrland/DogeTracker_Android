@@ -2,6 +2,7 @@ package kowoof.dogetracker;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,7 +69,7 @@ public class wallet_memory {
         jsonObj = new JSONObject();
         try {
             jsonObj.put("title", wallet_name);
-            jsonObj.put("notice", "View wallet to check balance.");
+            jsonObj.put("notice", "Click refresh icon to check balance.");
             jsonObj.put("address", wallet_address);
 
         } catch (JSONException e) {
@@ -81,6 +82,25 @@ public class wallet_memory {
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
+    public void save_to_wallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException{
+        jsonObj = new JSONObject();
+        try {
+            jsonObj.put("title", wallet_name);
+            jsonObj.put("notice", wallet_balance);
+            jsonObj.put("address", wallet_address);
+
+        } catch (JSONException e) {
+
+        }
+        JSONArray new_array = new JSONArray(read_all_wallets());
+        new_array.put(position, jsonObj);
+
+        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(KEY_STRING, new_array.toString());
+        editor.apply();
+    }
+
     //remove wallet
     public void remove_wallet(int wallet_id) throws JSONException{
         JSONArray new_array = new JSONArray(read_all_wallets());
