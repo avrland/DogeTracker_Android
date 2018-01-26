@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -22,14 +23,13 @@ import org.json.JSONObject;
  */
 
 public class wallet_balance {
-    String balance, success;
+    String balance, success, error;
     private ProgressDialog dialog;
     private static String url = "https://dogechain.info/api/v1/address/balance/";
 
     //We download here json response, leaving a information everything is ready to update view
     public void get_wallet_balance(final Context current_context, final Handler do_it_now, String address){
         dialog = new ProgressDialog(current_context);
-//        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.setMessage("Loading....");
         dialog.show();
 
@@ -61,6 +61,7 @@ public class wallet_balance {
             JSONObject jsonobject = new JSONObject(jsonString);
             balance      = jsonobject.getString("balance");
             success     = jsonobject.getString("success");
+            Log.e("OK:", success);
         } catch (JSONException e) {
             e.printStackTrace();
         }

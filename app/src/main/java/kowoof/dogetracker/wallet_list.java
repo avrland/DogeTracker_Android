@@ -116,7 +116,11 @@ public class wallet_list extends DrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-
+        if (id == android.R.id.home) {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+            finish();
+        }
         if (id == R.id.refresh) {
             //Refresh all wallets data
             total_doges = 0;
