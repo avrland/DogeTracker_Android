@@ -34,7 +34,7 @@ Tested on:
 Head over to https://www.reddit.com/r/DogeTracker/ for if you seek support or have an idea. Here on Github you can also create an issue or make a pull request
 
 ## Few words in the end:
-I create this app because I wanted to support lovely Dogecoin community. I've learned a lot of Android programming here, it's my first so big project. If you like it, feel free to modify this project, share with your friends and throw a bone to my dogecoin address:
+I create this app because I wanted to support lovely Dogecoin community. I've learned a lot of Android programming here, it's my first so 'big' project. If you like it, feel free to modify this project, share with your friends and throw a bone to my dogecoin address:
 
 DTvQCPbJ1UwVxdV3Gei9u4FWHpdcGKsWYS
 
