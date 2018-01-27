@@ -2,6 +2,7 @@
 <img src="https://github.com/avrland/DogeTracker_Android/blob/master/app/src/main/res/mipmap-mdpi/main_icon.png?raw=true"/>
 
 DogeTracker comes from iOS to Android, wow! 
+https://play.google.com/store/apps/details?id=kowoof.dogetracker
 
 Original project: https://github.com/Philipp-p/DogeTracker/
 
