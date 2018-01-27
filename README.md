@@ -10,19 +10,20 @@ Original project: https://github.com/Philipp-p/DogeTracker/
 A simplistic approach to keep track of your Dogecoins and Dogecoin in general. Just keep track of all your addresses, without handing over your private keys. Check the current exchange rates for your Dogecoins and be ready to reach the moon.
 
 ## Requirments
-* Android 6.0 or higher
+* Android 5.0 or higher
 * granted camera permission for qr code reading (app will ask you when it'll be needed)
 * app optimazed for smartphones, hoverer it should run on tablets too
 
 Tested on:
 - Xiaomi Redmi Note 4 on MIUI 9.0.3.0
+- Xiaomi Redmi 4X on MIUI 8
 - Samsung Galaxy Note 4 on Android 6.0.1
 
-## Features coming in v1.0
-* adding wallet address by pasting from clipboard or with qr code - DONE!
-* tracking your multiple dogecoin wallets - DONE!
+## Features in v1.0:
+* adding nameable wallet address by pasting from clipboard or with qr code
+* tracking your multiple dogecoin wallets
 * show your total doges amount in doges and $ (using dogechain.info api)
-* see all doge exchange rates in app (using coinmarketcap.com api). If there is no connection, we store recent rates offline. - DONE!
+* see all doge exchange rates in app (using coinmarketcap.com api). If there is no connection, we store recent rates offline.
 
 ## Support, ideas, pull request and more
 Head over to https://www.reddit.com/r/DogeTracker/ for if you seek support or have an idea. Here on Github you can also create an issue or make a pull request
