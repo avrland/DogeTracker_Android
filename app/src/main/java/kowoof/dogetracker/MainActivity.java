@@ -21,6 +21,7 @@ public class MainActivity extends DrawerActivity {
         setContentView(R.layout.activity_main);
 
 
+
         //We create handler to wait for get exchange rates
         handler = new Handler(){
 
