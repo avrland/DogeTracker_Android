@@ -101,6 +101,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startActivity(i);
             //finish();
         }
+        else if (id == R.id.help_doge) {
+            Intent i = new Intent(getApplicationContext(), help_doge.class);
+            startActivity(i);
+            finish();
+        }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -21,6 +21,10 @@
             android:icon="@drawable/logo_big"
             android:title="DogeTracker Reddit" />
         <item
+            android:id="@+id/help_doge"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="Help" />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />
