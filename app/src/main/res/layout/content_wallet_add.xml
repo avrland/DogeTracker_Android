@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="kowoof.dogetracker.wallet_add"
-    tools:showIn="@layout/activity_wallet_add">
+    tools:showIn="@layout/activity_wallet_add"
+    android:id="@+id/snackbar_layout_add">
 
     <ImageView
         android:id="@+id/imageView"

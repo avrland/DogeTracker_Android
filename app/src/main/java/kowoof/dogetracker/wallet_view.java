@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -96,7 +98,6 @@ public class wallet_view extends DrawerActivity {
                 super.handleMessage(msg); //don't know it's really needed now
                 show_balance();
             }
-
         };
 
         //Get single wallet balance
@@ -152,15 +153,12 @@ public class wallet_view extends DrawerActivity {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("label", wallet_address);
         clipboard.setPrimaryClip(clip);
-        make_toast("Address copied to clipboard.");
+
+        ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);
+        Snackbar snackbar = Snackbar
+                .make(layout, "Address copied to clipboard.", Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
-    //It's easier when you make toast, but I'm not sure if really
-    public void make_toast(String messege_toast){
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, messege_toast, duration);
-        toast.show();
-    }
 }
 

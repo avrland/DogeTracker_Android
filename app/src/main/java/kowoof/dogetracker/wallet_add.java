@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -83,12 +85,13 @@ public class wallet_add extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
-                    wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
+                    wallet_memory_handler.add_to_wallets_with_balance(added_wallet_name, added_wallet_address, current_wallet_balance.balance);
                     Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                    i.putExtra("added_wallet", 1);
                     startActivity(i);
                     finish();
                 } catch (JSONException e) {
-
+                    make_toast("Wallet address/connection error.");
                 }
             }
 
@@ -128,7 +131,11 @@ public class wallet_add extends AppCompatActivity {
         //todo check if there is anything in clipbaord,
         EditText editText = findViewById(R.id.editText);
         editText.setText(pasted_wallet_address);
-        make_toast("Pasted.");
+
+        ConstraintLayout layout = findViewById(R.id.snackbar_layout_add);
+        Snackbar snackbar = Snackbar
+                .make(layout, "Address pasted.", Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
     //if we want to scan, we go to wallet_qr_read

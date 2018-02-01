@@ -102,6 +102,12 @@ public class wallet_list extends DrawerActivity {
                 finish();
             }
         });
+//        //if you added wallet, refresh it for first time
+//        Bundle b = getIntent().getExtras();
+//        if(b!=null &&  b.getInt("added_wallet")==1) {
+//            total_doges = 0;
+//            get_balances();
+//        }
     }
 
     //Opening drawer here

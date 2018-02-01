@@ -85,6 +85,26 @@ public class wallet_memory {
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
+    //add new wallet
+    //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
+    public void add_to_wallets_with_balance(String wallet_name, String wallet_address, String wallet_balance) throws JSONException {
+
+        jsonObj = new JSONObject();
+        try {
+            jsonObj.put("title", wallet_name);
+            jsonObj.put("notice", wallet_balance);
+            jsonObj.put("address", wallet_address);
+
+        } catch (JSONException e) {
+
+        }
+        JSONArray new_array = new JSONArray(read_all_wallets());
+        new_array.put(jsonObj);
+        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(KEY_STRING, new_array.toString());
+        editor.apply();
+    }
 
     //save to specific place in json
     public void save_to_wallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException {
