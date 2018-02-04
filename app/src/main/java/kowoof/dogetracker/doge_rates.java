@@ -54,12 +54,12 @@ public class doge_rates {
         }
 
         //We download here json response, leaving a information everything is ready to update view
-        public void get_rates(final Handler handler){
+        public void get_rates(final Handler handler, String fiat_currency){
             dialog = new ProgressDialog(current_context);
             dialog.setMessage("Loading....");
             dialog.show();
 
-            StringRequest request = new StringRequest(url, new Response.Listener<String>() {
+            StringRequest request = new StringRequest(url + "?convert=" + fiat_currency, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
                     parseJsonData(string);

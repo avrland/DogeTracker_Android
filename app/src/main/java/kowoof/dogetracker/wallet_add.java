@@ -35,10 +35,16 @@ import org.json.JSONObject;
 
 public class wallet_add extends AppCompatActivity {
 
+    //We create object to save stuff to memory
     wallet_memory wallet_memory_handler;
+    //We create strings to store address and name before adding
     String added_wallet_name, added_wallet_address;
+    //We create handler to react after getting first time balance
     Handler handler = new Handler();
+    //We create object to get first time balance (next time we'll do it in wallet_list and wallet_view)
     wallet_balance current_wallet_balance = new wallet_balance();
+    //We create object from class to verify if Dogecoin address is valid
+    wallet_verify wow_verify = new wallet_verify();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +70,15 @@ public class wallet_add extends AppCompatActivity {
                 EditText wallet_address_editText = findViewById(R.id.editText);
                 added_wallet_address = wallet_address_editText.getText().toString();
                 if(added_wallet_name.trim().length() == 0) added_wallet_name = added_wallet_address;
-                current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
+
+                if(wow_verify.validateDogecoinAddress(added_wallet_address)==true){
+                    current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
+                } else {
+                    ConstraintLayout layout = findViewById(R.id.snackbar_layout_add);
+                    Snackbar snackbar = Snackbar
+                            .make(layout, "Invalid address.", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
             }
         });
 
@@ -93,7 +107,7 @@ public class wallet_add extends AppCompatActivity {
                     startActivity(i);
                     finish();
                 } catch (JSONException e) {
-                    make_toast("Wallet address/connection error.");
+                    make_toast("Connection error.");
                 }
             }
 

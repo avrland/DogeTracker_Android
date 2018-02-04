@@ -49,9 +49,6 @@ public class MainActivity extends DrawerActivity {
         ImageView logo = findViewById(R.id.imageView);
         if(test == false) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
-
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        make_toast(sp.getString("fiat_list","USD"));
     }
 
 
@@ -63,7 +60,8 @@ public class MainActivity extends DrawerActivity {
     }
     public void refresh_rates(){
         //Getting current dogecoin rates from coinmarketcap
-        current_doge_rates.get_rates(handler);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
     }
     void update_rates() {
         TextView doge_rates_text = findViewById(R.id.doge_rate);
@@ -95,14 +93,6 @@ public class MainActivity extends DrawerActivity {
         } else {
             percent_rate_textview.setTextColor(Color.GREEN);
         }
-    }
-    //toast function to get it a little bit shorter
-    public void make_toast(String messege_toast){
-        Context context = getApplicationContext();
-        CharSequence text = messege_toast;
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
     }
 
     public void TEST(View view) {

@@ -275,11 +275,4 @@ public class wallet_list extends DrawerActivity {
         }
     }
 
-    // Last but not least, useful stuff to make app working
-    public void make_toast(String messege_toast){
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, messege_toast, duration);
-        toast.show();
-    }
 }
