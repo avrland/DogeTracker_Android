@@ -52,7 +52,6 @@ public class MainActivity extends DrawerActivity {
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         make_toast(sp.getString("fiat_list","USD"));
-
     }
 
 

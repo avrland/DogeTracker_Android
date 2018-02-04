@@ -18,6 +18,7 @@
 
     <ListPreference
         android:defaultValue="USD"
+        android:summary="%s"
         android:entries="@array/fiat_name"
         android:entryValues="@array/fiat_name"
         android:key="fiat_list"
