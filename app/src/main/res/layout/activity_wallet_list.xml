@@ -2,35 +2,59 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="kowoof.dogetracker.wallet_list">
 
+    <include
+        layout="@layout/content_wallet_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <!--<android.support.design.widget.AppBarLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:theme="@style/AppTheme.AppBarOverlay">-->
+    <include
+        layout="@layout/background_logo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/toolbar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="?attr/actionBarSize"-->
-            <!--android:background="?attr/colorPrimary"-->
-            <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
-            <!--/>-->
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/floatingMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true"
+        fab:menu_fab_label="Cancel"
+        fab:menu_backgroundColor="#ccffffff"
+        app:fab_progress_color="#FF009688"
+        app:fab_progress_backgroundColor="#4D000000"
+        fab:menu_animationDelayPerItem="0"
+        android:padding="8dp"
+        fab:menu_colorNormal="#FF4081"
+        fab:menu_colorPressed="#FF4081">
 
-    <!--</android.support.design.widget.AppBarLayout>-->
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/add_virtual_wallet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fab_add"
+            fab:fab_size="mini"
+            fab:fab_label="Add virtual wallet"
+            app:fab_colorNormal="#FF4081"
+            app:fab_colorPressed="#FF4081" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/add_real_wallet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fab_add"
+            fab:fab_size="mini"
+            fab:fab_label="Add real wallet"
+            app:fab_colorNormal="#FF4081"
+            app:fab_colorPressed="#FF4081"/>
 
-    <include layout="@layout/content_wallet_list" />
+    </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -70,7 +70,6 @@ public class wallet_add extends AppCompatActivity {
                 EditText wallet_address_editText = findViewById(R.id.editText);
                 added_wallet_address = wallet_address_editText.getText().toString();
                 if(added_wallet_name.trim().length() == 0) added_wallet_name = added_wallet_address;
-
                 if(wow_verify.validateDogecoinAddress(added_wallet_address)==true){
                     current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
                 } else {

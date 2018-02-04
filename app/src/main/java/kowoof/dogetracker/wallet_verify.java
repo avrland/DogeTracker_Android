@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
- * Created by Marcin on 04.02.2018.
+ *  Simple Dogecoin address verification, credits: https://rosettacode.org/wiki/Bitcoin/address_validation
  */
 
 public class wallet_verify {

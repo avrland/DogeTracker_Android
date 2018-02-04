@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +30,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 /**
  * In wallet list we load current saved wallets into listView, calculating total balance
@@ -54,6 +54,7 @@ public class wallet_list extends DrawerActivity {
     int count = 0, wallets_amount = 0, doges_dollars = 1;
     float total_doges = 0;
 
+    private FloatingActionMenu float_menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,8 +74,10 @@ public class wallet_list extends DrawerActivity {
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Add wallet button
-        FloatingActionButton fab = findViewById(R.id.fab);
+        //Floating wallet add menu
+        float_menu = (FloatingActionMenu) findViewById(R.id.floatingMenu);
+        float_menu.setClosedOnTouchOutside(true);
+        FloatingActionButton fab = findViewById(R.id.add_real_wallet);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,6 +86,14 @@ public class wallet_list extends DrawerActivity {
                 startActivity(i);
             }
         });
+        FloatingActionButton fab2 = findViewById(R.id.add_virtual_wallet);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                make_toast("Add virtual");
+            }
+        });
+
         //Give wallet memory 'handler' current context
         wallet_memory_handler = new wallet_memory(getApplicationContext());
 
