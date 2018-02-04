@@ -1,11 +1,15 @@
 package kowoof.dogetracker;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.ListPreference;
+import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +23,6 @@ public class MainActivity extends DrawerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //We create handler to wait for get exchange rates
         handler = new Handler(){
@@ -38,6 +41,19 @@ public class MainActivity extends DrawerActivity {
         refresh_rates();
     }
 
+    //we check and apply settings here
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean test = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(test == false) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        make_toast(sp.getString("fiat_list","USD"));
+
+    }
 
 
     //Refresh button - selects response for clicking refresh - refresh_rates

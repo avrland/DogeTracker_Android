@@ -4,9 +4,11 @@ package kowoof.dogetracker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,12 +105,6 @@ public class wallet_list extends DrawerActivity {
                 finish();
             }
         });
-//        //if you added wallet, refresh it for first time
-//        Bundle b = getIntent().getExtras();
-//        if(b!=null &&  b.getInt("added_wallet")==1) {
-//            total_doges = 0;
-//            get_balances();
-//        }
     }
 
     //Opening drawer here
@@ -158,7 +155,12 @@ public class wallet_list extends DrawerActivity {
     }
 
     public void onResume() {
-        super.onResume();
+        super.onResume();  // Always call the superclass method first
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean test = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(test == false) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
     }
 
     //populate list with items saved into json

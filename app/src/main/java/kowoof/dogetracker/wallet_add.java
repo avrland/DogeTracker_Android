@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
@@ -96,6 +98,15 @@ public class wallet_add extends AppCompatActivity {
             }
 
         };
+    }
+
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean test = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(test == false) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
     }
 
     @Override

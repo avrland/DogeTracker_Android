@@ -5,9 +5,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -118,6 +120,14 @@ public class wallet_view extends DrawerActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean test = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(test == false) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

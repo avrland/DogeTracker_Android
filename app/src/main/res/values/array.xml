@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string-array name="fiat_name">
+        <item>"USD"</item>
+        <item>"EUR"</item>
+        <item>"PLN"</item>
+    </string-array>
+
+    <string-array name="fiat_id">
+        <item>"USD"</item>
+        <item>"PLN"</item>
+    </string-array>
+</resources>
