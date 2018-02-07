@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -53,8 +54,9 @@ public class wallet_list extends DrawerActivity {
     String wallet_name, wallet_address, wallet_balance;
     int count = 0, wallets_amount = 0, doges_dollars = 1;
     float total_doges = 0;
-
     private FloatingActionMenu float_menu;
+    SwipeRefreshLayout mSwipeRefreshView;
+    FloatingActionButton fab_refresh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +79,7 @@ public class wallet_list extends DrawerActivity {
         //Floating wallet add menu
         float_menu = (FloatingActionMenu) findViewById(R.id.floatingMenu);
         float_menu.setClosedOnTouchOutside(true);
+
         FloatingActionButton fab = findViewById(R.id.add_real_wallet);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +119,15 @@ public class wallet_list extends DrawerActivity {
                 finish();
             }
         });
+        mSwipeRefreshView = findViewById(R.id.swiperefresh);
+        mSwipeRefreshView.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                            get_balances();
+                    }
+                }
+        );
     }
 
     //Opening drawer here
@@ -140,6 +152,7 @@ public class wallet_list extends DrawerActivity {
             //Refresh all wallets data
             total_doges = 0;
             get_balances();
+            mSwipeRefreshView.setRefreshing(true);
         }
         if (id == R.id.dollars) {
             if(doges_dollars == 1) {
@@ -234,6 +247,7 @@ public class wallet_list extends DrawerActivity {
 
     //We get here new all wallet balances, checking them one by one
     void get_balances(){
+        final ProgressDialog dialog = new ProgressDialog(wallet_list.this);
         //We create handler to wait for get exchange rates
         Handler handler = new Handler(){
             @Override
@@ -242,6 +256,7 @@ public class wallet_list extends DrawerActivity {
                 try {
                     wallet_balance = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
                     wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
+                    dialog.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -251,6 +266,7 @@ public class wallet_list extends DrawerActivity {
                 } else {
                     count = 0; //if no, just fill listview
                     populate_list();
+                    mSwipeRefreshView.setRefreshing(false);
                 }
             }
 
@@ -262,6 +278,9 @@ public class wallet_list extends DrawerActivity {
                     JSONObject jsonObject = new_array.getJSONObject(count);
                     wallet_name = jsonObject.getString("title");
                     wallet_address = jsonObject.getString("address");
+                    dialog.dismiss();
+                    dialog.setMessage("Loading: " + wallet_name);
+                    dialog.show();
                     //send get balance query with current address, wait in handler for response
                     local_wallet_balance_handler.get_wallet_balance(this, handler, wallet_address);
                 } catch (JSONException e) {

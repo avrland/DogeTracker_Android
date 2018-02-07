@@ -30,8 +30,8 @@ public class wallet_balance {
     //We download here json response, leaving a information everything is ready to update view
     public void get_wallet_balance(final Context current_context, final Handler do_it_now, String address){
         dialog = new ProgressDialog(current_context);
-        dialog.setMessage("Loading....");
-        dialog.show();
+//        dialog.setMessage("Loading....");
+//        dialog.show();
 
         StringRequest request = new StringRequest(url + address, new Response.Listener<String>() {
             @Override
