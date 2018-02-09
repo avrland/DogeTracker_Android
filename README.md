@@ -1,4 +1,4 @@
-# DogeTracker_Android
+# DogeTracker_Android_v1.0
 <img src="https://github.com/avrland/DogeTracker_Android/blob/master/app/src/main/res/mipmap-mdpi/main_icon.png?raw=true"/>
 
 DogeTracker comes from iOS to Android, wow! 
@@ -20,7 +20,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 
 
 ## Requirments
-* Android 5.0 or higher
+* Android 6.0 or higher (5.0 will come in v1.1)
 * internet connection (we'll save everything offline in futher release)
 * granted camera permission for qr code reading (app will ask you when it'll be needed)
 * app optimazed for smartphones, hoverer it should run on tablets too
