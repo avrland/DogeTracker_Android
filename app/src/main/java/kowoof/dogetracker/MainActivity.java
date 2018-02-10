@@ -19,10 +19,23 @@ public class MainActivity extends DrawerActivity {
     //We create doge_rates object and handler to make getting exchange rates wow
     doge_rates current_doge_rates;
     Handler handler = new Handler();
+
+    TextView doge_rates_text, hour_change_text, daily_change_text,
+            weekly_change_text, market_cap_text, volume_text,
+            total_supply_text, last_update_text;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        doge_rates_text = findViewById(R.id.doge_rate);
+        hour_change_text = findViewById(R.id.hour_change);
+        daily_change_text = findViewById(R.id.daily_change);
+        weekly_change_text = findViewById(R.id.weekly_change);
+        market_cap_text = findViewById(R.id.market_cap);
+        volume_text = findViewById(R.id.volume);
+        total_supply_text = findViewById(R.id.total_supply);
+        last_update_text = findViewById(R.id.last_update);
 
         //We create handler to wait for get exchange rates
         handler = new Handler(){
@@ -33,6 +46,9 @@ public class MainActivity extends DrawerActivity {
                 if(msg.arg1==1)      current_doge_rates.new_refresh_time(); //if we're online, we insert current time
                 else if(msg.arg1==2) current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
                 update_rates(); //insert updated rates to layout
+                green_or_red(current_doge_rates.hour_change, hour_change_text);
+                green_or_red(current_doge_rates.daily_change, daily_change_text);
+                green_or_red(current_doge_rates.weekly_change, weekly_change_text);
             }
 
         };
@@ -49,6 +65,9 @@ public class MainActivity extends DrawerActivity {
         ImageView logo = findViewById(R.id.imageView);
         if(test == false) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
+        green_or_red(current_doge_rates.hour_change, hour_change_text);
+        green_or_red(current_doge_rates.daily_change, daily_change_text);
+        green_or_red(current_doge_rates.weekly_change, weekly_change_text);
     }
 
 
@@ -64,19 +83,8 @@ public class MainActivity extends DrawerActivity {
         current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
     }
     void update_rates() {
-        TextView doge_rates_text = findViewById(R.id.doge_rate);
-        TextView hour_change_text = findViewById(R.id.hour_change);
-        TextView daily_change_text = findViewById(R.id.daily_change);
-        TextView weekly_change_text = findViewById(R.id.weekly_change);
-        TextView market_cap_text = findViewById(R.id.market_cap);
-        TextView volume_text = findViewById(R.id.volume);
-        TextView total_supply_text = findViewById(R.id.total_supply);
-        TextView last_update_text = findViewById(R.id.last_update);
         current_doge_rates.save_rates_to_offline();
         current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
-        green_or_red(current_doge_rates.hour_change, hour_change_text);
-        green_or_red(current_doge_rates.daily_change, daily_change_text);
-        green_or_red(current_doge_rates.weekly_change, weekly_change_text);
         doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + "$");
         hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
         daily_change_text.setText("24h: " + current_doge_rates.daily_change + "%");
@@ -88,10 +96,18 @@ public class MainActivity extends DrawerActivity {
     }
     //Check if percent rate are collapsing or raising
     public void green_or_red(String percent_rate, TextView percent_rate_textview){
-        if(percent_rate.contains("-")){
-            percent_rate_textview.setTextColor(Color.RED);
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean check_setting = spref.getBoolean("arrow_or_color", false);
+        if(percent_rate == null){
+            percent_rate_textview.setTextColor(Color.rgb(0x75, 0x75, 0x75));
+            return;
+        }
+        if(check_setting == true) {
+            if (percent_rate.contains("-")) percent_rate_textview.setTextColor(Color.RED);
+            else percent_rate_textview.setTextColor(Color.GREEN);
         } else {
-            percent_rate_textview.setTextColor(Color.GREEN);
+            //default theme color, so hard to find it directly lol
+            percent_rate_textview.setTextColor(Color.rgb(0x75, 0x75, 0x75));
         }
     }
 

@@ -57,7 +57,15 @@ public class wallet_list_create extends BaseAdapter {
         title22.setText(song2);
 
         return vi;
-
     }
-
+    public void updateView(int position, String title, String balance){
+//        View v = getChildAt( yourListView.getFirstVisiblePosition());
+////        if(v == null)
+////            return;
+//
+//        TextView title2 = v.findViewById(R.id.wallet_name); // title
+//        title2.setText(title);
+//        TextView title22 = v.findViewById(R.id.wallet_doges); // notice
+//        title22.setText(balance);
+    }
 }

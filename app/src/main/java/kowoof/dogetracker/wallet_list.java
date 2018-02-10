@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -56,12 +58,13 @@ public class wallet_list extends DrawerActivity {
     float total_doges = 0;
     private FloatingActionMenu float_menu;
     SwipeRefreshLayout mSwipeRefreshView;
-    FloatingActionButton fab_refresh;
+
+    int finished_update_flag = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_list);
-
+        finished_update_flag = 1;
         // Make toolbar wow again, I wanted to add here total amount of doges
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("My wallets");
@@ -110,13 +113,18 @@ public class wallet_list extends DrawerActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent i = new Intent(getApplicationContext(), wallet_view.class);
-                read_wallet(position);
-                i.putExtra("wallet_id", position);
-                i.putExtra("wallet_name", wallet_name); //show wallet_view what wallet I wanna see
-                i.putExtra("wallet_address", wallet_address); //show wallet_view what wallet I wanna see
-                startActivity(i);
-                finish();
+                if(finished_update_flag == 1) { //we would love to wait until all wallets will get updated
+                    Intent i = new Intent(getApplicationContext(), wallet_view.class);
+                    read_wallet(position);
+                    i.putExtra("wallet_id", position);
+                    i.putExtra("wallet_name", wallet_name); //show wallet_view what wallet I wanna see
+                    i.putExtra("wallet_address", wallet_address); //show wallet_view what wallet I wanna see
+                    startActivity(i);
+                    finish();
+                } else { //Inform user that he should wait to finish updating
+                    Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Please wait for finishing wallets update.", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                }
             }
         });
         mSwipeRefreshView = findViewById(R.id.swiperefresh);
@@ -245,9 +253,9 @@ public class wallet_list extends DrawerActivity {
         }
     }
 
-    //We get here new all wallet balances, checking them one by one
+    //We get here new all wallet balances, checking and updating in view them one by one,
     void get_balances(){
-        final ProgressDialog dialog = new ProgressDialog(wallet_list.this);
+        finished_update_flag = 0;
         //We create handler to wait for get exchange rates
         Handler handler = new Handler(){
             @Override
@@ -256,7 +264,7 @@ public class wallet_list extends DrawerActivity {
                 try {
                     wallet_balance = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
                     wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
-                    dialog.dismiss();
+                    update_single_row(count, wallet_name, wallet_balance + " Đ"); //we update signle row in listview
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -265,8 +273,8 @@ public class wallet_list extends DrawerActivity {
                     get_balances(); //if there are still wallets to read, get another
                 } else {
                     count = 0; //if no, just fill listview
-                    populate_list();
                     mSwipeRefreshView.setRefreshing(false);
+                    finished_update_flag = 1;
                 }
             }
 
@@ -278,9 +286,7 @@ public class wallet_list extends DrawerActivity {
                     JSONObject jsonObject = new_array.getJSONObject(count);
                     wallet_name = jsonObject.getString("title");
                     wallet_address = jsonObject.getString("address");
-                    dialog.dismiss();
-                    dialog.setMessage("Loading: " + wallet_name);
-                    dialog.show();
+                    update_single_row(count, wallet_name, "Loading balance...");
                     //send get balance query with current address, wait in handler for response
                     local_wallet_balance_handler.get_wallet_balance(this, handler, wallet_address);
                 } catch (JSONException e) {
@@ -290,6 +296,17 @@ public class wallet_list extends DrawerActivity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    //Single listview row update
+    public void update_single_row(int position, String title, String balance){
+        View v = list.getChildAt(position - list.getFirstVisiblePosition());
+        if(v == null)
+            return;
+        TextView title2 = v.findViewById(R.id.wallet_name); // title
+        title2.setText(title);
+        TextView title22 = v.findViewById(R.id.wallet_doges); // notice
+        title22.setText(balance);
     }
 
     //read wallet name and address by position

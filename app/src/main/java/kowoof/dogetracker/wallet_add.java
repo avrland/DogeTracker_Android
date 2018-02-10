@@ -73,10 +73,8 @@ public class wallet_add extends AppCompatActivity {
                 if(wow_verify.validateDogecoinAddress(added_wallet_address)==true){
                     current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
                 } else {
-                    ConstraintLayout layout = findViewById(R.id.snackbar_layout_add);
-                    Snackbar snackbar = Snackbar
-                            .make(layout, "Invalid address.", Snackbar.LENGTH_SHORT);
-                    snackbar.show();
+                    Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Invalid address.", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
                 }
             }
         });
