@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 
+import java.util.Currency;
+import java.util.Locale;
 
 
 public class wallet_view extends DrawerActivity {
@@ -156,7 +158,12 @@ public class wallet_view extends DrawerActivity {
         float total_dollar_balance = dolar_doge_f * balance_f;
         String dollar_doge_s = Float.toString(total_dollar_balance);
         TextView wallet_balance_text = findViewById(R.id.doge_in_dollars);
-        wallet_balance_text.setText(dollar_doge_s + " $");
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String fiat_name = sp.getString("fiat_list","USD");
+        Locale.setDefault(new Locale("lv","LV"));
+        Currency c  = Currency.getInstance(fiat_name);
+        wallet_balance_text.setText(dollar_doge_s + " " + c.getSymbol());
     }
     //Copy wallet address by clicking qr code
     public void copy_wallet_address(View view) {

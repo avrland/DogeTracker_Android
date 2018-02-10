@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -54,15 +56,16 @@ public class doge_rates {
         }
 
         //We download here json response, leaving a information everything is ready to update view
-        public void get_rates(final Handler handler, String fiat_currency){
+        public void get_rates(final Handler handler, final String fiat_currency){
             dialog = new ProgressDialog(current_context);
             dialog.setMessage("Loading....");
             dialog.show();
 
-            StringRequest request = new StringRequest(url + "?convert=" + fiat_currency, new Response.Listener<String>() {
+            Log.e("fiat_currency:", fiat_currency);
+            StringRequest request = new StringRequest(url + "?convert=" + fiat_currency.toLowerCase(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
-                    parseJsonData(string);
+                    parseJsonData(string, fiat_currency.toLowerCase());
                     dialog.dismiss();
                     //We're ready, leave messenge for handler to refresh_rates in view
                     //It doesn't matter now what kind of messege we send.
@@ -75,7 +78,7 @@ public class doge_rates {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
                     //If something went wrong, we leave messege with error
-                    Toast.makeText(current_context, "Connection error. Showing last updated rates.", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(current_context, "Connection error. Showing last updated rates.", Toast.LENGTH_SHORT).show();
                     Message news = new Message();
                     news.arg1 = 2;
                     handler.sendMessage(news);
@@ -87,17 +90,23 @@ public class doge_rates {
             rQueue.add(request);
         }
         //Parse Json exchange rates data
-        private void parseJsonData(String jsonString) {
+        private void parseJsonData(String jsonString, String fiat_currency) {
         try {
             JSONArray jsonarray = new JSONArray(jsonString);
             for(int i=0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                doge_rate       = jsonobject.getString("price_usd");
+                doge_rate       = jsonobject.getString("price_" + fiat_currency);
+                //we want 4 decimal places with dot as a separator
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                DecimalFormat df = new DecimalFormat("#.####");
+                symbols.setDecimalSeparator('.');
+                df.setDecimalFormatSymbols(symbols);
+                doge_rate = df.format(Float.parseFloat(doge_rate)).toString();
                 hour_change     = jsonobject.getString("percent_change_1h");
                 daily_change    = jsonobject.getString("percent_change_24h");
                 weekly_change   = jsonobject.getString("percent_change_7d");
-                market_cap      = jsonobject.getString("market_cap_usd");
-                volume          = jsonobject.getString("24h_volume_usd");
+                market_cap      = jsonobject.getString("market_cap_" + fiat_currency);
+                volume          = jsonobject.getString("24h_volume_" + fiat_currency);
                 total_supply    = jsonobject.getString("total_supply");
             }
         } catch (JSONException e) {

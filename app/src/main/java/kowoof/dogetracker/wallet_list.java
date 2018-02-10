@@ -33,6 +33,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
+
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
@@ -82,7 +85,7 @@ public class wallet_list extends DrawerActivity {
         //Floating wallet add menu
         float_menu = (FloatingActionMenu) findViewById(R.id.floatingMenu);
         float_menu.setClosedOnTouchOutside(true);
-
+        //go to add real wallet
         FloatingActionButton fab = findViewById(R.id.add_real_wallet);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,11 +95,13 @@ public class wallet_list extends DrawerActivity {
                 startActivity(i);
             }
         });
+        //go to add virtual wallet
         FloatingActionButton fab2 = findViewById(R.id.add_virtual_wallet);
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                make_toast("Add virtual");
+                Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Coming soon.", Snackbar.LENGTH_SHORT);
+                mySnackbar.show();
             }
         });
 
@@ -236,6 +241,12 @@ public class wallet_list extends DrawerActivity {
 
     //we show here total balance on to toolbar
     public void total_balance(float total, int doges_or_dollars){
+        //we change here current fiat currency symbol
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String fiat_name = sp.getString("fiat_list","USD");
+        Locale.setDefault(new Locale("lv","LV"));
+        Currency c  = Currency.getInstance(fiat_name);
+
         doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
         get_doge_dollar_rate.read_rates_from_offline();
         float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
@@ -248,7 +259,7 @@ public class wallet_list extends DrawerActivity {
             doges_dollars = 1;
         }
         if(doges_or_dollars == 2){
-            toolbar.setSubtitle("Total: " + total_dollar_doge_s + " $");
+            toolbar.setSubtitle("Total: " + total_dollar_doge_s + " " + c.getSymbol());
             doges_dollars = 2;
         }
     }

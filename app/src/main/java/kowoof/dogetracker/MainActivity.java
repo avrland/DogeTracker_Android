@@ -8,10 +8,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.ListPreference;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Currency;
+import java.util.Locale;
 
 
 public class MainActivity extends DrawerActivity {
@@ -44,7 +48,11 @@ public class MainActivity extends DrawerActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 if(msg.arg1==1)      current_doge_rates.new_refresh_time(); //if we're online, we insert current time
-                else if(msg.arg1==2) current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
+                else if(msg.arg1==2){
+                    current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
+                    Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                }
                 update_rates(); //insert updated rates to layout
                 green_or_red(current_doge_rates.hour_change, hour_change_text);
                 green_or_red(current_doge_rates.daily_change, daily_change_text);
@@ -54,7 +62,7 @@ public class MainActivity extends DrawerActivity {
         };
         current_doge_rates = new doge_rates(this);
         //Refresh exchange rates every startup
-        refresh_rates();
+      //  refresh_rates();
     }
 
     //we check and apply settings here
@@ -68,6 +76,7 @@ public class MainActivity extends DrawerActivity {
         green_or_red(current_doge_rates.hour_change, hour_change_text);
         green_or_red(current_doge_rates.daily_change, daily_change_text);
         green_or_red(current_doge_rates.weekly_change, weekly_change_text);
+        refresh_rates();
     }
 
 
@@ -83,14 +92,18 @@ public class MainActivity extends DrawerActivity {
         current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
     }
     void update_rates() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String fiat_name = sp.getString("fiat_list","USD");
+        Locale.setDefault(new Locale("lv","LV"));
+        Currency c  = Currency.getInstance(fiat_name);
         current_doge_rates.save_rates_to_offline();
         current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
-        doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + "$");
+        doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + " " + c.getSymbol());
         hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
         daily_change_text.setText("24h: " + current_doge_rates.daily_change + "%");
         weekly_change_text.setText("7d: " + current_doge_rates.weekly_change + "%");
-        market_cap_text.setText("Market cap: " + current_doge_rates.market_cap + " $");
-        volume_text.setText("Volume 24h: " + current_doge_rates.volume + " $");
+        market_cap_text.setText("Market cap: " + current_doge_rates.market_cap + " " + c.getSymbol());
+        volume_text.setText("Volume 24h: " + current_doge_rates.volume+ " " + c.getSymbol());
         total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + " Đ");
         last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
     }
@@ -109,9 +122,5 @@ public class MainActivity extends DrawerActivity {
             //default theme color, so hard to find it directly lol
             percent_rate_textview.setTextColor(Color.rgb(0x75, 0x75, 0x75));
         }
-    }
-
-    public void TEST(View view) {
-        make_toast("TEST");
     }
 }

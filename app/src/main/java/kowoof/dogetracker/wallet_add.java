@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.icu.util.Currency;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,14 +53,13 @@ public class wallet_add extends AppCompatActivity {
         setContentView(R.layout.activity_wallet_add);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add wallet");
+        getSupportActionBar().setTitle("Add real wallet");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         EditText wallet_name_editText = findViewById(R.id.editText2);
         wallet_name_editText.requestFocus();
         wallet_memory_handler = new wallet_memory(getApplicationContext());
         FloatingActionButton fab = findViewById(R.id.fab);
-
         //We get here wallet address and name, and save it to SharedPref
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
