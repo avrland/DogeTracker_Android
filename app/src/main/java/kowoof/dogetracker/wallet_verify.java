@@ -5,6 +5,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
 /**
  *  Simple Dogecoin address verification, credits: https://rosettacode.org/wiki/Bitcoin/address_validation
  */

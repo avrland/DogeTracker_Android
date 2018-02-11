@@ -8,6 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
 public class wallet_qr_read extends AppCompatActivity implements QRCodeReaderView.OnQRCodeReadListener {
     private QRCodeReaderView qrCodeReaderView;
 

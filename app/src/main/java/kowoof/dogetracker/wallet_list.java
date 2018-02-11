@@ -1,34 +1,24 @@
 package kowoof.dogetracker;
 
-
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +29,12 @@ import java.util.Locale;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
 /**
  * In wallet list we load current saved wallets into listView, calculating total balance
  * We also can change balance from doges to $ by klicking R.id.dollars
@@ -48,8 +44,8 @@ import com.github.clans.fab.FloatingActionMenu;
 
 public class wallet_list extends DrawerActivity {
     //We create here stuff for listView
-    ArrayList<String> title_array = new ArrayList<String>();
-    ArrayList<String> notice_array = new ArrayList<String>();
+    ArrayList<String> title_array = new ArrayList<>();
+    ArrayList<String> notice_array = new ArrayList<>();
     ListView list;
     wallet_list_create adapter;
 
@@ -83,7 +79,7 @@ public class wallet_list extends DrawerActivity {
         toggle.syncState();
 
         //Floating wallet add menu
-        float_menu = (FloatingActionMenu) findViewById(R.id.floatingMenu);
+        float_menu = findViewById(R.id.floatingMenu);
         float_menu.setClosedOnTouchOutside(true);
         //go to add real wallet
         FloatingActionButton fab = findViewById(R.id.add_real_wallet);
@@ -106,7 +102,7 @@ public class wallet_list extends DrawerActivity {
         });
 
         //Give wallet memory 'handler' current context
-        wallet_memory_handler = new wallet_memory(getApplicationContext());
+        wallet_memory_handler = new wallet_memory(getApplicationContext(), null);
 
         //Find listView and populate it
         list = findViewById(R.id.wallets);
@@ -196,7 +192,7 @@ public class wallet_list extends DrawerActivity {
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean test = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(test == false) logo.setVisibility(View.INVISIBLE);
+        if(!test) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
 

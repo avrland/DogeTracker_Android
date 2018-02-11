@@ -1,9 +1,11 @@
 package kowoof.dogetracker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +15,7 @@ import java.util.List;
 
 /**
  * Created by Marcin on 20.01.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
  *
  * We are going to save and read wallet address here to sharedpreferences using simply string converted to JSON.
  *
@@ -37,8 +40,44 @@ public class wallet_memory {
 
     String wallet_name, wallet_address, wallet_balance;
 
-    wallet_memory(Context context) {
+//    SwipeRefreshLayout mSwipeRefreshView;
+    int count = 0, wallets_amount = 0, doges_dollars = 1;
+    int finished_update_flag = 1;
+    wallet_balance local_wallet_balance_handler = new wallet_balance(); //object for getting wallet balances
+    float all_wallets_balance, current_wallet_balance = 0;
+
+
+    Handler balance_received_feedback = new Handler();
+
+    @SuppressLint("HandlerLeak")
+    wallet_memory(Context context, final Handler handler) {
         current_context = context;
+//        handler = balance_received_feedback;
+        balance_received_feedback = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg); //don't know it's really needed now
+                try {
+                    wallet_balance = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
+                    current_wallet_balance = Float.parseFloat(wallet_balance);
+                    save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                count++;
+                all_wallets_balance = all_wallets_balance + current_wallet_balance;
+                if(count < wallets_amount){
+                    get_balances(); //if there are still wallets to read, get another
+                } else {
+                    Message news = new Message();
+                    news.arg1 = 3;
+                    handler.sendMessage(news);
+                    Log.e("all_wallets_balance: ", Float.toString(all_wallets_balance));
+                    count = 0; //if no, just fill listview
+                }
+            }
+
+        };
     }
 
     //read all wallets to json object from sharedpreferences into class String
@@ -46,6 +85,25 @@ public class wallet_memory {
         SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         wallet_string = settings.getString(KEY_STRING, "[]");
         return wallet_string;
+    }
+
+    public void get_balances(){
+        try {
+            JSONArray new_array = new JSONArray(read_all_wallets());
+            wallets_amount = new_array.length();
+            try {
+                JSONObject jsonObject = new_array.getJSONObject(count);
+                wallet_name = jsonObject.getString("title");
+                wallet_address = jsonObject.getString("address");
+                //send get balance query with current address, wait in handler for response
+                local_wallet_balance_handler.get_wallet_balance(current_context, balance_received_feedback, wallet_address);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     //I don't think so we need it now

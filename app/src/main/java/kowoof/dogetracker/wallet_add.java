@@ -34,6 +34,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
+
 public class wallet_add extends AppCompatActivity {
 
     //We create object to save stuff to memory
@@ -58,7 +64,7 @@ public class wallet_add extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         EditText wallet_name_editText = findViewById(R.id.editText2);
         wallet_name_editText.requestFocus();
-        wallet_memory_handler = new wallet_memory(getApplicationContext());
+        wallet_memory_handler = new wallet_memory(getApplicationContext(), null);
         FloatingActionButton fab = findViewById(R.id.fab);
         //We get here wallet address and name, and save it to SharedPref
         fab.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +122,7 @@ public class wallet_add extends AppCompatActivity {
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean test = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(test == false) logo.setVisibility(View.INVISIBLE);
+        if(!test) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
 

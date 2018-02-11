@@ -15,6 +15,11 @@ import android.widget.TabHost;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
 public class help_doge extends DrawerActivity {
 
     private FloatingActionMenu float_menu;

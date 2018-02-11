@@ -1,5 +1,7 @@
 package kowoof.dogetracker;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -9,6 +11,7 @@ import android.os.Message;
 import android.preference.ListPreference;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +20,10 @@ import android.widget.Toast;
 import java.util.Currency;
 import java.util.Locale;
 
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
 
 public class MainActivity extends DrawerActivity {
 
@@ -27,11 +34,15 @@ public class MainActivity extends DrawerActivity {
     TextView doge_rates_text, hour_change_text, daily_change_text,
             weekly_change_text, market_cap_text, volume_text,
             total_supply_text, last_update_text;
+    wallet_memory wallet_memory_handler;
+    ProgressDialog dialog;
+
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        dialog = new ProgressDialog(MainActivity.this);
         doge_rates_text = findViewById(R.id.doge_rate);
         hour_change_text = findViewById(R.id.hour_change);
         daily_change_text = findViewById(R.id.daily_change);
@@ -40,7 +51,6 @@ public class MainActivity extends DrawerActivity {
         volume_text = findViewById(R.id.volume);
         total_supply_text = findViewById(R.id.total_supply);
         last_update_text = findViewById(R.id.last_update);
-
         //We create handler to wait for get exchange rates
         handler = new Handler(){
 
@@ -60,9 +70,26 @@ public class MainActivity extends DrawerActivity {
             }
 
         };
+        Handler handler2 = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg); //don't know it's really needed now
+                if(msg.arg1==3){
+                    TextView all_wallets_balance = findViewById(R.id.textView8);
+                    all_wallets_balance.setText(Float.toString(wallet_memory_handler.all_wallets_balance) + " Đ");
+                    dialog.dismiss();
+                }
+            }
+
+        };
+        wallet_memory_handler = new wallet_memory(getApplicationContext(), handler2);
         current_doge_rates = new doge_rates(this);
         //Refresh exchange rates every startup
-      //  refresh_rates();
+
+        dialog.setMessage("Loading....");
+        dialog.show();
+        wallet_memory_handler.all_wallets_balance = 0;
+        wallet_memory_handler.get_balances();
     }
 
     //we check and apply settings here
@@ -71,7 +98,7 @@ public class MainActivity extends DrawerActivity {
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean test = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(test == false) logo.setVisibility(View.INVISIBLE);
+        if(!test) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
         green_or_red(current_doge_rates.hour_change, hour_change_text);
         green_or_red(current_doge_rates.daily_change, daily_change_text);
@@ -85,6 +112,9 @@ public class MainActivity extends DrawerActivity {
     //Update_rates - update rates in view
     public void refresh_button(View view) {
             refresh_rates();
+            dialog.show();
+            wallet_memory_handler.all_wallets_balance = 0;
+            wallet_memory_handler.get_balances();
     }
     public void refresh_rates(){
         //Getting current dogecoin rates from coinmarketcap
@@ -92,20 +122,24 @@ public class MainActivity extends DrawerActivity {
         current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
     }
     void update_rates() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        String fiat_name = sp.getString("fiat_list","USD");
-        Locale.setDefault(new Locale("lv","LV"));
-        Currency c  = Currency.getInstance(fiat_name);
-        current_doge_rates.save_rates_to_offline();
-        current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
-        doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + " " + c.getSymbol());
-        hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
-        daily_change_text.setText("24h: " + current_doge_rates.daily_change + "%");
-        weekly_change_text.setText("7d: " + current_doge_rates.weekly_change + "%");
-        market_cap_text.setText("Market cap: " + current_doge_rates.market_cap + " " + c.getSymbol());
-        volume_text.setText("Volume 24h: " + current_doge_rates.volume+ " " + c.getSymbol());
-        total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + " Đ");
-        last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
+        try {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+            String fiat_name = sp.getString("fiat_list", "USD");
+            Locale.setDefault(new Locale("lv", "LV"));
+            Currency c = Currency.getInstance(fiat_name);
+            current_doge_rates.save_rates_to_offline();
+            current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
+            doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + " " + c.getSymbol());
+            hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
+            daily_change_text.setText("24h: " + current_doge_rates.daily_change + "%");
+            weekly_change_text.setText("7d: " + current_doge_rates.weekly_change + "%");
+            market_cap_text.setText("Market cap: " + current_doge_rates.market_cap + " " + c.getSymbol());
+            volume_text.setText("Volume 24h: " + current_doge_rates.volume + " " + c.getSymbol());
+            total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + " Đ");
+            last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
+        } catch(NullPointerException e ){
+
+        }
     }
     //Check if percent rate are collapsing or raising
     public void green_or_red(String percent_rate, TextView percent_rate_textview){
@@ -115,7 +149,7 @@ public class MainActivity extends DrawerActivity {
             percent_rate_textview.setTextColor(Color.rgb(0x75, 0x75, 0x75));
             return;
         }
-        if(check_setting == true) {
+        if(check_setting) {
             if (percent_rate.contains("-")) percent_rate_textview.setTextColor(Color.RED);
             else percent_rate_textview.setTextColor(Color.GREEN);
         } else {

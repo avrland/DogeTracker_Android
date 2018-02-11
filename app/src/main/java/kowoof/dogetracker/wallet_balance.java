@@ -19,8 +19,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Marcin on 14.01.2018.
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
  */
+
 
 public class wallet_balance {
     String balance, success, error;

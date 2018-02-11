@@ -28,6 +28,7 @@ import java.util.Calendar;
 
 /**
  * Created by Marcin on 10.01.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
  *
  * We get here exchange rates via coinmarketcap and save it to sharepreferences also.
  */
@@ -152,15 +153,19 @@ public class doge_rates {
         }
         //we add spaces to so big numbers like market cap, volume and total supply
         public void rates_with_commas(){
-            DecimalFormat decimalFormat1 = new DecimalFormat("#,###");
-            float market_cap_f = Float.parseFloat(market_cap);
-            market_cap = decimalFormat1.format(market_cap_f);
+            try {
+                DecimalFormat decimalFormat1 = new DecimalFormat("#,###");
+                float market_cap_f = Float.parseFloat(market_cap);
+                market_cap = decimalFormat1.format(market_cap_f);
 
-            float volume_f = Float.parseFloat(volume);
-            volume = decimalFormat1.format(volume_f);
+                float volume_f = Float.parseFloat(volume);
+                volume = decimalFormat1.format(volume_f);
 
-            float total_supply_f = Float.parseFloat(total_supply);
-            total_supply = decimalFormat1.format(total_supply_f);
+                float total_supply_f = Float.parseFloat(total_supply);
+                total_supply = decimalFormat1.format(total_supply_f);
+            } catch(NumberFormatException e ){
+
+            }
         }
 
 }

@@ -28,6 +28,11 @@ import org.json.JSONException;
 import java.util.Currency;
 import java.util.Locale;
 
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
 
 public class wallet_view extends DrawerActivity {
 
@@ -59,9 +64,9 @@ public class wallet_view extends DrawerActivity {
         TextView wallet_name_text = findViewById(R.id.wallet_name);
         TextView wallet_address_text = findViewById(R.id.wallet_address);
         wallet_name_text.setText(wallet_name);
-        if(wallet_name == wallet_address) wallet_name_text.setText("");
+        if(wallet_name.equals(wallet_address)) wallet_name_text.setText("");
         wallet_address_text.setText(wallet_address);
-        wallet_memory_handler = new wallet_memory(getApplicationContext());
+        wallet_memory_handler = new wallet_memory(getApplicationContext(), null);
         //Set button for deleting wallet (just from viewer, not really lol)
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +133,7 @@ public class wallet_view extends DrawerActivity {
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean test = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(test == false) logo.setVisibility(View.INVISIBLE);
+        if(!test) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
     @Override

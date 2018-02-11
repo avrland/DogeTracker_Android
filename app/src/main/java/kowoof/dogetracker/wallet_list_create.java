@@ -11,8 +11,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by Marcin on 14.01.2018.
- *
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
+/**
  * We implement here listView and his items
  */
 public class wallet_list_create extends BaseAdapter {
@@ -22,8 +25,8 @@ public class wallet_list_create extends BaseAdapter {
 
     public wallet_list_create(Activity a, ArrayList b, ArrayList bod) {
         activity = a;
-        this.title = b;
-        this.notice=bod;
+        title = b;
+        notice=bod;
 
         inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

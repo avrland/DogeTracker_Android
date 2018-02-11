@@ -15,6 +15,11 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+/**
+ * Created by Marcin on 11.02.2018.
+ * Copyright © 2017 Marcin Popko. All rights reserved.
+ */
+
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     protected RelativeLayout fullLayout;
@@ -24,7 +29,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public void setContentView(int layoutResID) {
         //Prepare default drawer view section
         fullLayout = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_drawer, null);
-        frameLayout = (FrameLayout) fullLayout.findViewById(R.id.drawer_frame);
+        frameLayout = fullLayout.findViewById(R.id.drawer_frame);
         getLayoutInflater().inflate(layoutResID, frameLayout, true);
         super.setContentView(fullLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
