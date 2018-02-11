@@ -50,8 +50,8 @@ public class wallet_list extends DrawerActivity {
     wallet_list_create adapter;
 
     //TODO better organize this variables
-    wallet_memory wallet_memory_handler; //object for saving and reading wallets fro memory
-    wallet_balance local_wallet_balance_handler = new wallet_balance(); //object for getting wallet balances
+    wallet_memory wallet_memory_object; //object for saving and reading wallets fro memory
+    wallet_balance wallet_balance_handler = new wallet_balance(); //object for getting wallet balances
     String wallet_name, wallet_address, wallet_balance;
     int count = 0, wallets_amount = 0, doges_dollars = 1;
     float total_doges = 0;
@@ -64,7 +64,6 @@ public class wallet_list extends DrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_list);
         finished_update_flag = 1;
-        // Make toolbar wow again, I wanted to add here total amount of doges
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("My wallets");
         toolbar.setSubtitle("Total:  Đ");
@@ -78,12 +77,10 @@ public class wallet_list extends DrawerActivity {
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        //Floating wallet add menu
         float_menu = findViewById(R.id.floatingMenu);
         float_menu.setClosedOnTouchOutside(true);
-        //go to add real wallet
-        FloatingActionButton fab = findViewById(R.id.add_real_wallet);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton real_wallet_fab = findViewById(R.id.add_real_wallet);
+        real_wallet_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -91,9 +88,8 @@ public class wallet_list extends DrawerActivity {
                 startActivity(i);
             }
         });
-        //go to add virtual wallet
-        FloatingActionButton fab2 = findViewById(R.id.add_virtual_wallet);
-        fab2.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton virtual_wallet_fab = findViewById(R.id.add_virtual_wallet);
+        virtual_wallet_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Coming soon.", Snackbar.LENGTH_SHORT);
@@ -101,8 +97,28 @@ public class wallet_list extends DrawerActivity {
             }
         });
 
+//        Handler balance_handler = new Handler(){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                if(msg.arg1== 1){
+//                    update_single_row(wallet_memory_object.COUNT, wallet_memory_object.WALLET_NAME, "Loading....");
+//                }
+//                if(msg.arg1== 2){ //
+//                    update_single_row(wallet_memory_object.COUNT, wallet_memory_object.WALLET_NAME, wallet_memory_object.WALLET_BALANCE);
+//                }
+//                if(msg.arg1==3){
+//                    finished_update_flag = 1;
+//                    wallet_memory_object.COUNT = 0;
+//                    mSwipeRefreshView.setRefreshing(false);
+//                }
+//            }
+//
+//        };
+
+
         //Give wallet memory 'handler' current context
-        wallet_memory_handler = new wallet_memory(getApplicationContext(), null);
+        wallet_memory_object= new wallet_memory(getApplicationContext(), null);
 
         //Find listView and populate it
         list = findViewById(R.id.wallets);
@@ -114,15 +130,15 @@ public class wallet_list extends DrawerActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                if(finished_update_flag == 1) { //we would love to wait until all wallets will get updated
+                if(finished_update_flag == 1) {
                     Intent i = new Intent(getApplicationContext(), wallet_view.class);
                     read_wallet(position);
                     i.putExtra("wallet_id", position);
-                    i.putExtra("wallet_name", wallet_name); //show wallet_view what wallet I wanna see
-                    i.putExtra("wallet_address", wallet_address); //show wallet_view what wallet I wanna see
+                    i.putExtra("wallet_name", wallet_name);
+                    i.putExtra("wallet_address", wallet_address);
                     startActivity(i);
                     finish();
-                } else { //Inform user that he should wait to finish updating
+                } else {
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Please wait for finishing wallets update.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
@@ -137,6 +153,7 @@ public class wallet_list extends DrawerActivity {
                     }
                 }
         );
+
     }
 
     //Opening drawer here
@@ -158,18 +175,16 @@ public class wallet_list extends DrawerActivity {
             finish();
         }
         if (id == R.id.refresh) {
-            //Refresh all wallets data
             total_doges = 0;
             get_balances();
             mSwipeRefreshView.setRefreshing(true);
         }
         if (id == R.id.dollars) {
+            //1 = doges, 2 = fiat
             if(doges_dollars == 1) {
-                //show total balance in dollars
                 total_balance(total_doges, 2);
                 doges_dollars = 2;
             } else {
-                //show total balance in doges
                 total_balance(total_doges, 1);
                 doges_dollars = 1;
             }
@@ -203,12 +218,13 @@ public class wallet_list extends DrawerActivity {
         title_array.clear();
         notice_array.clear();
         list.setAdapter(adapter);
+
         //prepare all balances float handler
         float total_balance_f = 0;
         float current_wallet_f = 0;
 
         try {
-            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
+            JSONArray new_array = new JSONArray(wallet_memory_object.read_all_wallets());
 
             for (int i = 0, count = new_array.length(); i < count; i++) {
                 try {
@@ -263,14 +279,15 @@ public class wallet_list extends DrawerActivity {
     //We get here new all wallet balances, checking and updating in view them one by one,
     void get_balances(){
         finished_update_flag = 0;
+//        wallet_memory_object.get_balances();
         //We create handler to wait for get exchange rates
         Handler handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
-                    wallet_balance = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
-                    wallet_memory_handler.save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
+                    wallet_balance = wallet_balance_handler.balance; //get single wallet balance when you get it from json query
+                    wallet_memory_object.save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
                     update_single_row(count, wallet_name, wallet_balance + " Đ"); //we update signle row in listview
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -287,7 +304,7 @@ public class wallet_list extends DrawerActivity {
 
         };
         try {
-            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
+            JSONArray new_array = new JSONArray(wallet_memory_object.read_all_wallets());
             wallets_amount = new_array.length();
                 try {
                     JSONObject jsonObject = new_array.getJSONObject(count);
@@ -295,7 +312,7 @@ public class wallet_list extends DrawerActivity {
                     wallet_address = jsonObject.getString("address");
                     update_single_row(count, wallet_name, "Loading balance...");
                     //send get balance query with current address, wait in handler for response
-                    local_wallet_balance_handler.get_wallet_balance(this, handler, wallet_address);
+                    wallet_balance_handler.get_wallet_balance(this, handler, wallet_address);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -319,7 +336,7 @@ public class wallet_list extends DrawerActivity {
     //read wallet name and address by position
     void read_wallet(int number){
         try {
-            JSONArray new_array = new JSONArray(wallet_memory_handler.read_all_wallets());
+            JSONArray new_array = new JSONArray(wallet_memory_object.read_all_wallets());
             JSONObject jsonObject = new_array.getJSONObject(number);
             wallet_name = jsonObject.getString("title");
             wallet_address = jsonObject.getString("address");

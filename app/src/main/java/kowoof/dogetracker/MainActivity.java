@@ -27,10 +27,12 @@ import java.util.Locale;
 
 public class MainActivity extends DrawerActivity {
 
+    static int default_text_color = Color.rgb(0x75, 0x75, 0x75);
+    SharedPreferences spref;
+
     //We create doge_rates object and handler to make getting exchange rates wow
     doge_rates current_doge_rates;
-    Handler handler = new Handler();
-
+    Handler rates_handler = new Handler();
     TextView doge_rates_text, hour_change_text, daily_change_text,
             weekly_change_text, market_cap_text, volume_text,
             total_supply_text, last_update_text;
@@ -40,9 +42,13 @@ public class MainActivity extends DrawerActivity {
     @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dialog = new ProgressDialog(MainActivity.this);
+        spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+
         doge_rates_text = findViewById(R.id.doge_rate);
         hour_change_text = findViewById(R.id.hour_change);
         daily_change_text = findViewById(R.id.daily_change);
@@ -51,15 +57,16 @@ public class MainActivity extends DrawerActivity {
         volume_text = findViewById(R.id.volume);
         total_supply_text = findViewById(R.id.total_supply);
         last_update_text = findViewById(R.id.last_update);
+
         //We create handler to wait for get exchange rates
-        handler = new Handler(){
+        rates_handler = new Handler(){
 
             @Override
             public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
-                if(msg.arg1==1)      current_doge_rates.new_refresh_time(); //if we're online, we insert current time
+                super.handleMessage(msg);
+                if(msg.arg1==1)      current_doge_rates.get_new_refresh_time();
                 else if(msg.arg1==2){
-                    current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
+                    current_doge_rates.get_last_refresh_time();
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
@@ -70,10 +77,10 @@ public class MainActivity extends DrawerActivity {
             }
 
         };
-        Handler handler2 = new Handler(){
+        Handler balance_handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
+                super.handleMessage(msg);
                 if(msg.arg1==3){
                     TextView all_wallets_balance = findViewById(R.id.textView8);
                     all_wallets_balance.setText(Float.toString(wallet_memory_handler.all_wallets_balance) + " Đ");
@@ -82,10 +89,11 @@ public class MainActivity extends DrawerActivity {
             }
 
         };
-        wallet_memory_handler = new wallet_memory(getApplicationContext(), handler2);
+        wallet_memory_handler = new wallet_memory(getApplicationContext(), balance_handler);
         current_doge_rates = new doge_rates(this);
-        //Refresh exchange rates every startup
 
+
+        //Refresh exchange rates every startup
         dialog.setMessage("Loading....");
         dialog.show();
         wallet_memory_handler.all_wallets_balance = 0;
@@ -95,7 +103,6 @@ public class MainActivity extends DrawerActivity {
     //we check and apply settings here
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean test = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
         if(!test) logo.setVisibility(View.INVISIBLE);
@@ -118,13 +125,11 @@ public class MainActivity extends DrawerActivity {
     }
     public void refresh_rates(){
         //Getting current dogecoin rates from coinmarketcap
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
+        current_doge_rates.get_rates(rates_handler, spref.getString("fiat_list","USD"));
     }
     void update_rates() {
         try {
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            String fiat_name = sp.getString("fiat_list", "USD");
+            String fiat_name = spref.getString("fiat_list", "USD");
             Locale.setDefault(new Locale("lv", "LV"));
             Currency c = Currency.getInstance(fiat_name);
             current_doge_rates.save_rates_to_offline();
@@ -143,18 +148,16 @@ public class MainActivity extends DrawerActivity {
     }
     //Check if percent rate are collapsing or raising
     public void green_or_red(String percent_rate, TextView percent_rate_textview){
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean check_setting = spref.getBoolean("arrow_or_color", false);
         if(percent_rate == null){
-            percent_rate_textview.setTextColor(Color.rgb(0x75, 0x75, 0x75));
+            percent_rate_textview.setTextColor(default_text_color);
             return;
         }
         if(check_setting) {
             if (percent_rate.contains("-")) percent_rate_textview.setTextColor(Color.RED);
             else percent_rate_textview.setTextColor(Color.GREEN);
         } else {
-            //default theme color, so hard to find it directly lol
-            percent_rate_textview.setTextColor(Color.rgb(0x75, 0x75, 0x75));
+            percent_rate_textview.setTextColor(default_text_color);
         }
     }
 }

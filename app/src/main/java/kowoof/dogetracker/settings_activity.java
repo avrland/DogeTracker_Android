@@ -61,9 +61,9 @@ public class settings_activity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
-                if(msg.arg1==1)      current_doge_rates.new_refresh_time(); //if we're online, we insert current time
+                if(msg.arg1==1)      current_doge_rates.get_new_refresh_time();
                 else if(msg.arg1==2){
-                    current_doge_rates.offline_refresh_time(); //if we're offline, we instert last update time
+                    current_doge_rates.get_last_refresh_time();
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }

@@ -36,9 +36,9 @@ import java.util.Calendar;
 public class doge_rates {
         String doge_rate, hour_change, daily_change, weekly_change, market_cap, volume,
                 total_supply, last_refresh;
-        private ProgressDialog dialog;
-        private static String url = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
-        private Context current_context;
+        private static ProgressDialog DIALOG;
+        private static String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
+        private static Context CURRENT_CONTEXT;
 
         //we store exchange rates stuff into memory
         private static final String PREFS_FILE = "Offline_exchange_rates";
@@ -53,21 +53,20 @@ public class doge_rates {
         private static final String last_refresh_offline = "last_refresh_offline";
 
         doge_rates(Context user_context){
-                current_context = user_context;
+            CURRENT_CONTEXT = user_context;
         }
 
         //We download here json response, leaving a information everything is ready to update view
         public void get_rates(final Handler handler, final String fiat_currency){
-            dialog = new ProgressDialog(current_context);
-            dialog.setMessage("Loading....");
-            dialog.show();
+            DIALOG = new ProgressDialog(CURRENT_CONTEXT);
+//            DIALOG.setMessage("Loading....");
+//            DIALOG.show();
 
-            Log.e("fiat_currency:", fiat_currency);
-            StringRequest request = new StringRequest(url + "?convert=" + fiat_currency.toLowerCase(), new Response.Listener<String>() {
+            StringRequest request = new StringRequest(URL + "?convert=" + fiat_currency.toLowerCase(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
                     parseJsonData(string, fiat_currency.toLowerCase());
-                    dialog.dismiss();
+//                    DIALOG.dismiss();
                     //We're ready, leave messenge for handler to refresh_rates in view
                     //It doesn't matter now what kind of messege we send.
                     Message news = new Message();
@@ -78,16 +77,14 @@ public class doge_rates {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    //If something went wrong, we leave messege with error
-//                    Toast.makeText(current_context, "Connection error. Showing last updated rates.", Toast.LENGTH_SHORT).show();
                     Message news = new Message();
                     news.arg1 = 2;
                     handler.sendMessage(news);
                     read_rates_from_offline();
-                    dialog.dismiss();
+//                    DIALOG.dismiss();
                 }
             });
-            RequestQueue rQueue = Volley.newRequestQueue(current_context);
+            RequestQueue rQueue = Volley.newRequestQueue(CURRENT_CONTEXT);
             rQueue.add(request);
         }
         //Parse Json exchange rates data
@@ -114,9 +111,8 @@ public class doge_rates {
             e.printStackTrace();
         }
         }
-        //We read here rates from offline
         public void read_rates_from_offline(){
-            SharedPreferences rates = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+            SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             doge_rate       = rates.getString(doge_rate_offline, "doge_rate_offline");
             hour_change     = rates.getString(hour_change_offline, "hour_change_offline");
             daily_change    = rates.getString(daily_change_offline, "daily_change_offline");
@@ -126,9 +122,8 @@ public class doge_rates {
             total_supply    = rates.getString(total_supply_offline, "total_supply_offline");
             last_refresh    = rates.getString(last_refresh_offline, "last_refresh_offline");
         }
-        //We save here rates to offline
         public void save_rates_to_offline(){
-            SharedPreferences rates = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+            SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
             editor.putString(doge_rate_offline, doge_rate);
             editor.putString(hour_change_offline, hour_change);
@@ -139,16 +134,16 @@ public class doge_rates {
             editor.putString(total_supply_offline, total_supply);
             editor.apply();
         }
-        public void new_refresh_time(){
-            SharedPreferences rates = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        public void get_new_refresh_time(){
+            SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
             DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
             last_refresh =df.format(Calendar.getInstance().getTime());
             editor.putString(last_refresh_offline, last_refresh);
             editor.apply();
         }
-        public void offline_refresh_time(){
-            SharedPreferences rates = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        public void get_last_refresh_time(){
+            SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             last_refresh    = rates.getString(last_refresh_offline, "last_refresh_offline");
         }
         //we add spaces to so big numbers like market cap, volume and total supply

@@ -70,7 +70,6 @@ public class wallet_add extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO we should check here if dogecoin wallet address is valid (or into wallet_view?)
                 EditText wallet_name_editText = findViewById(R.id.editText2);
                 added_wallet_name = wallet_name_editText.getText().toString();
                 EditText wallet_address_editText = findViewById(R.id.editText);
@@ -156,7 +155,6 @@ public class wallet_add extends AppCompatActivity {
         ClipData abc = clipboard.getPrimaryClip();
         ClipData.Item item = abc.getItemAt(0);
         String pasted_wallet_address = item.getText().toString();
-        //todo check if there is anything in clipbaord,
         EditText editText = findViewById(R.id.editText);
         editText.setText(pasted_wallet_address);
 

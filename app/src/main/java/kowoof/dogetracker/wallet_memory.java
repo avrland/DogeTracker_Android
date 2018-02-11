@@ -19,30 +19,31 @@ import java.util.List;
  *
  * We are going to save and read wallet address here to sharedpreferences using simply string converted to JSON.
  *
- * We initialize this class in any Activity by passing current context argument, for example:
+ * We initialize this class in any Activity by passing current context argument and single handler to get feedback from get_balances(), for example:
  *
  * Context current_context;
  * wallet_memory wallet_memory_handler;
  *     protected void onCreate(Bundle savedInstanceState) {
  *                  //other stuff from beggining here
- *                  wallet_memory_handler = new wallet_memory(getApplicationContext());
+ *                  wallet_memory_handler = new wallet_memory(getApplicationContext(), handler);
  *     }
  */
 
 public class wallet_memory {
+
     private static final String PREFS_FILE = "wallets_file";
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
-    // PREFS_MODE defines which apps can access the file
     private static final int PREFS_MODE = Context.MODE_PRIVATE;
+
     String wallet_string;
     JSONObject jsonObj = new JSONObject();
     Context current_context;
 
-    String wallet_name, wallet_address, wallet_balance;
+    String WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE;
 
-//    SwipeRefreshLayout mSwipeRefreshView;
-    int count = 0, wallets_amount = 0, doges_dollars = 1;
-    int finished_update_flag = 1;
+
+    int COUNT = 0, wallets_amount = 0;
+
     wallet_balance local_wallet_balance_handler = new wallet_balance(); //object for getting wallet balances
     float all_wallets_balance, current_wallet_balance = 0;
 
@@ -52,28 +53,38 @@ public class wallet_memory {
     @SuppressLint("HandlerLeak")
     wallet_memory(Context context, final Handler handler) {
         current_context = context;
-//        handler = balance_received_feedback;
+
+        //Plan:
+        //1 - received single wallet
+        //2 - started to getting another
+        //3 - task finished
         balance_received_feedback = new Handler(){
             @Override
             public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
+                super.handleMessage(msg);
                 try {
-                    wallet_balance = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
-                    current_wallet_balance = Float.parseFloat(wallet_balance);
-                    save_to_wallet(wallet_name, wallet_address , wallet_balance, count ); //save it to json
+                    WALLET_BALANCE = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
+                    current_wallet_balance = Float.parseFloat(WALLET_BALANCE);
+                    save_to_wallet(WALLET_NAME, WALLET_ADDRESS , WALLET_BALANCE, COUNT ); //save it to json
+                    Message news = new Message();
+                    news.arg1 = 1;
+                    handler.sendMessage(news);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                count++;
+                COUNT++;
                 all_wallets_balance = all_wallets_balance + current_wallet_balance;
-                if(count < wallets_amount){
+                if(COUNT < wallets_amount){
+                    Message news = new Message();
+                    news.arg1 = 2;
+                    handler.sendMessage(news);
                     get_balances(); //if there are still wallets to read, get another
                 } else {
                     Message news = new Message();
                     news.arg1 = 3;
                     handler.sendMessage(news);
-                    Log.e("all_wallets_balance: ", Float.toString(all_wallets_balance));
-                    count = 0; //if no, just fill listview
+
+                    COUNT = 0; //if no, just fill listview
                 }
             }
 
@@ -89,14 +100,17 @@ public class wallet_memory {
 
     public void get_balances(){
         try {
+            if(read_all_wallets()=="[]"){
+                //todo reaction on empty json
+            }
             JSONArray new_array = new JSONArray(read_all_wallets());
             wallets_amount = new_array.length();
             try {
-                JSONObject jsonObject = new_array.getJSONObject(count);
-                wallet_name = jsonObject.getString("title");
-                wallet_address = jsonObject.getString("address");
+                JSONObject jsonObject = new_array.getJSONObject(COUNT);
+                WALLET_NAME = jsonObject.getString("title");
+                WALLET_ADDRESS = jsonObject.getString("address");
                 //send get balance query with current address, wait in handler for response
-                local_wallet_balance_handler.get_wallet_balance(current_context, balance_received_feedback, wallet_address);
+                local_wallet_balance_handler.get_wallet_balance(current_context, balance_received_feedback, WALLET_ADDRESS);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -113,35 +127,14 @@ public class wallet_memory {
         try {
             JSONArray new_array = new JSONArray(wallet_string);
             JSONObject jsonObject = new_array.getJSONObject(number);
-            wallet_name = jsonObject.getString("title");
-            wallet_address = jsonObject.getString("address");
-            wallet_balance = jsonObject.getString("notice");
+            WALLET_NAME = jsonObject.getString("title");
+            WALLET_ADDRESS = jsonObject.getString("address");
+            WALLET_BALANCE = jsonObject.getString("notice");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("WE HAVE:", wallet_name + " " + wallet_address + " " + wallet_balance + " ");
+        Log.e("WE HAVE:", WALLET_NAME + " " + WALLET_ADDRESS + " " + WALLET_BALANCE + " ");
         return wallet_string;
-    }
-
-    //add new wallet
-    //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
-    public void add_to_wallets(String wallet_name, String wallet_address) throws JSONException {
-
-        jsonObj = new JSONObject();
-        try {
-            jsonObj.put("title", wallet_name);
-            jsonObj.put("notice", "Click refresh icon to check balance.");
-            jsonObj.put("address", wallet_address);
-
-        } catch (JSONException e) {
-
-        }
-        JSONArray new_array = new JSONArray(read_all_wallets());
-        new_array.put(jsonObj);
-        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(KEY_STRING, new_array.toString());
-        editor.apply();
     }
     //add new wallet
     //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
