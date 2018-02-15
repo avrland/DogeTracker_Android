@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 
 public class wallet_balance {
-    String balance, success, error;
+    String balance, success;
     private ProgressDialog dialog;
     private static String url = "https://dogechain.info/api/v1/address/balance/";
 

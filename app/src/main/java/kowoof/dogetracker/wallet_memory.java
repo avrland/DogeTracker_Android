@@ -35,9 +35,9 @@ public class wallet_memory {
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
     private static final int PREFS_MODE = Context.MODE_PRIVATE;
 
-    String wallet_string;
-    JSONObject jsonObj = new JSONObject();
-    Context current_context;
+    private String wallet_string;
+    private JSONObject jsonObj = new JSONObject();
+    private Context current_context;
 
     String WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE;
 
@@ -189,7 +189,7 @@ public class wallet_memory {
     }
 
     //addition methods to remove_wallet
-    public static JSONArray remove(final int idx, final JSONArray from) {
+    private static JSONArray remove(final int idx, final JSONArray from) {
         final List<JSONObject> objs = asList(from);
         objs.remove(idx);
 
@@ -200,7 +200,7 @@ public class wallet_memory {
         return ja;
     }
 
-    public static List<JSONObject> asList(final JSONArray ja) {
+    private static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
         final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);
         for (int i = 0; i < len; i++) {

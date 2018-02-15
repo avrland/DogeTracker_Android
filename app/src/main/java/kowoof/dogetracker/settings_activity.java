@@ -31,8 +31,8 @@ import android.widget.Toast;
 
 public class settings_activity extends AppCompatActivity {
 
-    doge_rates current_doge_rates;
-    Handler handler = new Handler();
+    private doge_rates current_doge_rates;
+    private Handler get_rates_handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +53,9 @@ public class settings_activity extends AppCompatActivity {
                 finish();
             }
         });
-//        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         current_doge_rates = new doge_rates(this);
         //We create handler to wait for get exchange rates
-        handler = new Handler(){
+        get_rates_handler = new Handler(){
 
             @Override
             public void handleMessage(Message msg) {
@@ -81,7 +80,7 @@ public class settings_activity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
+            current_doge_rates.get_rates(get_rates_handler, sp.getString("fiat_list","USD"));
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -92,7 +91,7 @@ public class settings_activity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            current_doge_rates.get_rates(handler, sp.getString("fiat_list","USD"));
+            current_doge_rates.get_rates(get_rates_handler, sp.getString("fiat_list","USD"));
         }
         return super.onOptionsItemSelected(item);
     }

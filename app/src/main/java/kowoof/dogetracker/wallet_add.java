@@ -43,15 +43,15 @@ import org.json.JSONObject;
 public class wallet_add extends AppCompatActivity {
 
     //We create object to save stuff to memory
-    wallet_memory wallet_memory_handler;
+    private wallet_memory walletMemoryObject;
     //We create strings to store address and name before adding
-    String added_wallet_name, added_wallet_address;
+    private String addedWalletName, addedWalletAddress;
     //We create handler to react after getting first time balance
-    Handler handler = new Handler();
+    private Handler handler = new Handler();
     //We create object to get first time balance (next time we'll do it in wallet_list and wallet_view)
-    wallet_balance current_wallet_balance = new wallet_balance();
+    private wallet_balance currentWalletBalance = new wallet_balance();
     //We create object from class to verify if Dogecoin address is valid
-    wallet_verify wow_verify = new wallet_verify();
+    private wallet_verify walletAddressVerify = new wallet_verify();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,21 +62,21 @@ public class wallet_add extends AppCompatActivity {
         getSupportActionBar().setTitle("Add real wallet");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        EditText wallet_name_editText = findViewById(R.id.editText2);
-        wallet_name_editText.requestFocus();
-        wallet_memory_handler = new wallet_memory(getApplicationContext(), null);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        EditText walletNameEditText = findViewById(R.id.editText2);
+        walletNameEditText.requestFocus();
+        walletMemoryObject = new wallet_memory(getApplicationContext(), null);
+        FloatingActionButton addWalletFab = findViewById(R.id.fab);
         //We get here wallet address and name, and save it to SharedPref
-        fab.setOnClickListener(new View.OnClickListener() {
+        addWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText wallet_name_editText = findViewById(R.id.editText2);
-                added_wallet_name = wallet_name_editText.getText().toString();
-                EditText wallet_address_editText = findViewById(R.id.editText);
-                added_wallet_address = wallet_address_editText.getText().toString();
-                if(added_wallet_name.trim().length() == 0) added_wallet_name = added_wallet_address;
-                if(wow_verify.validateDogecoinAddress(added_wallet_address)==true){
-                    current_wallet_balance.get_wallet_balance(wallet_add.this, handler, added_wallet_address);
+                EditText walletNameEditText = findViewById(R.id.editText2);
+                addedWalletName = walletNameEditText.getText().toString();
+                EditText walletAddressEditText = findViewById(R.id.editText);
+                addedWalletAddress = walletAddressEditText.getText().toString();
+                if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
+                if(walletAddressVerify.validateDogecoinAddress(addedWalletAddress)==true){
+                    currentWalletBalance.get_wallet_balance(wallet_add.this, handler, addedWalletAddress);
                 } else {
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Invalid address.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
@@ -85,14 +85,13 @@ public class wallet_add extends AppCompatActivity {
         });
 
         //If we use qr code reader, we insert here scanned address
-        Bundle b = getIntent().getExtras();
-        if(b!=null) {
-            int readed_qr = b.getInt("readed_qr_code");
-            if (readed_qr==1)
-            {
-                added_wallet_address = b.getString("wallet_address");
+        Bundle qrReaderMessage = getIntent().getExtras();
+        if(qrReaderMessage!=null) {
+            int checkIfReadedQr = qrReaderMessage.getInt("readed_qr_code");
+            if (checkIfReadedQr==1) {
+                addedWalletAddress = qrReaderMessage.getString("wallet_address");
                 EditText editText = findViewById(R.id.editText);
-                editText.setText(added_wallet_address);
+                editText.setText(addedWalletAddress);
             }
         }
 
@@ -103,7 +102,7 @@ public class wallet_add extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
-                    wallet_memory_handler.add_to_wallets_with_balance(added_wallet_name, added_wallet_address, current_wallet_balance.balance);
+                    walletMemoryObject.add_to_wallets_with_balance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
                     Intent i = new Intent(getApplicationContext(), wallet_list.class);
                     i.putExtra("added_wallet", 1);
                     startActivity(i);
@@ -119,9 +118,9 @@ public class wallet_add extends AppCompatActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean test = spref.getBoolean("dt_logo", false);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(!test) logo.setVisibility(View.INVISIBLE);
+        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
 
@@ -154,9 +153,9 @@ public class wallet_add extends AppCompatActivity {
         ClipboardManager clipboard=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         ClipData abc = clipboard.getPrimaryClip();
         ClipData.Item item = abc.getItemAt(0);
-        String pasted_wallet_address = item.getText().toString();
+        String pastedWalletAddress = item.getText().toString();
         EditText editText = findViewById(R.id.editText);
-        editText.setText(pasted_wallet_address);
+        editText.setText(pastedWalletAddress);
 
         ConstraintLayout layout = findViewById(R.id.snackbar_layout_add);
         Snackbar snackbar = Snackbar
@@ -196,19 +195,4 @@ public class wallet_add extends AppCompatActivity {
         Toast toast = Toast.makeText(context,  messege_toast, duration);
         toast.show();
     }
-
-//    //Preparing json object to save
-//    public void test_button(View view) throws JSONException  {
-//        EditText wallet_name_editText = findViewById(R.id.editText2);
-//        added_wallet_name = wallet_name_editText.getText().toString();
-//
-//        EditText wallet_address_editText = findViewById(R.id.editText);
-//        added_wallet_address = wallet_address_editText.getText().toString();
-//        wallet_memory_handler.add_to_wallets(added_wallet_name, added_wallet_address);
-//    }
-//
-//    public void test_button2(View view) {
-//        wallet_memory_handler.current_context = getApplicationContext();
-//        wallet_memory_handler.read_all_wallets();
-//    }
 }

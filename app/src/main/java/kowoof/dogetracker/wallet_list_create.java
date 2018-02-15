@@ -50,25 +50,15 @@ public class wallet_list_create extends BaseAdapter {
         if (convertView == null)
             vi = inflater.inflate(R.layout.row_listitem, null);
 
-        TextView title2 = vi.findViewById(R.id.wallet_name); // title
-        String song = title.get(position).toString();
-        title2.setText(song);
+        TextView wallet_name_list_textView = vi.findViewById(R.id.wallet_name); // title
+        String wallet_name_item = title.get(position).toString();
+        wallet_name_list_textView.setText(wallet_name_item);
 
 
-        TextView title22 = vi.findViewById(R.id.wallet_doges); // notice
-        String song2 = notice.get(position).toString();
-        title22.setText(song2);
+        TextView wallet_balance_list_textView = vi.findViewById(R.id.wallet_doges); // notice
+        String wallet_balance_item = notice.get(position).toString();
+        wallet_balance_list_textView.setText(wallet_balance_item);
 
         return vi;
-    }
-    public void updateView(int position, String title, String balance){
-//        View v = getChildAt( yourListView.getFirstVisiblePosition());
-////        if(v == null)
-////            return;
-//
-//        TextView title2 = v.findViewById(R.id.wallet_name); // title
-//        title2.setText(title);
-//        TextView title22 = v.findViewById(R.id.wallet_doges); // notice
-//        title22.setText(balance);
     }
 }

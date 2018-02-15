@@ -36,23 +36,23 @@ import java.util.Locale;
 
 public class wallet_view extends DrawerActivity {
 
-    static String qr_reading_address = "https://dogechain.info/api/v1/address/qrcode/";
+    private static String qr_reading_address = "https://dogechain.info/api/v1/address/qrcode/";
 
     String wallet_name, wallet_address;
     int wallet_id;
     wallet_balance current_wallet_balance = new wallet_balance();
-    wallet_memory wallet_memory_handler;
-    Handler handler = new Handler();
+    private wallet_memory wallet_memory_handler;
+    private Handler get_balance_handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Get feedback from wallet_qr_read activity
-        Bundle b = getIntent().getExtras();
-        if (b != null)
+
+        Bundle wallet_list_feedback = getIntent().getExtras();
+        if (wallet_list_feedback != null)
         {
-            wallet_name = b.getString("wallet_name");
-            wallet_address = b.getString("wallet_address");
-            wallet_id = b.getInt("wallet_id");
+            wallet_name = wallet_list_feedback.getString("wallet_name");
+            wallet_address = wallet_list_feedback.getString("wallet_address");
+            wallet_id = wallet_list_feedback.getInt("wallet_id");
         }
         //Prepare view
         super.onCreate(savedInstanceState);
@@ -101,7 +101,7 @@ public class wallet_view extends DrawerActivity {
             }
         });
         //We create handler to wait for get exchange rates
-        handler = new Handler(){
+        get_balance_handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
@@ -113,8 +113,8 @@ public class wallet_view extends DrawerActivity {
         get_balance();
 
         //QR code download&set section
-        ImageView qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load(qr_reading_address + wallet_address).into(qrcode);
+        ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
+        Picasso.with(this).load(qr_reading_address + wallet_address).into(current_wallet_qrcode);
     }
 
     // Letting come back home
@@ -131,9 +131,9 @@ public class wallet_view extends DrawerActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean test = spref.getBoolean("dt_logo", false);
+        boolean use_background_logo_setting = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(!test) logo.setVisibility(View.INVISIBLE);
+        if(!use_background_logo_setting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
     @Override
@@ -148,11 +148,11 @@ public class wallet_view extends DrawerActivity {
         return super.onKeyDown(keyCode, event);
     }
     public void get_balance(){
-        current_wallet_balance.get_wallet_balance(this, handler, wallet_address);
+        current_wallet_balance.get_wallet_balance(this, get_balance_handler, wallet_address);
     }
     public void show_balance(){
-        TextView wallet_balance_text = findViewById(R.id.balance);
-        wallet_balance_text.setText(current_wallet_balance.balance + " Đ");
+        TextView wallet_balance_textView = findViewById(R.id.balance);
+        wallet_balance_textView.setText(current_wallet_balance.balance + " Đ");
         balance_in_dollars();
     }
     public void balance_in_dollars(){
@@ -160,15 +160,15 @@ public class wallet_view extends DrawerActivity {
         get_doge_dollar_rate.read_rates_from_offline();
         float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
         float balance_f = Float.parseFloat(current_wallet_balance.balance);
-        float total_dollar_balance = dolar_doge_f * balance_f;
-        String dollar_doge_s = Float.toString(total_dollar_balance);
+        float total_dollar_balance_f = dolar_doge_f * balance_f;
+        String dollar_doge_s = Float.toString(total_dollar_balance_f);
         TextView wallet_balance_text = findViewById(R.id.doge_in_dollars);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         String fiat_name = sp.getString("fiat_list","USD");
         Locale.setDefault(new Locale("lv","LV"));
-        Currency c  = Currency.getInstance(fiat_name);
-        wallet_balance_text.setText(dollar_doge_s + " " + c.getSymbol());
+        Currency used_fiat_currency  = Currency.getInstance(fiat_name);
+        wallet_balance_text.setText(dollar_doge_s + " " + used_fiat_currency.getSymbol());
     }
     //Copy wallet address by clicking qr code
     public void copy_wallet_address(View view) {
