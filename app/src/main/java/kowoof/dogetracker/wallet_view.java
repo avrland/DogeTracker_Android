@@ -36,13 +36,13 @@ import java.util.Locale;
 
 public class wallet_view extends DrawerActivity {
 
-    private static String qr_reading_address = "https://dogechain.info/api/v1/address/qrcode/";
+    private static final String qrReadingURL = "https://dogechain.info/api/v1/address/qrcode/";
 
-    String wallet_name, wallet_address;
-    int wallet_id;
-    wallet_balance current_wallet_balance = new wallet_balance();
-    private wallet_memory wallet_memory_handler;
-    private Handler get_balance_handler = new Handler();
+    private String viewedWalletName, viewedWalletAddress;
+    private int viewedWalletId;
+    private wallet_balance walletBalanceObject = new wallet_balance();
+    private wallet_memory walletMemoryObject;
+    private Handler getBalanceHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +50,9 @@ public class wallet_view extends DrawerActivity {
         Bundle wallet_list_feedback = getIntent().getExtras();
         if (wallet_list_feedback != null)
         {
-            wallet_name = wallet_list_feedback.getString("wallet_name");
-            wallet_address = wallet_list_feedback.getString("wallet_address");
-            wallet_id = wallet_list_feedback.getInt("wallet_id");
+            viewedWalletName = wallet_list_feedback.getString("wallet_name");
+            viewedWalletAddress = wallet_list_feedback.getString("wallet_address");
+            viewedWalletId = wallet_list_feedback.getInt("wallet_id");
         }
         //Prepare view
         super.onCreate(savedInstanceState);
@@ -61,12 +61,12 @@ public class wallet_view extends DrawerActivity {
         toolbar.setTitle("Wallet view");
         toolbar.setSubtitle("");
 
-        TextView wallet_name_text = findViewById(R.id.wallet_name);
-        TextView wallet_address_text = findViewById(R.id.wallet_address);
-        wallet_name_text.setText(wallet_name);
-        if(wallet_name.equals(wallet_address)) wallet_name_text.setText("");
-        wallet_address_text.setText(wallet_address);
-        wallet_memory_handler = new wallet_memory(getApplicationContext(), null);
+        TextView walletNameTextView = findViewById(R.id.wallet_name);
+        TextView walletAddressTextView = findViewById(R.id.wallet_address);
+        walletNameTextView.setText(viewedWalletName);
+        if(viewedWalletName.equals(viewedWalletAddress)) walletNameTextView.setText("");
+        walletAddressTextView.setText(viewedWalletAddress);
+        walletMemoryObject = new wallet_memory(getApplicationContext(), null);
         //Set button for deleting wallet (just from viewer, not really lol)
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -76,13 +76,13 @@ public class wallet_view extends DrawerActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(wallet_view.this);
                 builder.setCancelable(true);
                 builder.setTitle("Are you sure?");
-                builder.setMessage("Remove wallet: " + wallet_name);
+                builder.setMessage("Remove wallet: " + viewedWalletName);
                 builder.setPositiveButton("Confirm",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
-                                    wallet_memory_handler.remove_wallet(wallet_id);
+                                    walletMemoryObject.removeWallet(viewedWalletId);
                                     Intent i = new Intent(getApplicationContext(), wallet_list.class);
                                     startActivity(i);
                                     finish();
@@ -101,20 +101,20 @@ public class wallet_view extends DrawerActivity {
             }
         });
         //We create handler to wait for get exchange rates
-        get_balance_handler = new Handler(){
+        getBalanceHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
-                show_balance();
+                showBalance();
             }
         };
 
         //Get single wallet balance
-        get_balance();
+        getBalance();
 
         //QR code download&set section
         ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load(qr_reading_address + wallet_address).into(current_wallet_qrcode);
+        Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
     }
 
     // Letting come back home
@@ -147,33 +147,33 @@ public class wallet_view extends DrawerActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    public void get_balance(){
-        current_wallet_balance.get_wallet_balance(this, get_balance_handler, wallet_address);
+    public void getBalance(){
+        walletBalanceObject.get_wallet_balance(this, getBalanceHandler, viewedWalletAddress);
     }
-    public void show_balance(){
+    public void showBalance(){
         TextView wallet_balance_textView = findViewById(R.id.balance);
-        wallet_balance_textView.setText(current_wallet_balance.balance + " Đ");
-        balance_in_dollars();
+        wallet_balance_textView.setText(walletBalanceObject.balance + " Đ");
+        balanceInFiat();
     }
-    public void balance_in_dollars(){
+    public void balanceInFiat(){
         doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
         get_doge_dollar_rate.read_rates_from_offline();
         float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
-        float balance_f = Float.parseFloat(current_wallet_balance.balance);
+        float balance_f = Float.parseFloat(walletBalanceObject.balance);
         float total_dollar_balance_f = dolar_doge_f * balance_f;
         String dollar_doge_s = Float.toString(total_dollar_balance_f);
-        TextView wallet_balance_text = findViewById(R.id.doge_in_dollars);
+        TextView walletFiatBalanceTextView = findViewById(R.id.doge_in_dollars);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         String fiat_name = sp.getString("fiat_list","USD");
         Locale.setDefault(new Locale("lv","LV"));
         Currency used_fiat_currency  = Currency.getInstance(fiat_name);
-        wallet_balance_text.setText(dollar_doge_s + " " + used_fiat_currency.getSymbol());
+        walletFiatBalanceTextView.setText(dollar_doge_s + " " + used_fiat_currency.getSymbol());
     }
     //Copy wallet address by clicking qr code
-    public void copy_wallet_address(View view) {
+    public void copyWalletAddress(View view) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("label", wallet_address);
+        ClipData clip = ClipData.newPlainText("label", viewedWalletAddress);
         clipboard.setPrimaryClip(clip);
 
         ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);

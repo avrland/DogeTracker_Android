@@ -30,8 +30,8 @@ public class wallet_balance {
     private static String url = "https://dogechain.info/api/v1/address/balance/";
 
     //We download here json response, leaving a information everything is ready to update view
-    public void get_wallet_balance(final Context current_context, final Handler do_it_now, String address){
-        dialog = new ProgressDialog(current_context);
+    public void get_wallet_balance(final Context currentContext, final Handler walletBalanceHandler, String address){
+        dialog = new ProgressDialog(currentContext);
 //        dialog.setMessage("Loading....");
 //        dialog.show();
 
@@ -44,17 +44,17 @@ public class wallet_balance {
                 //It doesn't matter now what kind of messege we send.
                 Message news = new Message();
                 news.arg1 = 1;
-                do_it_now.sendMessage(news);
+                walletBalanceHandler.sendMessage(news);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 //If something went wrong, we leave messege with error
-                Toast.makeText(current_context, "Connection error.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(currentContext, "Connection error.", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
-        RequestQueue rQueue = Volley.newRequestQueue(current_context);
+        RequestQueue rQueue = Volley.newRequestQueue(currentContext);
         rQueue.add(request);
     }
     //Parse Json exchange rates data

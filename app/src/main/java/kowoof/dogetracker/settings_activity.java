@@ -31,8 +31,8 @@ import android.widget.Toast;
 
 public class settings_activity extends AppCompatActivity {
 
-    private doge_rates current_doge_rates;
-    private Handler get_rates_handler = new Handler();
+    private doge_rates dogeRatesObject;
+    private Handler getRatesHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +53,16 @@ public class settings_activity extends AppCompatActivity {
                 finish();
             }
         });
-        current_doge_rates = new doge_rates(this);
+        dogeRatesObject = new doge_rates(this);
         //We create handler to wait for get exchange rates
-        get_rates_handler = new Handler(){
+        getRatesHandler = new Handler(){
 
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
-                if(msg.arg1==1)      current_doge_rates.get_new_refresh_time();
+                if(msg.arg1==1)      dogeRatesObject.get_new_refresh_time();
                 else if(msg.arg1==2){
-                    current_doge_rates.get_last_refresh_time();
+                    dogeRatesObject.get_last_refresh_time();
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
@@ -80,7 +80,7 @@ public class settings_activity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            current_doge_rates.get_rates(get_rates_handler, sp.getString("fiat_list","USD"));
+            dogeRatesObject.get_rates(getRatesHandler, sp.getString("fiat_list","USD"));
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -91,7 +91,7 @@ public class settings_activity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            current_doge_rates.get_rates(get_rates_handler, sp.getString("fiat_list","USD"));
+            dogeRatesObject.get_rates(getRatesHandler, sp.getString("fiat_list","USD"));
         }
         return super.onOptionsItemSelected(item);
     }

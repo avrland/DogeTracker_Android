@@ -80,7 +80,7 @@
         app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/doge"
-        android:onClick="copy_wallet_address"/>
+        android:onClick="copyWalletAddress"/>
 
     <TextView
         android:id="@+id/doge_in_dollars"

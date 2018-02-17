@@ -58,14 +58,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-
     //Options from right toolbar, I don't use it now (maybe someday)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -78,7 +70,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     //Hamburger menu selection segment
-    @SuppressWarnings("StatementWithEmptyBody")
+//    @SuppressWarnings("StatementWithEmptyBody")
 //    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.

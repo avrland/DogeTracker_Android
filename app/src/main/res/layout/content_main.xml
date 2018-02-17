@@ -113,7 +113,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:onClick="refresh_button"/>
+        android:onClick="refreshButton"/>
 
     <TextView
         android:id="@+id/last_update"

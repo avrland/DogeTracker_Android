@@ -19,7 +19,7 @@ import java.util.List;
  *
  * We are going to save and read wallet address here to sharedpreferences using simply string converted to JSON.
  *
- * We initialize this class in any Activity by passing current context argument and single handler to get feedback from get_balances(), for example:
+ * We initialize this class in any Activity by passing current context argument and single handler to get feedback from getBalances(), for example:
  *
  * Context current_context;
  * wallet_memory wallet_memory_handler;
@@ -35,37 +35,37 @@ public class wallet_memory {
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
     private static final int PREFS_MODE = Context.MODE_PRIVATE;
 
-    private String wallet_string;
+    private String walletJsonString;
     private JSONObject jsonObj = new JSONObject();
-    private Context current_context;
+    private Context currentContext;
 
     String WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE;
 
 
     int COUNT = 0, wallets_amount = 0;
 
-    wallet_balance local_wallet_balance_handler = new wallet_balance(); //object for getting wallet balances
+    private wallet_balance walletBalanceObject = new wallet_balance(); //object for getting wallet balances
     float all_wallets_balance, current_wallet_balance = 0;
 
 
-    Handler balance_received_feedback = new Handler();
+    Handler balanceReceivedHandler = new Handler();
 
     @SuppressLint("HandlerLeak")
     wallet_memory(Context context, final Handler handler) {
-        current_context = context;
+        currentContext = context;
 
         //Plan:
         //1 - received single wallet
         //2 - started to getting another
         //3 - task finished
-        balance_received_feedback = new Handler(){
+        balanceReceivedHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 try {
-                    WALLET_BALANCE = local_wallet_balance_handler.balance; //get single wallet balance when you get it from json query
+                    WALLET_BALANCE = walletBalanceObject.balance; //get single wallet balance when you get it from json query
                     current_wallet_balance = Float.parseFloat(WALLET_BALANCE);
-                    save_to_wallet(WALLET_NAME, WALLET_ADDRESS , WALLET_BALANCE, COUNT ); //save it to json
+                    saveToWallet(WALLET_NAME, WALLET_ADDRESS , WALLET_BALANCE, COUNT ); //save it to json
                     Message news = new Message();
                     news.arg1 = 1;
                     handler.sendMessage(news);
@@ -78,7 +78,7 @@ public class wallet_memory {
                     Message news = new Message();
                     news.arg1 = 2;
                     handler.sendMessage(news);
-                    get_balances(); //if there are still wallets to read, get another
+                    getBalances(); //if there are still wallets to read, get another
                 } else {
                     Message news = new Message();
                     news.arg1 = 3;
@@ -92,25 +92,25 @@ public class wallet_memory {
     }
 
     //read all wallets to json object from sharedpreferences into class String
-    public String read_all_wallets() {
-        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-        wallet_string = settings.getString(KEY_STRING, "[]");
-        return wallet_string;
+    public String readAllWallets() {
+        SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        walletJsonString = settings.getString(KEY_STRING, "[]");
+        return walletJsonString;
     }
 
-    public void get_balances(){
+    public void getBalances(){
         try {
-            if(read_all_wallets()=="[]"){
+            if(readAllWallets()=="[]"){
                 //todo reaction on empty json
             }
-            JSONArray new_array = new JSONArray(read_all_wallets());
+            JSONArray new_array = new JSONArray(readAllWallets());
             wallets_amount = new_array.length();
             try {
                 JSONObject jsonObject = new_array.getJSONObject(COUNT);
                 WALLET_NAME = jsonObject.getString("title");
                 WALLET_ADDRESS = jsonObject.getString("address");
                 //send get balance query with current address, wait in handler for response
-                local_wallet_balance_handler.get_wallet_balance(current_context, balance_received_feedback, WALLET_ADDRESS);
+                walletBalanceObject.get_wallet_balance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -122,10 +122,10 @@ public class wallet_memory {
 
     //I don't think so we need it now
     public String read_wallet(int number) {
-        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-        wallet_string = settings.getString(KEY_STRING, "my string");
+        SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        walletJsonString = settings.getString(KEY_STRING, "my string");
         try {
-            JSONArray new_array = new JSONArray(wallet_string);
+            JSONArray new_array = new JSONArray(walletJsonString);
             JSONObject jsonObject = new_array.getJSONObject(number);
             WALLET_NAME = jsonObject.getString("title");
             WALLET_ADDRESS = jsonObject.getString("address");
@@ -134,11 +134,11 @@ public class wallet_memory {
             e.printStackTrace();
         }
         Log.e("WE HAVE:", WALLET_NAME + " " + WALLET_ADDRESS + " " + WALLET_BALANCE + " ");
-        return wallet_string;
+        return walletJsonString;
     }
     //add new wallet
     //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
-    public void add_to_wallets_with_balance(String wallet_name, String wallet_address, String wallet_balance) throws JSONException {
+    public void addToWalletsWithBalance(String wallet_name, String wallet_address, String wallet_balance) throws JSONException {
 
         jsonObj = new JSONObject();
         try {
@@ -149,16 +149,16 @@ public class wallet_memory {
         } catch (JSONException e) {
 
         }
-        JSONArray new_array = new JSONArray(read_all_wallets());
+        JSONArray new_array = new JSONArray(readAllWallets());
         new_array.put(jsonObj);
-        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
 
     //save to specific place in json
-    public void save_to_wallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException {
+    public void saveToWallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException {
         jsonObj = new JSONObject();
         try {
             jsonObj.put("title", wallet_name);
@@ -168,21 +168,21 @@ public class wallet_memory {
         } catch (JSONException e) {
 
         }
-        JSONArray new_array = new JSONArray(read_all_wallets());
+        JSONArray new_array = new JSONArray(readAllWallets());
         new_array.put(position, jsonObj);
 
-        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
 
     //remove wallet
-    public void remove_wallet(int wallet_id) throws JSONException {
-        JSONArray new_array = new JSONArray(read_all_wallets());
+    public void removeWallet(int wallet_id) throws JSONException {
+        JSONArray new_array = new JSONArray(readAllWallets());
         new_array = remove(wallet_id, new_array);
 
-        SharedPreferences settings = current_context.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+        SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();

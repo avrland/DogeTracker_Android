@@ -57,15 +57,15 @@ public class doge_rates {
         }
 
         //We download here json response, leaving a information everything is ready to update view
-        public void get_rates(final Handler handler, final String fiat_currency){
+        public void get_rates(final Handler handler, final String fiatCurrency){
             DIALOG = new ProgressDialog(CURRENT_CONTEXT);
 //            DIALOG.setMessage("Loading....");
 //            DIALOG.show();
 
-            StringRequest request = new StringRequest(URL + "?convert=" + fiat_currency.toLowerCase(), new Response.Listener<String>() {
+            StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency.toLowerCase(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
-                    parseJsonData(string, fiat_currency.toLowerCase());
+                    parseJsonData(string, fiatCurrency.toLowerCase());
 //                    DIALOG.dismiss();
                     //We're ready, leave messenge for handler to refresh_rates in view
                     //It doesn't matter now what kind of messege we send.

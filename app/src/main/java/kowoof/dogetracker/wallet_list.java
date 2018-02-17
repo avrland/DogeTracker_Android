@@ -213,18 +213,14 @@ public class wallet_list extends DrawerActivity {
 
     //populate list with items saved into json
     void populateList(){
-        //clear listview every time you want to fill it
-        adapter = new wallet_list_create(wallet_list.this, walletNameArray, balanceArray);
-        walletNameArray.clear();
-        balanceArray.clear();
-        list.setAdapter(adapter);
+        clearList();
 
         //prepare all balances float handler
         float total_balance_f = 0;
         float current_wallet_f = 0;
 
         try {
-            JSONArray new_array = new JSONArray(walletMemoryObject.read_all_wallets());
+            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
 
             for (int i = 0, count = new_array.length(); i < count; i++) {
                 try {
@@ -249,6 +245,13 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
         totalDoges = total_balance_f;
+    }
+
+    void clearList(){
+        adapter = new wallet_list_create(wallet_list.this, walletNameArray, balanceArray);
+        walletNameArray.clear();
+        balanceArray.clear();
+        list.setAdapter(adapter);
     }
 
     //we show here total balance on to toolbar
@@ -279,7 +282,7 @@ public class wallet_list extends DrawerActivity {
     //We get here new all wallet balances, checking and updating in view them one by one,
     void getBalances(){
         finishedUpdateFlag = 0;
-//        wallet_memory_object.get_balances();
+//        wallet_memory_object.getBalances();
         //We create handler to wait for get exchange rates
         Handler handler = new Handler(){
             @Override
@@ -287,7 +290,7 @@ public class wallet_list extends DrawerActivity {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
                     walletBalance = walletBalanceHandler.balance; //get single wallet balance when you get it from json query
-                    walletMemoryObject.save_to_wallet(walletName, walletAddress , walletBalance, count ); //save it to json
+                    walletMemoryObject.saveToWallet(walletName, walletAddress , walletBalance, count ); //save it to json
                     updateSingleRow(count, walletName, walletBalance + " Đ"); //we update signle row in listview
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -304,7 +307,7 @@ public class wallet_list extends DrawerActivity {
 
         };
         try {
-            JSONArray new_array = new JSONArray(walletMemoryObject.read_all_wallets());
+            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
             walletsAmount = new_array.length();
                 try {
                     JSONObject jsonObject = new_array.getJSONObject(count);
@@ -336,7 +339,7 @@ public class wallet_list extends DrawerActivity {
     //read wallet name and address by position
     void getWalletNameAddress(int number){
         try {
-            JSONArray new_array = new JSONArray(walletMemoryObject.read_all_wallets());
+            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
             JSONObject jsonObject = new_array.getJSONObject(number);
             walletName = jsonObject.getString("title");
             walletAddress = jsonObject.getString("address");

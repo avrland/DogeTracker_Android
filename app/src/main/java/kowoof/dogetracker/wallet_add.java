@@ -57,11 +57,7 @@ public class wallet_add extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add real wallet");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setToolbar("Add real wallet", null);
         EditText walletNameEditText = findViewById(R.id.editText2);
         walletNameEditText.requestFocus();
         walletMemoryObject = new wallet_memory(getApplicationContext(), null);
@@ -78,8 +74,7 @@ public class wallet_add extends AppCompatActivity {
                 if(walletAddressVerify.validateDogecoinAddress(addedWalletAddress)==true){
                     currentWalletBalance.get_wallet_balance(wallet_add.this, handler, addedWalletAddress);
                 } else {
-                    Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Invalid address.", Snackbar.LENGTH_SHORT);
-                    mySnackbar.show();
+                    makeSnackbar("Invalid address.");
                 }
             }
         });
@@ -102,17 +97,25 @@ public class wallet_add extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
                 try {
-                    walletMemoryObject.add_to_wallets_with_balance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
+                    walletMemoryObject.addToWalletsWithBalance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
                     Intent i = new Intent(getApplicationContext(), wallet_list.class);
                     i.putExtra("added_wallet", 1);
                     startActivity(i);
                     finish();
                 } catch (JSONException e) {
-                    make_toast("Connection error.");
+                    makeSnackbar("Connection error.");
                 }
             }
 
         };
+    }
+    public void setToolbar(String title, String subtitle){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(title);
+        if(subtitle != null) getSupportActionBar().setSubtitle(subtitle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void onResume() {
@@ -149,22 +152,18 @@ public class wallet_add extends AppCompatActivity {
     }
 
     //if we have address copied to clipboard, we can paste it here
-    public void paste_wallet_address(View view) {
+    public void pasteWalletAddress(View view) {
         ClipboardManager clipboard=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         ClipData abc = clipboard.getPrimaryClip();
         ClipData.Item item = abc.getItemAt(0);
         String pastedWalletAddress = item.getText().toString();
         EditText editText = findViewById(R.id.editText);
         editText.setText(pastedWalletAddress);
-
-        ConstraintLayout layout = findViewById(R.id.snackbar_layout_add);
-        Snackbar snackbar = Snackbar
-                .make(layout, "Address pasted.", Snackbar.LENGTH_SHORT);
-        snackbar.show();
+        makeSnackbar("Address pasted.");
     }
 
     //if we want to scan, we go to wallet_qr_read
-    public void scan_qr_code(View view) {
+    public void scanQrCode(View view) {
         ActivityCompat.requestPermissions(wallet_add.this,
                 new String[]{Manifest.permission.CAMERA},
                 1);
@@ -181,18 +180,16 @@ public class wallet_add extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), wallet_qr_read.class);
                     startActivity(i);
                 } else {
-                    Toast.makeText(wallet_add.this, "Grant permission to camera to read qr code.", Toast.LENGTH_SHORT).show();
+                    makeSnackbar("Grant permission to camera to read qr code");
                 }
                 return;
             }
         }
     }
-
     //toast function to get it a little bit shorter
-    public void make_toast(String messege_toast){
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context,  messege_toast, duration);
-        toast.show();
+    public void makeSnackbar(String snackbar_message){
+        Snackbar snackbar = Snackbar
+                .make(getWindow().getDecorView(), snackbar_message, Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 }

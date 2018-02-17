@@ -27,16 +27,16 @@ import java.util.Locale;
 
 public class MainActivity extends DrawerActivity {
 
-    private static int default_text_color = Color.rgb(0x75, 0x75, 0x75);
+    private static int defaultTextColor = Color.rgb(0x75, 0x75, 0x75);
     private SharedPreferences spref;
 
     //We create doge_rates object and handler to make getting exchange rates wow
-    private doge_rates current_doge_rates;
-    private Handler get_rates_handler = new Handler();
-    private TextView doge_rates_text, hour_change_text, daily_change_text,
-            weekly_change_text, market_cap_text, volume_text,
-            total_supply_text, last_update_text;
-    private wallet_memory wallet_memory_handler;
+    private doge_rates dogeRatesObject;
+    private Handler getRatesHandler = new Handler();
+    private TextView dogeRatesTextView, hourChangeTextView, dailyChangeTextView,
+            weeklyChangeTextView, marketCapTextView, volumeTextView,
+            totalSupplyTextView, lastUpdateTextView;
+    private wallet_memory walletMemoryObject;
     private ProgressDialog dialog;
 
     @SuppressLint("HandlerLeak")
@@ -49,31 +49,31 @@ public class MainActivity extends DrawerActivity {
         dialog = new ProgressDialog(MainActivity.this);
         spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 
-        doge_rates_text = findViewById(R.id.doge_rate);
-        hour_change_text = findViewById(R.id.hour_change);
-        daily_change_text = findViewById(R.id.daily_change);
-        weekly_change_text = findViewById(R.id.weekly_change);
-        market_cap_text = findViewById(R.id.market_cap);
-        volume_text = findViewById(R.id.volume);
-        total_supply_text = findViewById(R.id.total_supply);
-        last_update_text = findViewById(R.id.last_update);
+        dogeRatesTextView = findViewById(R.id.doge_rate);
+        hourChangeTextView = findViewById(R.id.hour_change);
+        dailyChangeTextView = findViewById(R.id.daily_change);
+        weeklyChangeTextView = findViewById(R.id.weekly_change);
+        marketCapTextView = findViewById(R.id.market_cap);
+        volumeTextView = findViewById(R.id.volume);
+        totalSupplyTextView = findViewById(R.id.total_supply);
+        lastUpdateTextView = findViewById(R.id.last_update);
 
         //We create handler to wait for get exchange rates
-        get_rates_handler = new Handler(){
+        getRatesHandler = new Handler(){
 
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(msg.arg1==1)      current_doge_rates.get_new_refresh_time();
+                if(msg.arg1==1) dogeRatesObject.get_new_refresh_time();
                 else if(msg.arg1==2){
-                    current_doge_rates.get_last_refresh_time();
+                    dogeRatesObject.get_last_refresh_time();
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
-                update_rates_in_view(); //insert updated rates to layout
-                check_color_trend(current_doge_rates.hour_change, hour_change_text);
-                check_color_trend(current_doge_rates.daily_change, daily_change_text);
-                check_color_trend(current_doge_rates.weekly_change, weekly_change_text);
+                updateRatesInView(); //insert updated rates to layout
+                checkTrendColor(dogeRatesObject.hour_change, hourChangeTextView);
+                checkTrendColor(dogeRatesObject.daily_change, dailyChangeTextView);
+                checkTrendColor(dogeRatesObject.weekly_change, weeklyChangeTextView);
             }
 
         };
@@ -82,82 +82,86 @@ public class MainActivity extends DrawerActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if(msg.arg1==3){
-                    TextView all_wallets_balance = findViewById(R.id.textView8);
-                    all_wallets_balance.setText(Float.toString(wallet_memory_handler.all_wallets_balance) + " Đ");
+                    TextView allWalletsBalanceTextView = findViewById(R.id.textView8);
+                    allWalletsBalanceTextView.setText(Float.toString(walletMemoryObject.all_wallets_balance) + " Đ");
                     dialog.dismiss();
                 }
             }
 
         };
-        wallet_memory_handler = new wallet_memory(getApplicationContext(), balance_handler);
-        current_doge_rates = new doge_rates(this);
+        walletMemoryObject = new wallet_memory(getApplicationContext(), balance_handler);
+        dogeRatesObject = new doge_rates(this);
 
 
         //Refresh exchange rates every startup
         dialog.setMessage("Loading....");
         dialog.show();
-        wallet_memory_handler.all_wallets_balance = 0;
-        wallet_memory_handler.get_balances();
+        walletMemoryObject.all_wallets_balance = 0;
+        walletMemoryObject.getBalances();
     }
 
     //we check and apply settings here
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        boolean use_background_logo_setting = spref.getBoolean("dt_logo", false);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
-        if(!use_background_logo_setting) logo.setVisibility(View.INVISIBLE);
+        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
-        check_color_trend(current_doge_rates.hour_change, hour_change_text);
-        check_color_trend(current_doge_rates.daily_change, daily_change_text);
-        check_color_trend(current_doge_rates.weekly_change, weekly_change_text);
-        refresh_rates();
+        checkTrendColor(dogeRatesObject.hour_change, hourChangeTextView);
+        checkTrendColor(dogeRatesObject.daily_change, dailyChangeTextView);
+        checkTrendColor(dogeRatesObject.weekly_change, weeklyChangeTextView);
+        refreshRates();
     }
 
 
     //Refresh button - selects response for clicking refresh - refresh_rates
     //Refresh rates - calling get_rates from doge_rates class
     //Update_rates - update rates in view
-    public void refresh_button(View view) {
-            refresh_rates();
+    public void refreshButton(View view) {
+            refreshRates();
             dialog.show();
-            wallet_memory_handler.all_wallets_balance = 0;
-            wallet_memory_handler.get_balances();
+            walletMemoryObject.all_wallets_balance = 0;
+            walletMemoryObject.getBalances();
     }
-    public void refresh_rates(){
+    public void refreshRates(){
         //Getting current dogecoin rates from coinmarketcap
-        current_doge_rates.get_rates(get_rates_handler, spref.getString("fiat_list","USD"));
+        dogeRatesObject.get_rates(getRatesHandler, spref.getString("fiat_list","USD"));
     }
-    void update_rates_in_view() {
+    void updateRatesInView() {
         try {
-            String fiat_code = spref.getString("fiat_list", "USD");
-            Locale.setDefault(new Locale("lv", "LV"));
-            Currency used_fiat_currency = Currency.getInstance(fiat_code);
-            current_doge_rates.save_rates_to_offline();
-            current_doge_rates.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
-            doge_rates_text.setText("1Đ = " + current_doge_rates.doge_rate + " " + used_fiat_currency.getSymbol());
-            hour_change_text.setText("1h: " + current_doge_rates.hour_change + "%");
-            daily_change_text.setText("24h: " + current_doge_rates.daily_change + "%");
-            weekly_change_text.setText("7d: " + current_doge_rates.weekly_change + "%");
-            market_cap_text.setText("Market cap: " + current_doge_rates.market_cap + " " + used_fiat_currency.getSymbol());
-            volume_text.setText("Volume 24h: " + current_doge_rates.volume + " " + used_fiat_currency.getSymbol());
-            total_supply_text.setText("Total supply: " + current_doge_rates.total_supply + " Đ");
-            last_update_text.setText("Last update: " + current_doge_rates.last_refresh);
+            String fiatSymbol = getFiatSymbol();
+            dogeRatesObject.save_rates_to_offline();
+            dogeRatesObject.rates_with_commas(); //we add spaces to total supply, volume and market cap to make it clearly
+            dogeRatesTextView.setText("1Đ = " + dogeRatesObject.doge_rate + " " + fiatSymbol);
+            hourChangeTextView.setText("1h: " + dogeRatesObject.hour_change + "%");
+            dailyChangeTextView.setText("24h: " + dogeRatesObject.daily_change + "%");
+            weeklyChangeTextView.setText("7d: " + dogeRatesObject.weekly_change + "%");
+            marketCapTextView.setText("Market cap: " + dogeRatesObject.market_cap + " " + fiatSymbol);
+            volumeTextView.setText("Volume 24h: " + dogeRatesObject.volume + " " + fiatSymbol);
+            totalSupplyTextView.setText("Total supply: " + dogeRatesObject.total_supply + " Đ");
+            lastUpdateTextView.setText("Last update: " + dogeRatesObject.last_refresh);
         } catch(NullPointerException e ){
 
         }
     }
+    public String getFiatSymbol(){
+        String fiat_code = spref.getString("fiat_list", "USD");
+        Locale.setDefault(new Locale("lv", "LV"));
+        Currency used_fiat_currency = Currency.getInstance(fiat_code);
+        return used_fiat_currency.getSymbol();
+    }
     //Check if percent rate are collapsing or raising
-    public void check_color_trend(String percent_rate, TextView percent_rate_textview){
-        boolean use_color_trends_setting = spref.getBoolean("arrow_or_color", false);
-        if(percent_rate == null){
-            percent_rate_textview.setTextColor(default_text_color);
+    public void checkTrendColor(String percentRate, TextView percentRateTextView){
+        boolean useColorTrendsSetting = spref.getBoolean("arrow_or_color", false);
+        if(percentRate == null){
+            percentRateTextView.setTextColor(defaultTextColor);
             return;
         }
-        if(use_color_trends_setting) {
-            if (percent_rate.contains("-")) percent_rate_textview.setTextColor(Color.RED);
-            else percent_rate_textview.setTextColor(Color.GREEN);
+        if(useColorTrendsSetting) {
+            if (percentRate.contains("-")) percentRateTextView.setTextColor(Color.RED);
+            else percentRateTextView.setTextColor(Color.GREEN);
         } else {
-            percent_rate_textview.setTextColor(default_text_color);
+            percentRateTextView.setTextColor(defaultTextColor);
         }
     }
 }
