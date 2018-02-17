@@ -60,7 +60,7 @@ public class wallet_add extends AppCompatActivity {
         setToolbar("Add real wallet", null);
         EditText walletNameEditText = findViewById(R.id.editText2);
         walletNameEditText.requestFocus();
-        walletMemoryObject = new wallet_memory(getApplicationContext(), null);
+        walletMemoryObject = new wallet_memory(getApplicationContext());
         FloatingActionButton addWalletFab = findViewById(R.id.fab);
         //We get here wallet address and name, and save it to SharedPref
         addWalletFab.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +72,7 @@ public class wallet_add extends AppCompatActivity {
                 addedWalletAddress = walletAddressEditText.getText().toString();
                 if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
                 if(walletAddressVerify.validateDogecoinAddress(addedWalletAddress)==true){
-                    currentWalletBalance.get_wallet_balance(wallet_add.this, handler, addedWalletAddress);
+                    currentWalletBalance.getWalletBalance(wallet_add.this, handler, addedWalletAddress);
                 } else {
                     makeSnackbar("Invalid address.");
                 }

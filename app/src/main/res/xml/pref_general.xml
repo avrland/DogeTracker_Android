@@ -7,7 +7,7 @@
         android:title="Use DogeTracker logo in background" />
     <SwitchPreference
         android:defaultValue="false"
-        android:key="example_switch2"
+        android:key="wallets_auto_refresh"
         android:title="Auto refresh every startup"
         android:summary="Refresh wallet balances within app startup." />
     <SwitchPreference

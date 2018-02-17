@@ -66,7 +66,7 @@ public class wallet_view extends DrawerActivity {
         walletNameTextView.setText(viewedWalletName);
         if(viewedWalletName.equals(viewedWalletAddress)) walletNameTextView.setText("");
         walletAddressTextView.setText(viewedWalletAddress);
-        walletMemoryObject = new wallet_memory(getApplicationContext(), null);
+        walletMemoryObject = new wallet_memory(getApplicationContext());
         //Set button for deleting wallet (just from viewer, not really lol)
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +148,7 @@ public class wallet_view extends DrawerActivity {
         return super.onKeyDown(keyCode, event);
     }
     public void getBalance(){
-        walletBalanceObject.get_wallet_balance(this, getBalanceHandler, viewedWalletAddress);
+        walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);
     }
     public void showBalance(){
         TextView wallet_balance_textView = findViewById(R.id.balance);
@@ -157,8 +157,8 @@ public class wallet_view extends DrawerActivity {
     }
     public void balanceInFiat(){
         doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
-        get_doge_dollar_rate.read_rates_from_offline();
-        float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.doge_rate);
+        get_doge_dollar_rate.readRatesFromOffline();
+        float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.dogeFiatRate);
         float balance_f = Float.parseFloat(walletBalanceObject.balance);
         float total_dollar_balance_f = dolar_doge_f * balance_f;
         String dollar_doge_s = Float.toString(total_dollar_balance_f);

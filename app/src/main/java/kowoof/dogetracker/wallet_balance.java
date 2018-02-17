@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ public class wallet_balance {
     private static String url = "https://dogechain.info/api/v1/address/balance/";
 
     //We download here json response, leaving a information everything is ready to update view
-    public void get_wallet_balance(final Context currentContext, final Handler walletBalanceHandler, String address){
+    public void getWalletBalance(final Context currentContext, final Handler walletBalanceHandler, String address){
         dialog = new ProgressDialog(currentContext);
 //        dialog.setMessage("Loading....");
 //        dialog.show();
@@ -50,7 +51,6 @@ public class wallet_balance {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 //If something went wrong, we leave messege with error
-                Toast.makeText(currentContext, "Connection error.", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });

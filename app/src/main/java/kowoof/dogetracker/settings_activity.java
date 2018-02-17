@@ -60,9 +60,9 @@ public class settings_activity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg); //don't know it's really needed now
-                if(msg.arg1==1)      dogeRatesObject.get_new_refresh_time();
+                if(msg.arg1==1)      dogeRatesObject.getCurrentRefreshTime();
                 else if(msg.arg1==2){
-                    dogeRatesObject.get_last_refresh_time();
+                    dogeRatesObject.getRecentRefreshTime();
                     Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
@@ -72,15 +72,15 @@ public class settings_activity extends AppCompatActivity {
         };
     }
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            dogeRatesObject.get_rates(getRatesHandler, sp.getString("fiat_list","USD"));
+            dogeRatesObject.getRates(getRatesHandler, sp.getString("fiat_list","USD"));
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -91,7 +91,7 @@ public class settings_activity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            dogeRatesObject.get_rates(getRatesHandler, sp.getString("fiat_list","USD"));
+            dogeRatesObject.getRates(getRatesHandler, sp.getString("fiat_list","USD"));
         }
         return super.onOptionsItemSelected(item);
     }

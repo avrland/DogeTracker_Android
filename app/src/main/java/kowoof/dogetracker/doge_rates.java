@@ -34,8 +34,8 @@ import java.util.Calendar;
  */
 
 public class doge_rates {
-        String doge_rate, hour_change, daily_change, weekly_change, market_cap, volume,
-                total_supply, last_refresh;
+        String dogeFiatRate, hourChangeRate, dailyChangeRate, weeklyChangeRate, marketCapRate, volumeRate,
+                totalSupplyRate, lastRefreshRate;
         private static ProgressDialog DIALOG;
         private static String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
         private static Context CURRENT_CONTEXT;
@@ -43,21 +43,21 @@ public class doge_rates {
         //we store exchange rates stuff into memory
         private static final String PREFS_FILE = "Offline_exchange_rates";
         private static final int PREFS_MODE = Context.MODE_PRIVATE;
-        private static final String doge_rate_offline = "doge_rate_offline";
-        private static final String hour_change_offline = "hour_change_offline";
-        private static final String daily_change_offline = "daily_change_offline";
-        private static final String weekly_change_offline = "weekly_change_offline";
-        private static final String market_cap_offline = "market_cap_offline";
-        private static final String volume_offline = "volume_offline";
-        private static final String total_supply_offline = "total_supply_offline";
-        private static final String last_refresh_offline = "last_refresh_offline";
+        private static final String dogeFiatRateOffline = "doge_rate_offline";
+        private static final String hourChangeRateOffline = "hour_change_offline";
+        private static final String dailyChangeRateOffline = "daily_change_offline";
+        private static final String weeklyChangeRateOffline = "weekly_change_offline";
+        private static final String marketCapRateOffline = "market_cap_offline";
+        private static final String volumeRateOffline = "volume_offline";
+        private static final String totalSupplyRateOffline = "total_supply_offline";
+        private static final String lastRefreshOffline = "last_refresh_offline";
 
         doge_rates(Context user_context){
             CURRENT_CONTEXT = user_context;
         }
 
         //We download here json response, leaving a information everything is ready to update view
-        public void get_rates(final Handler handler, final String fiatCurrency){
+        public void getRates(final Handler handler, final String fiatCurrency){
             DIALOG = new ProgressDialog(CURRENT_CONTEXT);
 //            DIALOG.setMessage("Loading....");
 //            DIALOG.show();
@@ -72,15 +72,15 @@ public class doge_rates {
                     Message news = new Message();
                     news.arg1 = 1;
                     handler.sendMessage(news);
-                    save_rates_to_offline();
+                    saveRatesToOffline();
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
                     Message news = new Message();
-                    news.arg1 = 2;
+                    news.arg1 = 0;
                     handler.sendMessage(news);
-                    read_rates_from_offline();
+                    readRatesFromOffline();
 //                    DIALOG.dismiss();
                 }
             });
@@ -93,73 +93,75 @@ public class doge_rates {
             JSONArray jsonarray = new JSONArray(jsonString);
             for(int i=0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                doge_rate       = jsonobject.getString("price_" + fiat_currency);
+                dogeFiatRate       = jsonobject.getString("price_" + fiat_currency);
                 //we want 4 decimal places with dot as a separator
                 DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                 DecimalFormat df = new DecimalFormat("#.####");
                 symbols.setDecimalSeparator('.');
                 df.setDecimalFormatSymbols(symbols);
-                doge_rate = df.format(Float.parseFloat(doge_rate)).toString();
-                hour_change     = jsonobject.getString("percent_change_1h");
-                daily_change    = jsonobject.getString("percent_change_24h");
-                weekly_change   = jsonobject.getString("percent_change_7d");
-                market_cap      = jsonobject.getString("market_cap_" + fiat_currency);
-                volume          = jsonobject.getString("24h_volume_" + fiat_currency);
-                total_supply    = jsonobject.getString("total_supply");
+                dogeFiatRate = df.format(Float.parseFloat(dogeFiatRate)).toString();
+                hourChangeRate     = jsonobject.getString("percent_change_1h");
+                dailyChangeRate    = jsonobject.getString("percent_change_24h");
+                weeklyChangeRate   = jsonobject.getString("percent_change_7d");
+                marketCapRate      = jsonobject.getString("market_cap_" + fiat_currency);
+                volumeRate          = jsonobject.getString("24h_volume_" + fiat_currency);
+                totalSupplyRate    = jsonobject.getString("total_supply");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         }
-        public void read_rates_from_offline(){
+        public void readRatesFromOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-            doge_rate       = rates.getString(doge_rate_offline, "doge_rate_offline");
-            hour_change     = rates.getString(hour_change_offline, "hour_change_offline");
-            daily_change    = rates.getString(daily_change_offline, "daily_change_offline");
-            weekly_change   = rates.getString(weekly_change_offline, "weekly_change_offline");
-            market_cap      = rates.getString(market_cap_offline, "market_cap_offline");
-            volume          = rates.getString(volume_offline, "volume_offline");
-            total_supply    = rates.getString(total_supply_offline, "total_supply_offline");
-            last_refresh    = rates.getString(last_refresh_offline, "last_refresh_offline");
+            dogeFiatRate       = rates.getString(dogeFiatRateOffline, "doge_rate_offline");
+            hourChangeRate     = rates.getString(hourChangeRateOffline, "hour_change_offline");
+            dailyChangeRate    = rates.getString(dailyChangeRateOffline, "daily_change_offline");
+            weeklyChangeRate   = rates.getString(weeklyChangeRateOffline, "weekly_change_offline");
+            marketCapRate      = rates.getString(marketCapRateOffline, "market_cap_offline");
+            volumeRate          = rates.getString(volumeRateOffline, "volume_offline");
+            totalSupplyRate    = rates.getString(totalSupplyRateOffline, "total_supply_offline");
+            lastRefreshRate    = rates.getString(lastRefreshOffline, "last_refresh_offline");
         }
-        public void save_rates_to_offline(){
+        public void saveRatesToOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
-            editor.putString(doge_rate_offline, doge_rate);
-            editor.putString(hour_change_offline, hour_change);
-            editor.putString(daily_change_offline, daily_change);
-            editor.putString(weekly_change_offline, weekly_change);
-            editor.putString(market_cap_offline, market_cap);
-            editor.putString(volume_offline, volume);
-            editor.putString(total_supply_offline, total_supply);
+            editor.putString(dogeFiatRateOffline, dogeFiatRate);
+            editor.putString(hourChangeRateOffline, hourChangeRate);
+            editor.putString(dailyChangeRateOffline, dailyChangeRate);
+            editor.putString(weeklyChangeRateOffline, weeklyChangeRate);
+            editor.putString(marketCapRateOffline, marketCapRate);
+            editor.putString(volumeRateOffline, volumeRate);
+            editor.putString(totalSupplyRateOffline, totalSupplyRate);
             editor.apply();
         }
-        public void get_new_refresh_time(){
+        public void getCurrentRefreshTime(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
             DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
-            last_refresh =df.format(Calendar.getInstance().getTime());
-            editor.putString(last_refresh_offline, last_refresh);
+            lastRefreshRate =df.format(Calendar.getInstance().getTime());
+            editor.putString(lastRefreshOffline, lastRefreshRate);
             editor.apply();
         }
-        public void get_last_refresh_time(){
+        public void getRecentRefreshTime(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-            last_refresh    = rates.getString(last_refresh_offline, "last_refresh_offline");
+            lastRefreshRate    = rates.getString(lastRefreshOffline, "last_refresh_offline");
         }
         //we add spaces to so big numbers like market cap, volume and total supply
-        public void rates_with_commas(){
+        public void makeCommasOnRates(){
             try {
                 DecimalFormat decimalFormat1 = new DecimalFormat("#,###");
-                float market_cap_f = Float.parseFloat(market_cap);
-                market_cap = decimalFormat1.format(market_cap_f);
+                float market_cap_f = Float.parseFloat(marketCapRate);
+                marketCapRate = decimalFormat1.format(market_cap_f);
 
-                float volume_f = Float.parseFloat(volume);
-                volume = decimalFormat1.format(volume_f);
+                float volume_f = Float.parseFloat(volumeRate);
+                volumeRate = decimalFormat1.format(volume_f);
 
-                float total_supply_f = Float.parseFloat(total_supply);
-                total_supply = decimalFormat1.format(total_supply_f);
+                float total_supply_f = Float.parseFloat(totalSupplyRate);
+                totalSupplyRate = decimalFormat1.format(total_supply_f);
             } catch(NumberFormatException e ){
-
+                marketCapRate = "0";
+                volumeRate = "0";
+                totalSupplyRate = "0";
             }
         }
 
