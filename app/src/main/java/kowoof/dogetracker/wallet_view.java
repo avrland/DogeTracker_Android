@@ -46,14 +46,7 @@ public class wallet_view extends DrawerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        Bundle wallet_list_feedback = getIntent().getExtras();
-        if (wallet_list_feedback != null)
-        {
-            viewedWalletName = wallet_list_feedback.getString("wallet_name");
-            viewedWalletAddress = wallet_list_feedback.getString("wallet_address");
-            viewedWalletId = wallet_list_feedback.getInt("wallet_id");
-        }
+        getWalletInfo();
         //Prepare view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
@@ -67,6 +60,34 @@ public class wallet_view extends DrawerActivity {
         if(viewedWalletName.equals(viewedWalletAddress)) walletNameTextView.setText("");
         walletAddressTextView.setText(viewedWalletAddress);
         walletMemoryObject = new wallet_memory(getApplicationContext());
+        removeWalletButtonHandler();
+        //We create handler to wait for get exchange rates
+        getBalanceHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg); //don't know it's really needed now
+                showBalance();
+            }
+        };
+
+        //Get single wallet balance
+        getBalance();
+
+        //QR code download&set section
+        ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
+        Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
+    }
+
+    public void getWalletInfo(){
+        Bundle wallet_list_feedback = getIntent().getExtras();
+        if (wallet_list_feedback != null)
+        {
+            viewedWalletName = wallet_list_feedback.getString("wallet_name");
+            viewedWalletAddress = wallet_list_feedback.getString("wallet_address");
+            viewedWalletId = wallet_list_feedback.getInt("wallet_id");
+        }
+    }
+    public void removeWalletButtonHandler(){
         //Set button for deleting wallet (just from viewer, not really lol)
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -100,21 +121,6 @@ public class wallet_view extends DrawerActivity {
                 dialog.show();
             }
         });
-        //We create handler to wait for get exchange rates
-        getBalanceHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
-                showBalance();
-            }
-        };
-
-        //Get single wallet balance
-        getBalance();
-
-        //QR code download&set section
-        ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
     }
 
     // Letting come back home

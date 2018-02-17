@@ -61,6 +61,29 @@ public class wallet_add extends AppCompatActivity {
         EditText walletNameEditText = findViewById(R.id.editText2);
         walletNameEditText.requestFocus();
         walletMemoryObject = new wallet_memory(getApplicationContext());
+        addWalletFabHandler();
+        checkIfQrReceived();
+
+        //We create handler to wait for get exchange rates
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                //todo avoid memory leak
+                super.handleMessage(msg); //don't know it's really needed now
+                try {
+                    walletMemoryObject.addToWalletsWithBalance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
+                    Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                    i.putExtra("added_wallet", 1);
+                    startActivity(i);
+                    finish();
+                } catch (JSONException e) {
+                    makeSnackbar("Connection error.");
+                }
+            }
+
+        };
+    }
+    public void addWalletFabHandler(){
         FloatingActionButton addWalletFab = findViewById(R.id.fab);
         //We get here wallet address and name, and save it to SharedPref
         addWalletFab.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +101,8 @@ public class wallet_add extends AppCompatActivity {
                 }
             }
         });
-
+    }
+    public void checkIfQrReceived(){
         //If we use qr code reader, we insert here scanned address
         Bundle qrReaderMessage = getIntent().getExtras();
         if(qrReaderMessage!=null) {
@@ -89,25 +113,6 @@ public class wallet_add extends AppCompatActivity {
                 editText.setText(addedWalletAddress);
             }
         }
-
-
-        //We create handler to wait for get exchange rates
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
-                try {
-                    walletMemoryObject.addToWalletsWithBalance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
-                    Intent i = new Intent(getApplicationContext(), wallet_list.class);
-                    i.putExtra("added_wallet", 1);
-                    startActivity(i);
-                    finish();
-                } catch (JSONException e) {
-                    makeSnackbar("Connection error.");
-                }
-            }
-
-        };
     }
     public void setToolbar(String title, String subtitle){
         Toolbar toolbar = findViewById(R.id.toolbar);
