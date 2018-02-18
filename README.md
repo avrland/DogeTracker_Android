@@ -20,6 +20,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 
 ## What's new in v1.1?
 * Lollipop is now supported
+* dogecoin wallet address validation after adding new
 * you can choose now one of 32 FIAT currencies for exchange rates
 * you can swipe down in wallet list view to refresh wallets balances
 * added disable background logo, coloured trend rates option - if you disable it, we'll use default color 
