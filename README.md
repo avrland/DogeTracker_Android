@@ -23,7 +23,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * you can choose now one of 32 FIAT currencies for exchange rates
 * you can swipe down in wallet list view to refresh wallets balances
 * added disable background logo, coloured trend rates option - if you disable it, we'll use default color 
-* added exchange rates and wallet balances autorefresh option - if you disable it, we'll show recent fetched info
+* added exchange rates and wallet balances autorefresh option - if you disable it, we'll show recent fetched info, use refresh button to get new
 * all wallets balances can be viewed in main view 
 * code cleanup to make it more understandable
 * few improvements, please report bugs if you find 
