@@ -46,6 +46,7 @@ public class MainActivity extends DrawerActivity {
     private wallet_memory walletMemoryObject;
     private ProgressDialog dialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
