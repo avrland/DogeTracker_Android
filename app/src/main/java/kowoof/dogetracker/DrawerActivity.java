@@ -2,8 +2,11 @@ package kowoof.dogetracker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -99,9 +102,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             //finish();
         }
         else if (id == R.id.help_doge) {
-            Intent i = new Intent(getApplicationContext(), help_doge.class);
-            startActivity(i);
-            finish();
+//            Intent i = new Intent(getApplicationContext(), help_doge.class);
+//            startActivity(i);
+//            finish();
+            makeSnackbar("Coming soon.");
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -109,11 +113,15 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     }
 
     //toast function to get it a little bit shorter
-    public void make_toast(String messege_toast){
-        Context context = getApplicationContext();
-        CharSequence text = messege_toast;
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
+    public void makeSnackbar(String snackbar_message){
+        Snackbar snackbar = Snackbar
+                .make(getWindow().getDecorView(), snackbar_message, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

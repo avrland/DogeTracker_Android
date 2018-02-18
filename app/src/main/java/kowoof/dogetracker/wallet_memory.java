@@ -106,7 +106,6 @@ public class wallet_memory {
             JSONArray new_array = new JSONArray(readAllWallets());
             wallets_amount = new_array.length();
             if(wallets_amount > 0) {
-                Log.e("wallet_amount", Integer.toString(wallets_amount));
                 try {
                     JSONObject jsonObject = new_array.getJSONObject(COUNT);
                     WALLET_NAME = jsonObject.getString("title");
@@ -140,7 +139,6 @@ public class wallet_memory {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("WE HAVE:", WALLET_NAME + " " + WALLET_ADDRESS + " " + WALLET_BALANCE + " ");
         return walletJsonString;
     }
     //add new wallet

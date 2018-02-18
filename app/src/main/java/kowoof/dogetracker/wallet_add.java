@@ -1,6 +1,7 @@
 package kowoof.dogetracker;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -33,6 +34,7 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import kowoof.dogetracker.wallet_verify;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -50,9 +52,8 @@ public class wallet_add extends AppCompatActivity {
     private Handler handler = new Handler();
     //We create object to get first time balance (next time we'll do it in wallet_list and wallet_view)
     private wallet_balance currentWalletBalance = new wallet_balance();
-    //We create object from class to verify if Dogecoin address is valid
-    private wallet_verify walletAddressVerify = new wallet_verify();
 
+    private ProgressDialog addWalletProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +62,9 @@ public class wallet_add extends AppCompatActivity {
         EditText walletNameEditText = findViewById(R.id.editText2);
         walletNameEditText.requestFocus();
         walletMemoryObject = new wallet_memory(getApplicationContext());
+        addWalletProgressDialog = new ProgressDialog(wallet_add.this);
+        addWalletProgressDialog.setCancelable(false);
+
         addWalletFabHandler();
         checkIfQrReceived();
 
@@ -89,15 +93,18 @@ public class wallet_add extends AppCompatActivity {
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                addWalletProgressDialog.setCancelable(false);
+                addWalletProgressDialog.show(wallet_add.this, "Please wait", "Validating address and getting current balance...");
                 EditText walletNameEditText = findViewById(R.id.editText2);
                 addedWalletName = walletNameEditText.getText().toString();
                 EditText walletAddressEditText = findViewById(R.id.editText);
                 addedWalletAddress = walletAddressEditText.getText().toString();
                 if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
-                if(walletAddressVerify.validateDogecoinAddress(addedWalletAddress)==true){
+                if(wallet_verify.validateDogecoinAddress(addedWalletAddress)==true){
                     currentWalletBalance.getWalletBalance(wallet_add.this, handler, addedWalletAddress);
                 } else {
                     makeSnackbar("Invalid address.");
+                    addWalletProgressDialog.dismiss();
                 }
             }
         });
@@ -131,7 +138,10 @@ public class wallet_add extends AppCompatActivity {
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
-
+    public void onPause(){
+        super.onPause();
+        addWalletProgressDialog.dismiss();
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {

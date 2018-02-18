@@ -8,13 +8,13 @@
     <SwitchPreference
         android:defaultValue="false"
         android:key="wallets_auto_refresh"
-        android:title="Auto refresh every startup"
-        android:summary="Refresh wallet balances within app startup." />
+        android:title="Auto refresh balances and rates"
+        android:summary="Fetch new data every startup" />
     <SwitchPreference
         android:defaultValue="false"
         android:key="arrow_or_color"
-        android:title="Coloured trend % rates"
-        android:summary="Use green/red colours for trend rates." />
+        android:title="Coloured trend rates (1h, 24h, 7d)"
+        android:summary="ON - green/red, OFF - default" />
 
     <ListPreference
         android:defaultValue="USD"

@@ -18,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 import java.util.Currency;
 import java.util.Locale;
@@ -38,7 +42,7 @@ public class MainActivity extends DrawerActivity {
     private Handler balanceHandler = new Handler();
     private TextView dogeRatesTextView, hourChangeTextView, dailyChangeTextView,
             weeklyChangeTextView, marketCapTextView, volumeTextView,
-            totalSupplyTextView, lastUpdateTextView;
+            totalSupplyTextView, lastUpdateTextView, allWalletsBalanceTextView;
     private wallet_memory walletMemoryObject;
     private ProgressDialog dialog;
 
@@ -70,24 +74,54 @@ public class MainActivity extends DrawerActivity {
         checkTrendColor(dogeRatesObject.dailyChangeRate, dailyChangeTextView);
         checkTrendColor(dogeRatesObject.weeklyChangeRate, weeklyChangeTextView);
         refreshRates();
+
+        dialog.setCancelable(false);
+        dialog.setMessage("Getting rates and balances...");
     }
     public void startup_refresh(){
         boolean auto_wallets_refresh = spref.getBoolean("wallets_auto_refresh", false);
-        if(auto_wallets_refresh) {
+        if(auto_wallets_refresh && isNetworkAvailable()) {
             //Refresh exchange rates every startup
-            dialog.setMessage("Loading....");
             dialog.show();
+            refreshRates();
             walletMemoryObject.allWalletsBalance = 0;
             walletMemoryObject.getBalances();
         } else {
             dogeRatesObject.readRatesFromOffline();
             updateRatesInView();
+            allWalletsBalanceTextView.setText(Float.toString(calculateAllWalletsBalance()) + " Đ");
         }
+
     }
+    float calculateAllWalletsBalance(){
+        //prepare all balances float handler
+        float total_balance_f = 0, current_wallet_f = 0;
+        try {
+            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
+
+            for (int i = 0, count = new_array.length(); i < count; i++) {
+                try {
+                    JSONObject jsonObject = new_array.getJSONObject(i);
+                    try {
+                        current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
+                    } catch (NumberFormatException e) {
+                        current_wallet_f = 0;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                total_balance_f += current_wallet_f;
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return total_balance_f;
+    }
+
     class BalanceHandlerCallback implements Handler.Callback {
         @Override
         public boolean handleMessage(Message message) {
-            final TextView allWalletsBalanceTextView = findViewById(R.id.textView8);
             int isAnyWalletsAdded = message.arg1;
             // Handle message code
             if(isAnyWalletsAdded==3){
@@ -107,8 +141,7 @@ public class MainActivity extends DrawerActivity {
             if(onlineMode==1) dogeRatesObject.getCurrentRefreshTime();
             else if(onlineMode==0){
                 dogeRatesObject.getRecentRefreshTime();
-                Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
-                mySnackbar.show();
+                makeSnackbar("Connection error. Showing last updated rates.");
                 dialog.dismiss();
             }
             updateRatesInView(); //insert updated rates to layout
@@ -127,6 +160,7 @@ public class MainActivity extends DrawerActivity {
         volumeTextView = findViewById(R.id.volume);
         totalSupplyTextView = findViewById(R.id.total_supply);
         lastUpdateTextView = findViewById(R.id.last_update);
+        allWalletsBalanceTextView = findViewById(R.id.textView8);
     }
 
 
@@ -141,8 +175,8 @@ public class MainActivity extends DrawerActivity {
     //Refresh rates - calling getRates from doge_rates class
     //Update_rates - update rates in view
     public void refreshButton(View view) {
-            refreshRates();
             dialog.show();
+            refreshRates();
             walletMemoryObject.allWalletsBalance = 0;
             walletMemoryObject.getBalances();
     }
