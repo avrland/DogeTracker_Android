@@ -1,4 +1,4 @@
-# DogeTracker_Android_v1.1
+# DogeTracker_Android_v1.2
 <img src="https://github.com/avrland/DogeTracker_Android/blob/master/app/src/main/res/mipmap-mdpi/main_icon.png?raw=true"/>
 
 DogeTracker comes from iOS to Android, wow! 
@@ -28,6 +28,12 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * all wallets balances can be viewed in main view 
 * code cleanup to make it more understandable
 * few improvements, please report bugs if you find 
+
+## What's new in v1.2?
+*
+*
+*
+
 
 ## Requirments
 * Android 5.0 or higher
