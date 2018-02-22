@@ -13,7 +13,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 ## Features:
 * adding nameable wallet address by pasting from clipboard or with qr code
 * tracking your multiple dogecoin wallets
-* show your total doges amount in doges and $ (using dogechain.info api)
+* show your total wallets balance in doges and one from 32 fiat currencies (using dogechain.info api)
 * see all doge exchange rates in app (using coinmarketcap.com api)
 * no ads or in app purchase (I learned quite a lot of Android coding DogeTracker, it's enough profit)
 * open source (LGPL 3.0 licence)
