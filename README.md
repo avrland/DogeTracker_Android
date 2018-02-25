@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/avrland/DogeTracker_Android/1.1/screenshoot.png"/>
+
 # DogeTracker_Android_v1.1
 <img src="https://github.com/avrland/DogeTracker_Android/blob/master/app/src/main/res/mipmap-mdpi/main_icon.png?raw=true"/>
 
