@@ -75,7 +75,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="200dp"
         android:layout_marginStart="200dp"
-        android:layout_marginTop="450dp"
+        android:layout_marginTop="200dp"
         android:onClick="copyWalletAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
