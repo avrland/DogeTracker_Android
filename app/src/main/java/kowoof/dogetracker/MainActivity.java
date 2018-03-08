@@ -77,7 +77,7 @@ public class MainActivity extends DrawerActivity {
         refreshRates();
 
         dialog.setCancelable(false);
-        dialog.setMessage("Getting rates and balances...");
+        dialog.setMessage("Getting rates and balances... NOW!");
     }
     public void startup_refresh(){
         boolean auto_wallets_refresh = spref.getBoolean("wallets_auto_refresh", false);
