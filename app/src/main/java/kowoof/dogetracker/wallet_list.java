@@ -294,37 +294,43 @@ public class wallet_list extends DrawerActivity {
         Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
         return usedFiatCurrency.getSymbol();
     }
+    private static class WalletListHandler extends Handler {
+        private final WeakReference<wallet_list> mActivity;
 
-    class RefreshBalanceCallback implements Handler.Callback{
-            @Override
-            public boolean handleMessage(Message message) {
-                // Handle message code
+        private WalletListHandler(wallet_list activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_list activity = mActivity.get();
+            if (activity != null) {
                 try {
-                    walletBalance = walletBalanceHandler.balance; //get single wallet balance when you get it from json query
-                    walletMemoryObject.saveToWallet(walletName, walletAddress , walletBalance, count ); //save it to json
-                    updateSingleRow(count, walletName, walletBalance + " Đ"); //we update signle row in listview
+                    activity.walletBalance = activity.walletBalanceHandler.balance; //get single wallet balance when you get it from json query
+                    activity.walletMemoryObject.saveToWallet(activity.walletName, activity.walletAddress , activity.walletBalance, activity.count ); //save it to json
+                    activity.updateSingleRow(activity.count, activity.walletName, activity.walletBalance + " Đ"); //we update signle row in listview
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                count++;
-                if(count < walletsAmount){
-                    refreshBalances(); //if there are still wallets to read, get another
+                activity.count++;
+                if(activity.count < activity.walletsAmount){
+                    activity.refreshBalances(); //if there are still wallets to read, get another
                 } else {
-                    count = 0; //if no, just fill listview
-                    populateList();
-                    mSwipeRefreshView.setRefreshing(false);
-                    finishedUpdateFlag = 1;
+                    activity.count = 0; //if no, just fill listview
+                    activity.populateList();
+                    activity.mSwipeRefreshView.setRefreshing(false);
+                    activity.finishedUpdateFlag = 1;
                 }
-                return true;
             }
         }
+    }
 
     //We get here new all wallet balances, checking and updating in view them one by one,
     void refreshBalances(){
         if(isNetworkAvailable()) {
             finishedUpdateFlag = 0;
             //We create handler to wait for get exchange rates
-            Handler handler = new Handler(new RefreshBalanceCallback());
+            Handler handler = new WalletListHandler(this);
             try {
                 JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
                 walletsAmount = new_array.length();

@@ -2,6 +2,7 @@ package kowoof.dogetracker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,8 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +51,7 @@ public class wallet_memory {
     float allWalletsBalance, currentWalletBalance = 0;
 
 
-    Handler balanceReceivedHandler = new Handler();
+    private Handler balanceReceivedHandler = new Handler();
     Handler externalBalanceGetHandler = new Handler();
     //@SuppressLint("HandlerLeak")
     wallet_memory(Context context) {
@@ -57,42 +60,49 @@ public class wallet_memory {
     wallet_memory(Context context, final Handler handler){
         currentContext = context;
         externalBalanceGetHandler = handler;
-        //Plan:
-        //1 - received single wallet
-        //2 - started to getting another
-        //3 - task finished
-        balanceReceivedHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
+        balanceReceivedHandler = new WalletMemoryHandler(this);
+    }
+
+
+    private static class WalletMemoryHandler extends Handler {
+        private final WeakReference<wallet_memory> mActivity;
+
+        private WalletMemoryHandler(wallet_memory activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_memory activity = mActivity.get();
+            if (activity != null) {
                 try {
-                    WALLET_BALANCE = walletBalanceObject.balance; //get single wallet balance when you get it from json query
-                    currentWalletBalance = Float.parseFloat(WALLET_BALANCE);
-                    saveToWallet(WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE, COUNT); //save it to json
+                    activity.WALLET_BALANCE = activity.walletBalanceObject.balance; //get single wallet balance when you get it from json query
+                    activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE);
+                    activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
                     Message news = new Message();
                     news.arg1 = 1;
-                    handler.sendMessage(news);
+                    activity.externalBalanceGetHandler.sendMessage(news);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                allWalletsBalance = allWalletsBalance + currentWalletBalance;
-                COUNT++;
-                if (COUNT < wallets_amount) {
+                activity.allWalletsBalance = activity.allWalletsBalance + activity.currentWalletBalance;
+                activity.COUNT++;
+                if (activity.COUNT < activity.wallets_amount) {
                     Message news = new Message();
                     news.arg1 = 2;
-                    handler.sendMessage(news);
-                    getBalances(); //if there are still wallets to read, get another
+                    activity.externalBalanceGetHandler.sendMessage(news);
+                    activity.getBalances(); //if there are still wallets to read, get another
                 } else {
                     Message news = new Message();
                     news.arg1 = 3;
-                    handler.sendMessage(news);
+                    activity.externalBalanceGetHandler.sendMessage(news);
 
-                    COUNT = 0; //if no, just fill listview
+                    activity.COUNT = 0; //if no, just fill listview
                 }
             }
-        };
-
+        }
     }
+
 
     //read all wallets to json object from sharedpreferences into class String
     public String readAllWallets() {

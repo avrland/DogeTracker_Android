@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,6 +18,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.haha.perflib.Main;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,7 +51,6 @@ public class MainActivity extends DrawerActivity {
     private wallet_memory walletMemoryObject;
     private ProgressDialog dialog;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,16 +59,16 @@ public class MainActivity extends DrawerActivity {
         spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         getTextViews();
 
-        //We create handler to wait for get exchange rates
-        getRatesHandler = new Handler(new GetRatesCallback());
-        balanceHandler = new Handler(new BalanceHandlerCallback());
-
+        //We create handler with WeakReference to wait for get exchange rates
+        balanceHandler = new BalanceHandler(this);
+        getRatesHandler = new GetRatesHandler(this);
+        
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
         dogeRatesObject = new doge_rates(this);
         startup_refresh();
-
     }
     //we check and apply settings here
+    @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
@@ -79,6 +83,63 @@ public class MainActivity extends DrawerActivity {
         dialog.setCancelable(false);
         dialog.setMessage("Getting rates and balances...");
     }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        getRatesHandler.removeCallbacksAndMessages(null);
+        balanceHandler.removeCallbacksAndMessages(null);
+    }
+
+    private static class BalanceHandler extends Handler {
+        private final WeakReference<MainActivity> mActivity;
+
+        private BalanceHandler(MainActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity activity = mActivity.get();
+            if (activity != null) {
+                int isAnyWalletsAdded = msg.arg1;
+                // Handle message code
+                if(isAnyWalletsAdded==3){
+                    activity.allWalletsBalanceTextView.setText(Float.toString(activity.walletMemoryObject.allWalletsBalance) + " Đ");
+                    activity.dialog.dismiss();
+                } else if (isAnyWalletsAdded==0){
+                    activity.allWalletsBalanceTextView.setText("0" + " Đ");
+                    activity.dialog.dismiss();
+                }
+            }
+        }
+    }
+
+    private static class GetRatesHandler extends Handler {
+        private final WeakReference<MainActivity> mActivity;
+
+        private GetRatesHandler(MainActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity activity = mActivity.get();
+            if (activity != null) {
+                int onlineMode = msg.arg1;
+                if(onlineMode==1) activity.dogeRatesObject.getCurrentRefreshTime();
+                else if(onlineMode==0){
+                    activity.dogeRatesObject.getRecentRefreshTime();
+                    activity.makeSnackbar("Connection error. Showing last updated rates.");
+                    activity.dialog.dismiss();
+                }
+                activity.updateRatesInView(); //insert updated rates to layout
+                activity.checkTrendColor(activity.dogeRatesObject.hourChangeRate, activity.hourChangeTextView);
+                activity.checkTrendColor(activity.dogeRatesObject.dailyChangeRate, activity.dailyChangeTextView);
+                activity.checkTrendColor(activity.dogeRatesObject.weeklyChangeRate, activity.weeklyChangeTextView);
+            }
+        }
+    }
+
     public void startup_refresh(){
         boolean auto_wallets_refresh = spref.getBoolean("wallets_auto_refresh", false);
         if(auto_wallets_refresh && isNetworkAvailable()) {
@@ -119,39 +180,6 @@ public class MainActivity extends DrawerActivity {
         }
         return total_balance_f;
     }
-
-    class BalanceHandlerCallback implements Handler.Callback {
-        @Override
-        public boolean handleMessage(Message message) {
-            int isAnyWalletsAdded = message.arg1;
-            // Handle message code
-            if(isAnyWalletsAdded==3){
-                allWalletsBalanceTextView.setText(Float.toString(walletMemoryObject.allWalletsBalance) + " Đ");
-                dialog.dismiss();
-            } else if (isAnyWalletsAdded==0){
-                allWalletsBalanceTextView.setText("0" + " Đ");
-                dialog.dismiss();
-            }
-            return true;
-        }
-    }
-    class GetRatesCallback implements Handler.Callback {
-        @Override
-        public boolean handleMessage(Message message) {
-            int onlineMode = message.arg1;
-            if(onlineMode==1) dogeRatesObject.getCurrentRefreshTime();
-            else if(onlineMode==0){
-                dogeRatesObject.getRecentRefreshTime();
-                makeSnackbar("Connection error. Showing last updated rates.");
-                dialog.dismiss();
-            }
-            updateRatesInView(); //insert updated rates to layout
-            checkTrendColor(dogeRatesObject.hourChangeRate, hourChangeTextView);
-            checkTrendColor(dogeRatesObject.dailyChangeRate, dailyChangeTextView);
-            checkTrendColor(dogeRatesObject.weeklyChangeRate, weeklyChangeTextView);
-            return true;
-        }
-    }
     public void getTextViews(){
         dogeRatesTextView = findViewById(R.id.doge_rate);
         hourChangeTextView = findViewById(R.id.hour_change);
@@ -163,14 +191,6 @@ public class MainActivity extends DrawerActivity {
         lastUpdateTextView = findViewById(R.id.last_update);
         allWalletsBalanceTextView = findViewById(R.id.textView8);
     }
-
-
-    public void onStop(){
-        super.onStop();
-        getRatesHandler.removeCallbacksAndMessages(null);
-        balanceHandler.removeCallbacksAndMessages(null);
-    }
-
 
     //Refresh button - selects response for clicking refresh - refresh_rates
     //Refresh rates - calling getRates from doge_rates class
@@ -199,7 +219,14 @@ public class MainActivity extends DrawerActivity {
             totalSupplyTextView.setText("Total supply: " + dogeRatesObject.totalSupplyRate + " Đ");
             lastUpdateTextView.setText("Last update: " + dogeRatesObject.lastRefreshRate);
         } catch(NullPointerException e ){
-
+            dogeRatesTextView.setText("1Đ = " + "Err");
+            hourChangeTextView.setText("1h: " + "Err");
+            dailyChangeTextView.setText("24h: " + "Err");
+            weeklyChangeTextView.setText("7d: " + "Err");
+            marketCapTextView.setText("Market cap: " + "Err");
+            volumeTextView.setText("Volume 24h: " + "Err");
+            totalSupplyTextView.setText("Total supply: " + "Err");
+            lastUpdateTextView.setText("Last update: " + "Err");
         }
     }
     public String getFiatSymbol(){

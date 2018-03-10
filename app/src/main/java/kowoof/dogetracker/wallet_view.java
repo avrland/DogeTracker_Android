@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 
+import java.lang.ref.WeakReference;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -62,13 +63,7 @@ public class wallet_view extends DrawerActivity {
         walletMemoryObject = new wallet_memory(getApplicationContext());
         removeWalletButtonHandler();
         //We create handler to wait for get exchange rates
-        getBalanceHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
-                showBalance();
-            }
-        };
+        getBalanceHandler = new WalletViewHandler(this);
 
         //Get single wallet balance
         getBalance();
@@ -76,6 +71,22 @@ public class wallet_view extends DrawerActivity {
         //QR code download&set section
         ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
         Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
+    }
+
+    private static class WalletViewHandler extends Handler {
+        private final WeakReference<wallet_view> mActivity;
+
+        private WalletViewHandler(wallet_view activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_view activity = mActivity.get();
+            if (activity != null) {
+                activity.showBalance();
+            }
+        }
     }
 
     public void getWalletInfo(){

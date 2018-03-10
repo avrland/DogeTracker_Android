@@ -30,10 +30,14 @@ import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.google.gson.Gson;
+import com.squareup.haha.perflib.Main;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.ref.WeakReference;
+
 import kowoof.dogetracker.wallet_verify;
 
 /**
@@ -54,6 +58,7 @@ public class wallet_add extends AppCompatActivity {
     private wallet_balance currentWalletBalance = new wallet_balance();
 
     private ProgressDialog addWalletProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,25 +73,34 @@ public class wallet_add extends AppCompatActivity {
         addWalletFabHandler();
         checkIfQrReceived();
 
-        //We create handler to wait for get exchange rates
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                //todo avoid memory leak
-                super.handleMessage(msg); //don't know it's really needed now
+        handler = new WalletMemoryHandler(this);
+
+    }
+
+    private static class WalletMemoryHandler extends Handler {
+        private final WeakReference<wallet_add> mActivity;
+
+        private WalletMemoryHandler(wallet_add activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_add activity = mActivity.get();
+            if (activity != null) {
                 try {
-                    walletMemoryObject.addToWalletsWithBalance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
-                    Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                    activity.walletMemoryObject.addToWalletsWithBalance(activity.addedWalletName, activity.addedWalletAddress, activity.currentWalletBalance.balance);
+                    Intent i = new Intent(activity.getApplicationContext(), wallet_list.class);
                     i.putExtra("added_wallet", 1);
-                    startActivity(i);
-                    finish();
+                    activity.startActivity(i);
+                    activity.finish();
                 } catch (JSONException e) {
-                    makeSnackbar("Connection error.");
+                    activity.makeSnackbar("Connection error.");
                 }
             }
-
-        };
+        }
     }
+
     public void addWalletFabHandler(){
         FloatingActionButton addWalletFab = findViewById(R.id.fab);
         //We get here wallet address and name, and save it to SharedPref

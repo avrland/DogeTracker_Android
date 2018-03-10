@@ -38,7 +38,7 @@ public class doge_rates {
                 totalSupplyRate, lastRefreshRate;
         private static ProgressDialog DIALOG;
         private static String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
-        private static Context CURRENT_CONTEXT;
+        private Context CURRENT_CONTEXT;
 
         //we store exchange rates stuff into memory
         private static final String PREFS_FILE = "Offline_exchange_rates";

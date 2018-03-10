@@ -32,4 +32,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
     compile 'com.github.clans:fab:1.6.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }
