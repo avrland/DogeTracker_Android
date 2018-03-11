@@ -35,7 +35,6 @@ import java.util.Locale;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-
 /**
  * Created by Marcin on 11.02.2018.
  * Copyright © 2017 Marcin Popko. All rights reserved.
@@ -173,8 +172,8 @@ public class wallet_list extends DrawerActivity {
         }
         if (id == R.id.dollars) {
             if(dogesFiat == 1) {
-                showTotalBalanceInFiatOnToolbar(calculateAllWalletsBalance());
-            } else showTotalBalanceInDogesOnToolbar(calculateAllWalletsBalance());
+                showTotalBalanceInFiatOnToolbar(walletMemoryObject.calculateAllWalletsBalance());
+            } else showTotalBalanceInDogesOnToolbar(walletMemoryObject.calculateAllWalletsBalance());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -229,34 +228,6 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
-
-    float calculateAllWalletsBalance(){
-        //prepare all balances float handler
-        float total_balance_f = 0, current_wallet_f = 0;
-        try {
-            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
-
-            for (int i = 0, count = new_array.length(); i < count; i++) {
-                try {
-                    JSONObject jsonObject = new_array.getJSONObject(i);
-                    try {
-                        current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
-                    } catch (NumberFormatException e) {
-                        current_wallet_f = 0;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                total_balance_f += current_wallet_f;
-            }
-            showTotalBalanceInDogesOnToolbar(total_balance_f);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return total_balance_f;
-    }
-
     void clearWalletsList(){
         adapter = new wallet_list_create(wallet_list.this, walletNameArray, balanceArray);
         walletNameArray.clear();
@@ -267,10 +238,12 @@ public class wallet_list extends DrawerActivity {
     //we show here total balance on to toolbar
     public void showTotalBalanceInFiatOnToolbar(float total){
         //we change here current fiat currency symbol
-        float totalFiatBalance = getDogeFiatRate() * total;
+        doge_rates local_doge = new doge_rates(wallet_list.this);
+
+        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
         String totalFiatDogeString = Float.toString(totalFiatBalance);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle("Total: " + totalFiatDogeString + " " + getFiatSymbol());
+        toolbar.setSubtitle("Total: " + totalFiatDogeString + " " + local_doge.getFiatSymbol());
         dogesFiat = 2;
     }
 
@@ -280,19 +253,6 @@ public class wallet_list extends DrawerActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setSubtitle("Total: " + totalDogeString + " Đ");
         dogesFiat = 1;
-    }
-
-    public float getDogeFiatRate(){
-        doge_rates getDogeFiatRate = new doge_rates(getApplicationContext());
-        getDogeFiatRate.readRatesFromOffline();
-        float fiatDogeFloat = Float.parseFloat(getDogeFiatRate.dogeFiatRate);
-        return fiatDogeFloat;
-    }
-    public String getFiatSymbol(){
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        String fiatCode = sp.getString("fiat_list","USD");
-        Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
-        return usedFiatCurrency.getSymbol();
     }
     private static class WalletListHandler extends Handler {
         private final WeakReference<wallet_list> mActivity;

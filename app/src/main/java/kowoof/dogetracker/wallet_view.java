@@ -168,24 +168,19 @@ public class wallet_view extends DrawerActivity {
         walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);
     }
     public void showBalance(){
-        TextView wallet_balance_textView = findViewById(R.id.balance);
-        wallet_balance_textView.setText(walletBalanceObject.balance + " Đ");
+        TextView walletBalanceTextView = findViewById(R.id.balance);
+        walletBalanceTextView.setText(walletBalanceObject.balance + " Đ");
         balanceInFiat();
     }
     public void balanceInFiat(){
-        doge_rates get_doge_dollar_rate = new doge_rates(getApplicationContext());
-        get_doge_dollar_rate.readRatesFromOffline();
-        float dolar_doge_f = Float.parseFloat(get_doge_dollar_rate.dogeFiatRate);
-        float balance_f = Float.parseFloat(walletBalanceObject.balance);
-        float total_dollar_balance_f = dolar_doge_f * balance_f;
-        String dollar_doge_s = Float.toString(total_dollar_balance_f);
-        TextView walletFiatBalanceTextView = findViewById(R.id.doge_in_dollars);
+        doge_rates dogeRateObject = new doge_rates(getApplicationContext());
+        float fiatDogeFloat = dogeRateObject.getDogeFiatRate();
+        float balanceFloat = Float.parseFloat(walletBalanceObject.balance);
+        float totalFiatBalanceFloat = fiatDogeFloat * balanceFloat;
+        String fiatDogeStringWithSymbol = Float.toString(totalFiatBalanceFloat) + " " + dogeRateObject.getFiatSymbol();
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        String fiat_name = sp.getString("fiat_list","USD");
-        Locale.setDefault(new Locale("lv","LV"));
-        Currency used_fiat_currency  = Currency.getInstance(fiat_name);
-        walletFiatBalanceTextView.setText(dollar_doge_s + " " + used_fiat_currency.getSymbol());
+        TextView walletFiatBalanceTextView = findViewById(R.id.doge_in_dollars);
+        walletFiatBalanceTextView.setText(fiatDogeStringWithSymbol);
     }
     //Copy wallet address by clicking qr code
     public void copyWalletAddress(View view) {

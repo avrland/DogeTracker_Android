@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -25,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Currency;
 
 /**
  * Created by Marcin on 10.01.2018.
@@ -166,4 +168,15 @@ public class doge_rates {
             }
         }
 
+    public float getDogeFiatRate(){
+        readRatesFromOffline();
+        float fiatDogeFloat = Float.parseFloat(dogeFiatRate);
+        return fiatDogeFloat;
+    }
+    public String getFiatSymbol(){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(CURRENT_CONTEXT);
+        String fiatCode = sp.getString("fiat_list","USD");
+        Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
+        return usedFiatCurrency.getSymbol();
+    }
 }

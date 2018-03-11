@@ -227,4 +227,30 @@ public class wallet_memory {
         return result;
     }
 
+    float calculateAllWalletsBalance(){
+        //prepare all balances float handler
+        float total_balance_f = 0, current_wallet_f = 0;
+        try {
+            JSONArray new_array = new JSONArray(readAllWallets());
+
+            for (int i = 0, count = new_array.length(); i < count; i++) {
+                try {
+                    JSONObject jsonObject = new_array.getJSONObject(i);
+                    try {
+                        current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
+                    } catch (NumberFormatException e) {
+                        current_wallet_f = 0;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                total_balance_f += current_wallet_f;
+            }
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return total_balance_f;
+    }
 }

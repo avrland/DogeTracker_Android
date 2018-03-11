@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.Currency;
 import java.util.Locale;
+import kowoof.dogetracker.wallet_memory;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -152,37 +153,10 @@ public class MainActivity extends DrawerActivity {
         } else {
             dogeRatesObject.readRatesFromOffline();
             updateRatesInView();
-            String allWalletsBalanceString = calculateAllWalletsBalance();
+            String allWalletsBalanceString = String.valueOf(walletMemoryObject.calculateAllWalletsBalance());
             allWalletsBalanceTextView.setText( allWalletsBalanceString + " Đ");
         }
-
     }
-    String calculateAllWalletsBalance(){
-        //prepare all balances float handler
-        float total_balance_f = 0, current_wallet_f = 0;
-        try {
-            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
-
-            for (int i = 0, count = new_array.length(); i < count; i++) {
-                try {
-                    JSONObject jsonObject = new_array.getJSONObject(i);
-                    try {
-                        current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
-                    } catch (NumberFormatException e) {
-                        current_wallet_f = 0;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                total_balance_f += current_wallet_f;
-            }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return Float.toString(total_balance_f);
-    }
-
     public void getTextViews(){
         dogeRatesTextView = findViewById(R.id.doge_rate);
         hourChangeTextView = findViewById(R.id.hour_change);
@@ -210,7 +184,7 @@ public class MainActivity extends DrawerActivity {
     }
     void updateRatesInView() {
         try {
-            String fiatSymbol = getFiatSymbol();
+            String fiatSymbol = dogeRatesObject.getFiatSymbol();
             dogeRatesObject.saveRatesToOffline();
             dogeRatesObject.makeCommasOnRates(); //we add spaces to total supply, volume and market cap to make it clearly
             dogeRatesTextView.setText("1Đ = " + dogeRatesObject.dogeFiatRate + " " + fiatSymbol);
@@ -231,12 +205,6 @@ public class MainActivity extends DrawerActivity {
             totalSupplyTextView.setText("Total supply: " + "Err");
             lastUpdateTextView.setText("Last update: " + "Err");
         }
-    }
-    public String getFiatSymbol(){
-        String fiat_code = spref.getString("fiat_list", "USD");
-        Locale.setDefault(new Locale("lv", "LV"));
-        Currency used_fiat_currency = Currency.getInstance(fiat_code);
-        return used_fiat_currency.getSymbol();
     }
     //Check if percent rate are collapsing or raising
     public void checkTrendColor(String percentRate, TextView percentRateTextView){

@@ -67,5 +67,4 @@ public class wallet_balance {
             e.printStackTrace();
         }
     }
-
 }
