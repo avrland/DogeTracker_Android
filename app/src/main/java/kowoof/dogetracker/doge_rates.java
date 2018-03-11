@@ -59,14 +59,11 @@ public class doge_rates {
         //We download here json response, leaving a information everything is ready to update view
         public void getRates(final Handler handler, final String fiatCurrency){
             DIALOG = new ProgressDialog(CURRENT_CONTEXT);
-//            DIALOG.setMessage("Loading....");
-//            DIALOG.show();
 
             StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency.toLowerCase(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
                     parseJsonData(string, fiatCurrency.toLowerCase());
-//                    DIALOG.dismiss();
                     //We're ready, leave messenge for handler to refresh_rates in view
                     //It doesn't matter now what kind of messege we send.
                     Message news = new Message();
@@ -81,7 +78,6 @@ public class doge_rates {
                     news.arg1 = 0;
                     handler.sendMessage(news);
                     readRatesFromOffline();
-//                    DIALOG.dismiss();
                 }
             });
             RequestQueue rQueue = Volley.newRequestQueue(CURRENT_CONTEXT);
@@ -95,11 +91,7 @@ public class doge_rates {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 dogeFiatRate       = jsonobject.getString("price_" + fiat_currency);
                 //we want 4 decimal places with dot as a separator
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                DecimalFormat df = new DecimalFormat("#.####");
-                symbols.setDecimalSeparator('.');
-                df.setDecimalFormatSymbols(symbols);
-                dogeFiatRate = df.format(Float.parseFloat(dogeFiatRate)).toString();
+                dogeFiatRate = cutDecimalPlacesToFour(dogeFiatRate);
                 hourChangeRate     = jsonobject.getString("percent_change_1h");
                 dailyChangeRate    = jsonobject.getString("percent_change_24h");
                 weeklyChangeRate   = jsonobject.getString("percent_change_7d");
@@ -111,6 +103,15 @@ public class doge_rates {
             e.printStackTrace();
         }
         }
+        private String cutDecimalPlacesToFour(String FiatRate){
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            DecimalFormat df = new DecimalFormat("#.####");
+            symbols.setDecimalSeparator('.');
+            df.setDecimalFormatSymbols(symbols);
+            FiatRate = df.format(Float.parseFloat(FiatRate));
+            return FiatRate;
+        }
+
         public void readRatesFromOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             dogeFiatRate       = rates.getString(dogeFiatRateOffline, "doge_rate_offline");
@@ -137,7 +138,7 @@ public class doge_rates {
         public void getCurrentRefreshTime(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
-            DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
+            DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
             lastRefreshRate =df.format(Calendar.getInstance().getTime());
             editor.putString(lastRefreshOffline, lastRefreshRate);
             editor.apply();

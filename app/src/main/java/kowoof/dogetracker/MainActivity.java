@@ -86,6 +86,7 @@ public class MainActivity extends DrawerActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        //todo make sure if it's required now
         getRatesHandler.removeCallbacksAndMessages(null);
         balanceHandler.removeCallbacksAndMessages(null);
     }
@@ -151,11 +152,12 @@ public class MainActivity extends DrawerActivity {
         } else {
             dogeRatesObject.readRatesFromOffline();
             updateRatesInView();
-            allWalletsBalanceTextView.setText(Float.toString(calculateAllWalletsBalance()) + " Đ");
+            String allWalletsBalanceString = calculateAllWalletsBalance();
+            allWalletsBalanceTextView.setText( allWalletsBalanceString + " Đ");
         }
 
     }
-    float calculateAllWalletsBalance(){
+    String calculateAllWalletsBalance(){
         //prepare all balances float handler
         float total_balance_f = 0, current_wallet_f = 0;
         try {
@@ -178,8 +180,9 @@ public class MainActivity extends DrawerActivity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return total_balance_f;
+        return Float.toString(total_balance_f);
     }
+
     public void getTextViews(){
         dogeRatesTextView = findViewById(R.id.doge_rate);
         hourChangeTextView = findViewById(R.id.hour_change);

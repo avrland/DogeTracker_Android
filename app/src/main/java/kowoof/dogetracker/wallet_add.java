@@ -63,7 +63,7 @@ public class wallet_add extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add);
-        setToolbar("Add real wallet", null);
+        setToolbar();
         EditText walletNameEditText = findViewById(R.id.editText2);
         walletNameEditText.requestFocus();
         walletMemoryObject = new wallet_memory(getApplicationContext());
@@ -107,21 +107,26 @@ public class wallet_add extends AppCompatActivity {
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addWalletProgressDialog.setCancelable(false);
-                addWalletProgressDialog.show(wallet_add.this, "Please wait", "Validating address and getting current balance...");
+                addWalletProgressDialog = ProgressDialog.show(wallet_add.this, "Please wait", "Validating address and getting current balance...");
                 EditText walletNameEditText = findViewById(R.id.editText2);
                 addedWalletName = walletNameEditText.getText().toString();
                 EditText walletAddressEditText = findViewById(R.id.editText);
                 addedWalletAddress = walletAddressEditText.getText().toString();
-                if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
-                if(wallet_verify.validateDogecoinAddress(addedWalletAddress)==true){
-                    currentWalletBalance.getWalletBalance(wallet_add.this, handler, addedWalletAddress);
-                } else {
-                    makeSnackbar("Invalid address.");
-                    addWalletProgressDialog.dismiss();
-                }
+                ifNameEmptyAddAddressAsName();
+                verifyWalletAddress();
             }
         });
+    }
+    public void ifNameEmptyAddAddressAsName(){
+        if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
+    }
+    public void verifyWalletAddress(){
+        if(wallet_verify.validateDogecoinAddress(addedWalletAddress)){
+            currentWalletBalance.getWalletBalance(this, handler, addedWalletAddress);
+        } else {
+            addWalletProgressDialog.dismiss();
+            makeSnackbar("Invalid address.");
+        }
     }
     public void checkIfQrReceived(){
         //If we use qr code reader, we insert here scanned address
@@ -135,11 +140,10 @@ public class wallet_add extends AppCompatActivity {
             }
         }
     }
-    public void setToolbar(String title, String subtitle){
+    public void setToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(title);
-        if(subtitle != null) getSupportActionBar().setSubtitle(subtitle);
+        getSupportActionBar().setTitle("Add real wallet");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }

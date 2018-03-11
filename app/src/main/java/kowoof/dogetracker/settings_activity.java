@@ -24,6 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.squareup.haha.perflib.Main;
+
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Marcin on 11.02.2018.
  * Copyright © 2017 Marcin Popko. All rights reserved.
@@ -32,7 +36,7 @@ import android.widget.Toast;
 public class settings_activity extends AppCompatActivity {
 
     private doge_rates dogeRatesObject;
-    private Handler getRatesHandler = new Handler();
+    private Handler getRatesHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,22 +59,33 @@ public class settings_activity extends AppCompatActivity {
         });
         dogeRatesObject = new doge_rates(this);
         //We create handler to wait for get exchange rates
-        getRatesHandler = new Handler(){
+        getRatesHandler = new GetRatesHandler(this);
+    }
 
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg); //don't know it's really needed now
-                if(msg.arg1==1)      dogeRatesObject.getCurrentRefreshTime();
+
+    private static class GetRatesHandler extends Handler {
+        private final WeakReference<settings_activity> mActivity;
+
+        private GetRatesHandler(settings_activity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            settings_activity activity = mActivity.get();
+            if (activity != null) {
+                if(msg.arg1==1)      activity.dogeRatesObject.getCurrentRefreshTime();
                 else if(msg.arg1==2){
-                    dogeRatesObject.getRecentRefreshTime();
-                    Snackbar mySnackbar = Snackbar.make(getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
+                    activity.dogeRatesObject.getRecentRefreshTime();
+                    Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
-                finish();
+                activity.finish();
             }
-
-        };
+        }
     }
+
+
     @Override
     public void onPause() {
         super.onPause();
@@ -98,7 +113,6 @@ public class settings_activity extends AppCompatActivity {
 
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
-
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
