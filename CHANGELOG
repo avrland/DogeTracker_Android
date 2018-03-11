@@ -1,6 +1,8 @@
 ## v1.2
 * avoided potential memory leaks in non-static handlers
 * added splash screen
+* layouts readability improvements
+* fixed address verify freeze if we enter wrong one
 
 ## v1.1
 * Lollipop is now supported
