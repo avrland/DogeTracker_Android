@@ -64,6 +64,7 @@ public class wallet_list extends DrawerActivity {
     private SwipeRefreshLayout mSwipeRefreshView;
     private Toolbar toolbar;
     int finishedUpdateFlag = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,6 +178,7 @@ public class wallet_list extends DrawerActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -228,6 +230,7 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
+
     void clearWalletsList(){
         adapter = new wallet_list_create(wallet_list.this, walletNameArray, balanceArray);
         walletNameArray.clear();

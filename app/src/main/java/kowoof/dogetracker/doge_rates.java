@@ -167,16 +167,15 @@ public class doge_rates {
                 totalSupplyRate = "0";
             }
         }
-
-    public float getDogeFiatRate(){
-        readRatesFromOffline();
-        float fiatDogeFloat = Float.parseFloat(dogeFiatRate);
-        return fiatDogeFloat;
-    }
-    public String getFiatSymbol(){
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(CURRENT_CONTEXT);
-        String fiatCode = sp.getString("fiat_list","USD");
-        Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
-        return usedFiatCurrency.getSymbol();
-    }
+        public float getDogeFiatRate(){
+            readRatesFromOffline();
+            float fiatDogeFloat = Float.parseFloat(dogeFiatRate);
+            return fiatDogeFloat;
+        }
+        public String getFiatSymbol(){
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(CURRENT_CONTEXT);
+            String fiatCode = sp.getString("fiat_list","USD");
+            Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
+            return usedFiatCurrency.getSymbol();
+        }
 }

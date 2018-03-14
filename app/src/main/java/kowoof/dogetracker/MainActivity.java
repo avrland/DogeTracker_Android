@@ -30,6 +30,9 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.Currency;
 import java.util.Locale;
+
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
 import kowoof.dogetracker.wallet_memory;
 
 /**
@@ -67,11 +70,13 @@ public class MainActivity extends DrawerActivity {
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
         dogeRatesObject = new doge_rates(this);
         startup_refresh();
+        rateAppReminder();
     }
     //we check and apply settings here
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
+
         boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
         ImageView logo = findViewById(R.id.imageView);
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
@@ -79,8 +84,8 @@ public class MainActivity extends DrawerActivity {
         checkTrendColor(dogeRatesObject.hourChangeRate, hourChangeTextView);
         checkTrendColor(dogeRatesObject.dailyChangeRate, dailyChangeTextView);
         checkTrendColor(dogeRatesObject.weeklyChangeRate, weeklyChangeTextView);
-        refreshRates();
 
+        refreshRates();
         dialog.setCancelable(false);
         dialog.setMessage("Getting rates and balances...");
     }
@@ -184,9 +189,9 @@ public class MainActivity extends DrawerActivity {
     }
     void updateRatesInView() {
         try {
-            String fiatSymbol = dogeRatesObject.getFiatSymbol();
             dogeRatesObject.saveRatesToOffline();
             dogeRatesObject.makeCommasOnRates(); //we add spaces to total supply, volume and market cap to make it clearly
+            String fiatSymbol = dogeRatesObject.getFiatSymbol();
             dogeRatesTextView.setText("1Đ = " + dogeRatesObject.dogeFiatRate + " " + fiatSymbol);
             hourChangeTextView.setText("1h: " + dogeRatesObject.hourChangeRate + "%");
             dailyChangeTextView.setText("24h: " + dogeRatesObject.dailyChangeRate + "%");
@@ -219,5 +224,24 @@ public class MainActivity extends DrawerActivity {
         } else {
             percentRateTextView.setTextColor(defaultTextColor);
         }
+    }
+
+    private void rateAppReminder(){
+        AppRate.with(this)
+                .setInstallDays(0) // default 10, 0 means install day.
+                .setLaunchTimes(3) // default 10
+                .setRemindInterval(2) // default 1
+                .setShowLaterButton(true) // default true
+                .setDebug(true) // default false
+                .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
+                    @Override
+                    public void onClickButton(int which) {
+                        Log.d(MainActivity.class.getName(), Integer.toString(which));
+                    }
+                })
+                .monitor();
+
+        // Show a dialog if meets conditions
+        AppRate.showRateDialogIfMeetsConditions(this);
     }
 }
