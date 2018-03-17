@@ -21,9 +21,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".wallet_list"
             android:label="@string/title_activity_wallet_list"
@@ -58,7 +56,8 @@
             android:theme="@style/AppTheme.NoActionBar">
             >
         </activity>
-        <activity android:name=".Splash"
+        <activity
+            android:name=".Splash"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -66,6 +65,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".wallet_add_virtual"
+            android:label="@string/title_activity_wallet_add_virtual"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

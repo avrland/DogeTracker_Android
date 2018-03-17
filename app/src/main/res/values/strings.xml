@@ -74,6 +74,9 @@
     <string name="validatingText">Validating address and getting current balance.</string>
     <string name="grantPermissionText">Grant permission to camera to read qr code.</string>
 
+    <!--wallet_add_virtual-->
+    <string name="amountOfDogecoinText">Amount of Dogecoins:</string>
+
     <!--setting_activity-->
     <string name="useDTlogoText">Use DogeTracker logo in background</string>
     <string name="autoRefreshTitleText">Auto refresh balances and rates</string>
@@ -81,4 +84,5 @@
     <string name="colourTrendTitleText">Coloured trend rates (1h, 24h, 7d)</string>
     <string name="colourTrendSummaryText">ON - green/red, OFF - default</string>
     <string name="fiatCurrencyText">FIAT exchange currency</string>
+    <string name="title_activity_wallet_add_virtual">Add virtual wallet</string>
 </resources>

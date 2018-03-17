@@ -236,7 +236,7 @@ public class MainActivity extends DrawerActivity {
                 .setLaunchTimes(3) // default 10
                 .setRemindInterval(2) // default 1
                 .setShowLaterButton(true) // default true
-                .setDebug(true) // default false
+                .setDebug(false) // default false
                 .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
                     @Override
                     public void onClickButton(int which) {

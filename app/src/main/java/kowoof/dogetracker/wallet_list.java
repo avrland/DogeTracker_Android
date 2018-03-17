@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ import java.util.Locale;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.florent37.viewtooltip.ViewTooltip;
+import com.tooltip.Tooltip;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -84,6 +87,8 @@ public class wallet_list extends DrawerActivity {
 
         //Find listView and populate it
         populateList();
+
+        showTooltips();
     }
 
     public void setToolbar(){
@@ -109,7 +114,9 @@ public class wallet_list extends DrawerActivity {
         virtualWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                makeSnackbar("Coming soon.");
+                finish();
+                Intent i = new Intent(getApplicationContext(), wallet_add_virtual.class);
+                startActivity(i);
             }
         });
     }
@@ -344,5 +351,9 @@ public class wallet_list extends DrawerActivity {
         Snackbar snackbar = Snackbar
                 .make(getWindow().getDecorView(), snackbar_message, Snackbar.LENGTH_SHORT);
         snackbar.show();
+    }
+
+    private void showTooltips(){
+
     }
 }

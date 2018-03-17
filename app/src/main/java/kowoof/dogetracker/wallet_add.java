@@ -4,41 +4,27 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PointF;
-import android.icu.util.Currency;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
-import com.google.gson.Gson;
-import com.squareup.haha.perflib.Main;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-
-import kowoof.dogetracker.wallet_verify;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -64,7 +50,7 @@ public class wallet_add extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add);
         setToolbar();
-        EditText walletNameEditText = findViewById(R.id.editText2);
+        EditText walletNameEditText = findViewById(R.id.editText10);
         walletNameEditText.requestFocus();
         walletMemoryObject = new wallet_memory(getApplicationContext());
         addWalletProgressDialog = new ProgressDialog(wallet_add.this);
@@ -108,7 +94,7 @@ public class wallet_add extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addWalletProgressDialog = ProgressDialog.show(wallet_add.this, getString(R.string.pleaseWaitText), getString(R.string.validatingText));
-                EditText walletNameEditText = findViewById(R.id.editText2);
+                EditText walletNameEditText = findViewById(R.id.editText10);
                 addedWalletName = walletNameEditText.getText().toString();
                 EditText walletAddressEditText = findViewById(R.id.editText);
                 addedWalletAddress = walletAddressEditText.getText().toString();
