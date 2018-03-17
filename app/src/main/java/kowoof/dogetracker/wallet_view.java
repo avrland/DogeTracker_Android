@@ -52,7 +52,7 @@ public class wallet_view extends DrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Wallet view");
+        toolbar.setTitle(getString(R.string.title_activity_wallet_view));
         toolbar.setSubtitle("");
 
         TextView walletNameTextView = findViewById(R.id.wallet_name);
@@ -107,9 +107,9 @@ public class wallet_view extends DrawerActivity {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(wallet_view.this);
                 builder.setCancelable(true);
-                builder.setTitle("Are you sure?");
-                builder.setMessage("Remove wallet: " + viewedWalletName);
-                builder.setPositiveButton("Confirm",
+                builder.setTitle(getString(R.string.areYouSureText));
+                builder.setMessage(getString(R.string.removeWalletText) + viewedWalletName);
+                builder.setPositiveButton(getString(R.string.confirmText),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -123,7 +123,7 @@ public class wallet_view extends DrawerActivity {
                                 }
                             }
                         });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getString(R.string.cancelText), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -190,7 +190,7 @@ public class wallet_view extends DrawerActivity {
 
         ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);
         Snackbar snackbar = Snackbar
-                .make(layout, "Address copied to clipboard.", Snackbar.LENGTH_SHORT);
+                .make(layout, getString(R.string.addressCopiedText), Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 

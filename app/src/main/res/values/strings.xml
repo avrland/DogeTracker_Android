@@ -1,19 +1,84 @@
 <resources>
-    <string name="app_name">DogeTracker</string>
+    <string name="app_name" translatable="false">DogeTracker</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_wallet_list">wallet_list</string>
-    <string name="title_activity_wallet_add">wallet_add</string>
-    <string name="title_activity_wallet_view">wallet_view</string>
-    <string name="title_activity_wallet_qr_read">wallet_qr_read</string>
+    <string name="title_activity_wallet_list">My wallets</string>
+    <string name="title_activity_wallet_add">Add real wallet</string>
+    <string name="title_activity_wallet_view">Wallet view</string>
+    <string name="title_activity_wallet_qr_read" translatable="false">wallet_qr_read</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_settings_activity">settings_activity</string>
 
-    <string name="rate_dialog_title">Rate this app</string>
-    <string name="rate_dialog_message">If you enjoy this app, would you mind taking a moment to rate it? Such wow, many thanks for your support!</string>
-    <string name="rate_dialog_ok">Rate It Now</string>
-    <string name="rate_dialog_cancel">Remind Me Later</string>
-    <string name="rate_dialog_no">No, Thanks</string>
+    <string name="rate_dialog_title" translatable="false">Rate this app</string>
+    <string name="rate_dialog_message" translatable="false">If you enjoy this app, would you mind taking a moment to rate it? Such wow, many thanks for your support!</string>
+    <string name="rate_dialog_ok" translatable="false">Rate It Now</string>
+    <string name="rate_dialog_cancel" translatable="false">Remind Me Later</string>
+    <string name="rate_dialog_no" translatable="false">No, Thanks</string>
+
+    <!--App translation section-->
+    <string name="errorText">Error</string>
+    <string name="hourText">1h: %1$s%2$s</string>
+    <string name="day7Text">7d: %1$s%2$s</string>
+    <string name="h24Text">24h: %1$s%2$s</string>
+    <string name="dogecoinSymbolText">Đ</string>
+    <string name="connectionErrorText">Connection error. Showing last updated rates.</string>
+    <string name="trackDogesDrawerText">Track doges! Wow!</string>
+
+
+    <!--MainActivity-->
+    <string name="exchangeRatesText">Exchange rates:</string>
+    <string name="marketCapText">Market cap: %1$s %2$s</string>
+    <string name="volume24hText">Volume 24h: %1$s %2$s</string>
+    <string name="totalSupplyText">Total supply: %1$s %2$s</string>
+    <string name="lastUpdateText"> Last update: %1$s</string>
+    <string name="yourWalletsBalanceText">Your wallets balance:</string>
+    <string name="refreshText">REFRESH</string>
+    <string name="remember1dogeText">Remember:  1Đ = 1Đ</string>
+    <string name="gettingRatesText">Getting rates and balances.</string>
+
+    <!--DrawerActivity-->
+    <string name="exchangeRatesMenuText">Exchange rates</string>
+    <string name="myWalletsMenuText">My wallets</string>
+    <string name="dogecoinRedditMenuText" translatable="false">Dogecoin Reddit</string>
+    <string name="dogeTrackerRedditMenuText" translatable="false">DogeTracker Reddit</string>
+    <string name="helpMenuText">Help</string>
+    <string name="settingsMenuText">Settings</string>
+
+    <!--wallet_list-->
+    <string name="totalBalanceText">Total: %1$s %2$s</string>
+    <string name="addVirtualWalletText">Add virtual wallet</string>
+    <string name="addRealWalletText">Add real wallet</string>
+    <string name="cancelText">Cancel</string>
+    <string name="waitToFinishUpdateText">Please wait for finishing wallets update.</string>
+    <string name="loadingBalanceText">**Loading balance**</string>
+    <string name="noConnectionText">No internet connection</string>
+
+    <!--wallet_view-->
+    <string name="balanceText">Balance:</string>
+    <string name="addressCopiedText">Address copied to clipboard.</string>
+    <string name="areYouSureText">Are you sure?</string>
+    <string name="removeWalletText">Remove wallet: </string>
+    <string name="confirmText">Confirm</string>
+    <string name="waitWowText">Please wait, getting doges, such wow.</string>
+
+    <!--wallet_add-->
+    <string name="walletNameText">Name:</string>
+    <string name="leaveEmptyToAddAddressHereText">Leave empty to add address here.</string>
+    <string name="walletAddressText">Wallet address:</string>
+    <string name="pasteText">Paste</string>
+    <string name="scanQRCodeText">Scan qr code</string>
+    <string name="invalidAddressText">Invalid address.</string>
+    <string name="pleaseWaitText">Please wait</string>
+    <string name="validatingText">Validating address and getting current balance.</string>
+    <string name="grantPermissionText">Grant permission to camera to read qr code.</string>
+
+    <!--setting_activity-->
+    <string name="useDTlogoText">Use DogeTracker logo in background</string>
+    <string name="autoRefreshTitleText">Auto refresh balances and rates</string>
+    <string name="autoRefreshSummaryText">Fetch new data every startup</string>
+    <string name="colourTrendTitleText">Coloured trend rates (1h, 24h, 7d)</string>
+    <string name="colourTrendSummaryText">ON - green/red, OFF - default</string>
+    <string name="fiatCurrencyText">FIAT exchange currency</string>
 </resources>

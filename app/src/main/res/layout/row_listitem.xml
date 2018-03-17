@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
             android:text="Wallet_name"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -31,12 +31,12 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
             android:layout_marginTop="3dp"
-            android:paddingLeft="10dp"
+            android:ellipsize="end"
             android:maxEms="20"
             android:maxLines="2"
+            android:paddingLeft="10dp"
             android:singleLine="false"
-            android:ellipsize="end"
-            android:text="Wallet doges"
+            android:text="Wallet_doges"
             android:textColor="#808080"
             android:textSize="15dp"
             android:textStyle="normal"

@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.text.Format;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -87,7 +88,7 @@ public class MainActivity extends DrawerActivity {
 
         refreshRates();
         dialog.setCancelable(false);
-        dialog.setMessage("Getting rates and balances...");
+        dialog.setMessage(getString(R.string.gettingRatesText));
     }
     @Override
     public void onDestroy(){
@@ -192,23 +193,26 @@ public class MainActivity extends DrawerActivity {
             dogeRatesObject.saveRatesToOffline();
             dogeRatesObject.makeCommasOnRates(); //we add spaces to total supply, volume and market cap to make it clearly
             String fiatSymbol = dogeRatesObject.getFiatSymbol();
+
             dogeRatesTextView.setText("1Đ = " + dogeRatesObject.dogeFiatRate + " " + fiatSymbol);
-            hourChangeTextView.setText("1h: " + dogeRatesObject.hourChangeRate + "%");
-            dailyChangeTextView.setText("24h: " + dogeRatesObject.dailyChangeRate + "%");
-            weeklyChangeTextView.setText("7d: " + dogeRatesObject.weeklyChangeRate + "%");
-            marketCapTextView.setText("Market cap: " + dogeRatesObject.marketCapRate + " " + fiatSymbol);
-            volumeTextView.setText("Volume 24h: " + dogeRatesObject.volumeRate + " " + fiatSymbol);
-            totalSupplyTextView.setText("Total supply: " + dogeRatesObject.totalSupplyRate + " Đ");
-            lastUpdateTextView.setText("Last update: " + dogeRatesObject.lastRefreshRate);
+            hourChangeTextView.setText(getString(R.string.hourText, dogeRatesObject.hourChangeRate, "%"));
+            dailyChangeTextView.setText(getString(R.string.h24Text, dogeRatesObject.dailyChangeRate, "%"));
+            weeklyChangeTextView.setText(getString(R.string.day7Text, dogeRatesObject.weeklyChangeRate, "%"));
+            marketCapTextView.setText(getString(R.string.marketCapText, dogeRatesObject.marketCapRate, fiatSymbol));
+            volumeTextView.setText(getString(R.string.volume24hText, dogeRatesObject.volumeRate, fiatSymbol));
+            totalSupplyTextView.setText(getString(R.string.totalSupplyText, dogeRatesObject.totalSupplyRate, getString(R.string.dogecoinSymbolText)));
+            lastUpdateTextView.setText(getString(R.string.lastUpdateText, dogeRatesObject.lastRefreshRate));
+
         } catch(NullPointerException e ){
-            dogeRatesTextView.setText("1Đ = " + "Err");
-            hourChangeTextView.setText("1h: " + "Err");
-            dailyChangeTextView.setText("24h: " + "Err");
-            weeklyChangeTextView.setText("7d: " + "Err");
-            marketCapTextView.setText("Market cap: " + "Err");
-            volumeTextView.setText("Volume 24h: " + "Err");
-            totalSupplyTextView.setText("Total supply: " + "Err");
-            lastUpdateTextView.setText("Last update: " + "Err");
+            String errorText = getString(R.string.errorText);
+            dogeRatesTextView.setText("1Đ = " + errorText);
+            hourChangeTextView.setText(getString(R.string.hourText, errorText, ""));
+            dailyChangeTextView.setText(getString(R.string.h24Text, errorText, ""));
+            weeklyChangeTextView.setText(getString(R.string.day7Text, errorText, ""));
+            marketCapTextView.setText(getString(R.string.marketCapText, errorText, ""));
+            volumeTextView.setText(getString(R.string.volume24hText, errorText, ""));
+            totalSupplyTextView.setText(getString(R.string.totalSupplyText, errorText, ""));
+            lastUpdateTextView.setText(getString(R.string.lastUpdateText, errorText));
         }
     }
     //Check if percent rate are collapsing or raising

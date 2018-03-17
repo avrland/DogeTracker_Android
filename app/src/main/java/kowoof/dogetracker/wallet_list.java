@@ -38,9 +38,7 @@ import com.github.clans.fab.FloatingActionMenu;
 /**
  * Created by Marcin on 11.02.2018.
  * Copyright © 2017 Marcin Popko. All rights reserved.
- */
-
-/**
+ *
  * In wallet list we load current saved wallets into listView, calculating total balance
  * We also can change balance from doges to $ by klicking R.id.dollars
  * If we click R.id.refresh, we get new fresh balances using dogechain.info API
@@ -90,8 +88,8 @@ public class wallet_list extends DrawerActivity {
 
     public void setToolbar(){
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("My wallets");
-        toolbar.setSubtitle("Total:  Đ");
+        toolbar.setTitle(getString(R.string.myWalletsMenuText));
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, " ","Đ"));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -132,7 +130,7 @@ public class wallet_list extends DrawerActivity {
                     startActivity(passWalletInfo);
                     finish();
                 } else {
-                    makeSnackbar("Please wait for finishing wallets update.");
+                    makeSnackbar(getString(R.string.waitToFinishUpdateText));
                 }
             }
         });
@@ -246,7 +244,7 @@ public class wallet_list extends DrawerActivity {
         float totalFiatBalance = local_doge.getDogeFiatRate() * total;
         String totalFiatDogeString = Float.toString(totalFiatBalance);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle("Total: " + totalFiatDogeString + " " + local_doge.getFiatSymbol());
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
         dogesFiat = 2;
     }
 
@@ -254,7 +252,7 @@ public class wallet_list extends DrawerActivity {
         //we change here current fiat currency symbol
         String totalDogeString = Float.toString(total);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle("Total: " + totalDogeString + " Đ");
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
         dogesFiat = 1;
     }
     private static class WalletListHandler extends Handler {
@@ -301,7 +299,7 @@ public class wallet_list extends DrawerActivity {
                     JSONObject jsonObject = new_array.getJSONObject(count);
                     walletName = jsonObject.getString("title");
                     walletAddress = jsonObject.getString("address");
-                    updateSingleRow(count, walletName, "Loading balance...");
+                    updateSingleRow(count, walletName, getString(R.string.loadingBalanceText));
                     //send get balance query with current address, wait in handler for response
                     walletBalanceHandler.getWalletBalance(this, handler, walletAddress);
                 } catch (JSONException e) {
@@ -312,7 +310,7 @@ public class wallet_list extends DrawerActivity {
                 e.printStackTrace();
             }
         } else {
-            makeSnackbar("No internet connection");
+            makeSnackbar(getString(R.string.noConnectionText));
             mSwipeRefreshView.setRefreshing(false);
         }
     }

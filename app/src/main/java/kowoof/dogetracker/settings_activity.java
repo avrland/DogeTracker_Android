@@ -77,7 +77,7 @@ public class settings_activity extends AppCompatActivity {
                 if(msg.arg1==1)      activity.dogeRatesObject.getCurrentRefreshTime();
                 else if(msg.arg1==2){
                     activity.dogeRatesObject.getRecentRefreshTime();
-                    Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(),"Connection error. Showing last updated rates.", Snackbar.LENGTH_SHORT);
+                    Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(), activity.getString(R.string.connectionErrorText), Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
                 activity.finish();

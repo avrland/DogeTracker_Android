@@ -107,7 +107,7 @@ public class wallet_add extends AppCompatActivity {
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addWalletProgressDialog = ProgressDialog.show(wallet_add.this, "Please wait", "Validating address and getting current balance...");
+                addWalletProgressDialog = ProgressDialog.show(wallet_add.this, getString(R.string.pleaseWaitText), getString(R.string.validatingText));
                 EditText walletNameEditText = findViewById(R.id.editText2);
                 addedWalletName = walletNameEditText.getText().toString();
                 EditText walletAddressEditText = findViewById(R.id.editText);
@@ -125,7 +125,7 @@ public class wallet_add extends AppCompatActivity {
             currentWalletBalance.getWalletBalance(this, handler, addedWalletAddress);
         } else {
             addWalletProgressDialog.dismiss();
-            makeSnackbar("Invalid address.");
+            makeSnackbar(getString(R.string.invalidAddressText));
         }
     }
     public void checkIfQrReceived(){
@@ -143,7 +143,7 @@ public class wallet_add extends AppCompatActivity {
     public void setToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add real wallet");
+        getSupportActionBar().setTitle(getString(R.string.addRealWalletText));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -213,9 +213,8 @@ public class wallet_add extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), wallet_qr_read.class);
                     startActivity(i);
                 } else {
-                    makeSnackbar("Grant permission to camera to read qr code");
+                    makeSnackbar(getString(R.string.grantPermissionText));
                 }
-                return;
             }
         }
     }
