@@ -72,6 +72,40 @@ public class wallet_view extends DrawerActivity {
         ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
         Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
     }
+    // Letting come back home
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            Intent i = new Intent(getApplicationContext(), wallet_list.class);
+            startActivity(i);
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        checkLogoSetting();
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // handle Android back click here
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent i = new Intent(getApplicationContext(), wallet_list.class);
+            startActivity(i);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    private void checkLogoSetting(){
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
+    }
 
     private static class WalletViewHandler extends Handler {
         private final WeakReference<wallet_view> mActivity;
@@ -134,36 +168,6 @@ public class wallet_view extends DrawerActivity {
         });
     }
 
-    // Letting come back home
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            Intent i = new Intent(getApplicationContext(), wallet_list.class);
-            startActivity(i);
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean use_background_logo_setting = spref.getBoolean("dt_logo", false);
-        ImageView logo = findViewById(R.id.imageView);
-        if(!use_background_logo_setting) logo.setVisibility(View.INVISIBLE);
-        else logo.setVisibility(View.VISIBLE);
-    }
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // handle Android back click here
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent i = new Intent(getApplicationContext(), wallet_list.class);
-            startActivity(i);
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
     public void getBalance(){
         walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);
     }

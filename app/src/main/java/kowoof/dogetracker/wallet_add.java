@@ -50,17 +50,32 @@ public class wallet_add extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add);
         setToolbar();
+
         EditText walletNameEditText = findViewById(R.id.editText10);
         walletNameEditText.requestFocus();
+
         walletMemoryObject = new wallet_memory(getApplicationContext());
+        handler = new WalletMemoryHandler(this);
         addWalletProgressDialog = new ProgressDialog(wallet_add.this);
         addWalletProgressDialog.setCancelable(false);
 
         addWalletFabHandler();
         checkIfQrReceived();
-
-        handler = new WalletMemoryHandler(this);
-
+    }
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        checkLogoSetting();
+    }
+    public void onPause(){
+        super.onPause();
+        addWalletProgressDialog.dismiss();
+    }
+    private void checkLogoSetting(){
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
     }
 
     private static class WalletMemoryHandler extends Handler {
@@ -132,19 +147,6 @@ public class wallet_add extends AppCompatActivity {
         getSupportActionBar().setTitle(getString(R.string.addRealWalletText));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
-
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
-        ImageView logo = findViewById(R.id.imageView);
-        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
-        else logo.setVisibility(View.VISIBLE);
-    }
-    public void onPause(){
-        super.onPause();
-        addWalletProgressDialog.dismiss();
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

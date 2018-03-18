@@ -82,13 +82,79 @@ public class wallet_list extends DrawerActivity {
         fabButtonsHandler();
         goToWalletViewHandler();
         useSwipeRefreshHandler();
+
         //Give wallet memory 'handler' current context
         walletMemoryObject = new wallet_memory(getApplicationContext());
-
         //Find listView and populate it
         populateList();
 
         showTooltips();
+    }
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean use_background_logo_setting = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(!use_background_logo_setting) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
+    }
+
+    //Opening drawer here
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    // Letting come back home
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+            finish();
+        }
+        if (id == R.id.refresh) {
+            mSwipeRefreshView.setRefreshing(true);
+            refreshBalances();
+        }
+        if (id == R.id.dollars) {
+            if(dogesFiat == 1) {
+                showTotalBalanceInFiatOnToolbar(walletMemoryObject.calculateAllWalletsBalance());
+            } else showTotalBalanceInDogesOnToolbar(walletMemoryObject.calculateAllWalletsBalance());
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    //we show here total balance on to toolbar
+    public void showTotalBalanceInFiatOnToolbar(float total){
+        //we change here current fiat currency symbol
+        doge_rates local_doge = new doge_rates(wallet_list.this);
+
+        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
+        String totalFiatDogeString = Float.toString(totalFiatBalance);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
+        dogesFiat = 2;
+    }
+    public void showTotalBalanceInDogesOnToolbar(float total){
+        //we change here current fiat currency symbol
+        String totalDogeString = Float.toString(total);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
+        dogesFiat = 1;
     }
 
     public void setToolbar(){
@@ -153,58 +219,7 @@ public class wallet_list extends DrawerActivity {
                 }
         );
     }
-
-    //Opening drawer here
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    // Letting come back home
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(i);
-            finish();
-        }
-        if (id == R.id.refresh) {
-            mSwipeRefreshView.setRefreshing(true);
-            refreshBalances();
-        }
-        if (id == R.id.dollars) {
-            if(dogesFiat == 1) {
-                showTotalBalanceInFiatOnToolbar(walletMemoryObject.calculateAllWalletsBalance());
-            } else showTotalBalanceInDogesOnToolbar(walletMemoryObject.calculateAllWalletsBalance());
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(i);
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean use_background_logo_setting = spref.getBoolean("dt_logo", false);
-        ImageView logo = findViewById(R.id.imageView);
-        if(!use_background_logo_setting) logo.setVisibility(View.INVISIBLE);
-        else logo.setVisibility(View.VISIBLE);
-    }
-
-    //return float of total balance in doges
+        //return float of total balance in doges
     void populateList(){
         clearWalletsList();
         //prepare all balances float handler
@@ -235,7 +250,6 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
-
     void clearWalletsList(){
         adapter = new wallet_list_create(wallet_list.this, walletNameArray, balanceArray);
         walletNameArray.clear();
@@ -243,25 +257,6 @@ public class wallet_list extends DrawerActivity {
         list.setAdapter(adapter);
     }
 
-    //we show here total balance on to toolbar
-    public void showTotalBalanceInFiatOnToolbar(float total){
-        //we change here current fiat currency symbol
-        doge_rates local_doge = new doge_rates(wallet_list.this);
-
-        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
-        String totalFiatDogeString = Float.toString(totalFiatBalance);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
-        dogesFiat = 2;
-    }
-
-    public void showTotalBalanceInDogesOnToolbar(float total){
-        //we change here current fiat currency symbol
-        String totalDogeString = Float.toString(total);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
-        dogesFiat = 1;
-    }
     private static class WalletListHandler extends Handler {
         private final WeakReference<wallet_list> mActivity;
 
@@ -321,7 +316,6 @@ public class wallet_list extends DrawerActivity {
             mSwipeRefreshView.setRefreshing(false);
         }
     }
-
 
     //Single listview row update
     public void updateSingleRow(int position, String title, String balance){

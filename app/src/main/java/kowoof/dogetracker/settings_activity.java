@@ -100,7 +100,6 @@ public class settings_activity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

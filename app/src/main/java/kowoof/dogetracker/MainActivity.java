@@ -17,24 +17,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.haha.perflib.Main;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
-import java.text.Format;
-import java.util.Currency;
-import java.util.Locale;
-
 import hotchemi.android.rate.AppRate;
 import hotchemi.android.rate.OnClickButtonListener;
-import kowoof.dogetracker.wallet_memory;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -62,14 +47,15 @@ public class MainActivity extends DrawerActivity {
         setContentView(R.layout.activity_main);
         dialog = new ProgressDialog(MainActivity.this);
         spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        getTextViews();
 
         //We create handler with WeakReference to wait for get exchange rates
         balanceHandler = new BalanceHandler(this);
         getRatesHandler = new GetRatesHandler(this);
-        
+
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
         dogeRatesObject = new doge_rates(this);
+
+        getTextViews();
         startup_refresh();
         rateAppReminder();
     }
@@ -78,13 +64,8 @@ public class MainActivity extends DrawerActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
-        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
-        ImageView logo = findViewById(R.id.imageView);
-        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
-        else logo.setVisibility(View.VISIBLE);
-        checkTrendColor(dogeRatesObject.hourChangeRate, hourChangeTextView);
-        checkTrendColor(dogeRatesObject.dailyChangeRate, dailyChangeTextView);
-        checkTrendColor(dogeRatesObject.weeklyChangeRate, weeklyChangeTextView);
+        checkLogoSetting();
+        checkAllExchangeTrendColors();
 
         refreshRates();
         dialog.setCancelable(false);
@@ -121,7 +102,6 @@ public class MainActivity extends DrawerActivity {
             }
         }
     }
-
     private static class GetRatesHandler extends Handler {
         private final WeakReference<MainActivity> mActivity;
 
@@ -148,7 +128,7 @@ public class MainActivity extends DrawerActivity {
         }
     }
 
-    public void startup_refresh(){
+    private void startup_refresh(){
         boolean auto_wallets_refresh = spref.getBoolean("wallets_auto_refresh", false);
         if(auto_wallets_refresh && isNetworkAvailable()) {
             //Refresh exchange rates every startup
@@ -163,7 +143,7 @@ public class MainActivity extends DrawerActivity {
             allWalletsBalanceTextView.setText( allWalletsBalanceString + " Đ");
         }
     }
-    public void getTextViews(){
+    private void getTextViews(){
         dogeRatesTextView = findViewById(R.id.doge_rate);
         hourChangeTextView = findViewById(R.id.hour_change);
         dailyChangeTextView = findViewById(R.id.daily_change);
@@ -175,6 +155,31 @@ public class MainActivity extends DrawerActivity {
         allWalletsBalanceTextView = findViewById(R.id.textView8);
     }
 
+    private void checkAllExchangeTrendColors(){
+        checkTrendColor(dogeRatesObject.hourChangeRate, hourChangeTextView);
+        checkTrendColor(dogeRatesObject.dailyChangeRate, dailyChangeTextView);
+        checkTrendColor(dogeRatesObject.weeklyChangeRate, weeklyChangeTextView);
+    }
+    private void checkTrendColor(String percentRate, TextView percentRateTextView){
+        boolean useColorTrendsSetting = spref.getBoolean("arrow_or_color", false);
+        if(percentRate == null){
+            percentRateTextView.setTextColor(defaultTextColor);
+            return;
+        }
+        if(useColorTrendsSetting) {
+            if (percentRate.contains("-")) percentRateTextView.setTextColor(Color.RED);
+            else percentRateTextView.setTextColor(Color.GREEN);
+        } else {
+            percentRateTextView.setTextColor(defaultTextColor);
+        }
+    }
+    private void checkLogoSetting(){
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
+    }
+
     //Refresh button - selects response for clicking refresh - refresh_rates
     //Refresh rates - calling getRates from doge_rates class
     //Update_rates - update rates in view
@@ -184,7 +189,7 @@ public class MainActivity extends DrawerActivity {
             walletMemoryObject.allWalletsBalance = 0;
             walletMemoryObject.getBalances();
     }
-    public void refreshRates(){
+    private void refreshRates(){
         //Getting current dogecoin rates from coinmarketcap
         dogeRatesObject.getRates(getRatesHandler, spref.getString("fiat_list","USD"));
     }
@@ -213,20 +218,6 @@ public class MainActivity extends DrawerActivity {
             volumeTextView.setText(getString(R.string.volume24hText, errorText, ""));
             totalSupplyTextView.setText(getString(R.string.totalSupplyText, errorText, ""));
             lastUpdateTextView.setText(getString(R.string.lastUpdateText, errorText));
-        }
-    }
-    //Check if percent rate are collapsing or raising
-    public void checkTrendColor(String percentRate, TextView percentRateTextView){
-        boolean useColorTrendsSetting = spref.getBoolean("arrow_or_color", false);
-        if(percentRate == null){
-            percentRateTextView.setTextColor(defaultTextColor);
-            return;
-        }
-        if(useColorTrendsSetting) {
-            if (percentRate.contains("-")) percentRateTextView.setTextColor(Color.RED);
-            else percentRateTextView.setTextColor(Color.GREEN);
-        } else {
-            percentRateTextView.setTextColor(defaultTextColor);
         }
     }
 
