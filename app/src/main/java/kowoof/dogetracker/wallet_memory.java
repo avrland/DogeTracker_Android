@@ -32,7 +32,9 @@ import java.util.List;
  *     }
  */
 
+
 public class wallet_memory {
+    public enum response { OK, }
 
     private static final String PREFS_FILE = "wallets_file";
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
@@ -70,41 +72,42 @@ public class wallet_memory {
         private WalletMemoryHandler(wallet_memory activity) {
             mActivity = new WeakReference<>(activity);
         }
-
+        wallet_memory activity;
         @Override
         public void handleMessage(Message msg) {
-            wallet_memory activity = mActivity.get();
+            activity = mActivity.get();
             if (activity != null) {
                 try {
+                    //We save here already fetched info
                     activity.WALLET_BALANCE = activity.walletBalanceObject.balance; //get single wallet balance when you get it from json query
                     activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE);
                     activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
-                    Message news = new Message();
-                    news.arg1 = 1;
-                    activity.externalBalanceGetHandler.sendMessage(news);
+
+                    Message news2 = new Message();
+                    news2.arg1 = 2;
+                    activity.externalBalanceGetHandler.sendMessage(news2);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 activity.allWalletsBalance = activity.allWalletsBalance + activity.currentWalletBalance;
                 activity.COUNT++;
+                //After we saved new wallet balance, we have two possibilities what to do
                 if (activity.COUNT < activity.wallets_amount) {
-                    Message news = new Message();
-                    news.arg1 = 2;
-                    activity.externalBalanceGetHandler.sendMessage(news);
+                    //We still have wallets to update, so we order another update
                     activity.getBalances(); //if there are still wallets to read, get another
                 } else {
+                    //Finished getting all balances, so we send info we're ready
                     Message news = new Message();
                     news.arg1 = 3;
                     activity.externalBalanceGetHandler.sendMessage(news);
-
-                    activity.COUNT = 0; //if no, just fill listview
+                    activity.COUNT = 0;
                 }
             }
         }
     }
 
 
-    //read all wallets to json object from sharedpreferences into class String
+    //get all wallets to json object from sharedpreferences into class String
     public String readAllWallets() {
         SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         walletJsonString = settings.getString(KEY_STRING, "[]");
@@ -113,6 +116,7 @@ public class wallet_memory {
 
     public void getBalances(){
         try {
+
             JSONArray new_array = new JSONArray(readAllWallets());
             wallets_amount = new_array.length();
             if(wallets_amount > 0) {
@@ -122,6 +126,10 @@ public class wallet_memory {
                     WALLET_ADDRESS = jsonObject.getString("address");
                     //send get balance query with current address, wait in handler for response
                     walletBalanceObject.getWalletBalance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
+
+                    Message news = new Message();
+                    news.arg1 = 1;
+                    externalBalanceGetHandler.sendMessage(news);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -181,7 +189,9 @@ public class wallet_memory {
             jsonObj.put("address", wallet_address);
 
         } catch (JSONException e) {
-
+            jsonObj.put("title", "Error");
+            jsonObj.put("notice", "Error");
+            jsonObj.put("address", "Error");
         }
         JSONArray new_array = new JSONArray(readAllWallets());
         new_array.put(position, jsonObj);

@@ -66,6 +66,8 @@ public class wallet_list extends DrawerActivity {
     private Toolbar toolbar;
     int finishedUpdateFlag = 1;
 
+    private Handler balanceHandler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +86,9 @@ public class wallet_list extends DrawerActivity {
         useSwipeRefreshHandler();
 
         //Give wallet memory 'handler' current context
-        walletMemoryObject = new wallet_memory(getApplicationContext());
+        balanceHandler = new WalletMemoryHandler(this);
+        walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
+
         //Find listView and populate it
         populateList();
 
@@ -118,7 +122,8 @@ public class wallet_list extends DrawerActivity {
         }
         if (id == R.id.refresh) {
             mSwipeRefreshView.setRefreshing(true);
-            refreshBalances();
+//            refreshBalances();
+            NewGetBalance();
         }
         if (id == R.id.dollars) {
             if(dogesFiat == 1) {
@@ -349,5 +354,33 @@ public class wallet_list extends DrawerActivity {
 
     private void showTooltips(){
 
+    }
+
+    private static class WalletMemoryHandler extends Handler {
+        private final WeakReference<wallet_list> mActivity;
+
+        private WalletMemoryHandler(wallet_list activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_list activity = mActivity.get();
+            if (activity != null) {
+                int response = msg.arg1;
+                if(response==1){
+                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, "LOADING TEST...");
+                } else if (response==2){
+                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
+                } else if (response==3){
+                    activity.mSwipeRefreshView.setRefreshing(false);
+                } else if (response==10){
+                    activity.makeSnackbar("O kurwa problem :(");
+                }
+            }
+        }
+    }
+    private void NewGetBalance(){
+        walletMemoryObject.getBalances();
     }
 }
