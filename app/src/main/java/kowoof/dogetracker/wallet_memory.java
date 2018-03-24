@@ -78,10 +78,9 @@ public class wallet_memory {
             activity = mActivity.get();
             if (activity != null) {
                 try {
-                    //We save here already fetched info
                     activity.WALLET_BALANCE = activity.walletBalanceObject.balance; //get single wallet balance when you get it from json query
-                    activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE);
                     activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
+                    activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE); //parse float for total calculation
 
                     Log.i("Wallet name: ", activity.WALLET_NAME);
                     Log.i("Wallet address: ", activity.WALLET_ADDRESS);
@@ -118,12 +117,21 @@ public class wallet_memory {
                     JSONObject jsonObject = new_array.getJSONObject(COUNT);
                     WALLET_NAME = jsonObject.getString("title");
                     WALLET_ADDRESS = jsonObject.getString("address");
-                    //send get balance query with current address, wait in handler for response
-                    walletBalanceObject.getWalletBalance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
-
-                    Message news = new Message();
-                    news.arg1 = 1; //send information that we've started fetching data for this wallet
-                    externalBalanceGetHandler.sendMessage(news);
+                    if(!WALLET_ADDRESS.equals("Virtual")) {
+                        //send get balance query with current address, wait in handler for response
+                        walletBalanceObject.getWalletBalance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
+                        Message news = new Message();
+                        news.arg1 = 1; //send information that we've started fetching data for this wallet
+                        externalBalanceGetHandler.sendMessage(news);
+                    } else {
+                        Log.e("Virtal", "We have one!");
+                        //We have virtual wallet so we don't want to fetch data, just insert info
+                        WALLET_BALANCE = jsonObject.getString("notice");
+                        allWalletsBalance = allWalletsBalance + Float.parseFloat(WALLET_BALANCE);
+                        Message news2 = new Message();
+                        news2.arg1 = 2;
+                        externalBalanceGetHandler.sendMessage(news2);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

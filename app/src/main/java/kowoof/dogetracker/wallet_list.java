@@ -255,7 +255,9 @@ public class wallet_list extends DrawerActivity {
                     Log.d("Wallet balance: ", activity.walletMemoryObject.WALLET_BALANCE);
                     Log.d("Count: : ", Integer.toString(activity.walletMemoryObject.COUNT));
 
-                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
+                    if(!activity.walletMemoryObject.WALLET_ADDRESS.equals("Virtual")) {
+                        activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
+                    } else activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ (Virtual)");
                     activity.walletMemoryObject.COUNT++;
                     if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
                         //We still have wallets to update, so we order another update
@@ -279,16 +281,18 @@ public class wallet_list extends DrawerActivity {
         float total_balance_f = 0, current_wallet_f = 0;
         try {
             JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
-
             for (int i = 0, count = new_array.length(); i < count; i++) {
                 try {
                     JSONObject jsonObject = new_array.getJSONObject(i);
+                    String currentWalletAddress = jsonObject.getString("address");
                     walletNameArray.add(jsonObject.getString("title"));
                     try {
                         current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
-                        balanceArray.add(jsonObject.getString("notice") + " Đ");
+                        if(!currentWalletAddress.equals("Virtual")) {
+                            balanceArray.add(jsonObject.getString("notice") + " Đ");
+                        } else balanceArray.add(jsonObject.getString("notice") + " Đ (Virtual)");
                     } catch (NumberFormatException e) {
-                        balanceArray.add(jsonObject.getString("notice"));
+                        balanceArray.add("Error");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

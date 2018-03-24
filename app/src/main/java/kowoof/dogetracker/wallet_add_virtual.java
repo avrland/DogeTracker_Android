@@ -17,15 +17,23 @@ import android.widget.ImageView;
 
 import com.github.florent37.viewtooltip.ViewTooltip;
 
+import org.json.JSONException;
+
 
 public class wallet_add_virtual extends AppCompatActivity {
 
+    //We create object to save stuff to memory
+    private wallet_memory walletMemoryObject;
+
+    private String addedVirtualWalletName, addedVirtualWalletBalance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add_virtual);
         setToolbar();
         addWalletFabHandler();
+
+        walletMemoryObject = new wallet_memory(getApplicationContext());
     }
     public void onResume() {
         super.onResume();  // Always call the superclass method first
@@ -75,9 +83,28 @@ public class wallet_add_virtual extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 makeSnackbar("Such wow! Virtual wallet!");
+
+                EditText walletNameEditText = findViewById(R.id.editText10);
+                addedVirtualWalletName = walletNameEditText.getText().toString();
+                EditText virtualWalletBalance = findViewById(R.id.editText11);
+                addedVirtualWalletBalance = virtualWalletBalance.getText().toString();
+                ifNameEmptyAddAddressAsName();
+                try {
+                    walletMemoryObject.addToWalletsWithBalance(addedVirtualWalletName, "Virtual", addedVirtualWalletBalance);
+                    Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                    i.putExtra("added_wallet", 1);
+                    startActivity(i);
+                    finish();
+                } catch (JSONException e){
+                    makeSnackbar("Something went wrong :(");
+                }
             }
         });
     }
+    private void ifNameEmptyAddAddressAsName(){
+        if(addedVirtualWalletName.trim().length() == 0) addedVirtualWalletName = "Virtual wallet";
+    }
+
 
 
     //toast function to get it a little bit shorter
