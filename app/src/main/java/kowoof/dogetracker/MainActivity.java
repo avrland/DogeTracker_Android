@@ -79,6 +79,20 @@ public class MainActivity extends DrawerActivity {
         balanceHandler.removeCallbacksAndMessages(null);
     }
 
+    //Refresh button - selects response for clicking refresh - refresh_rates
+    //Refresh rates - calling getRates from doge_rates class
+    public void refreshButton(View view) {
+        dialog.show();
+        refreshRates();
+        walletMemoryObject.allWalletsBalance = 0;
+        walletMemoryObject.getBalances();
+        allWalletsBalanceTextView.setText( "Refreshing...");
+    }
+    private void refreshRates(){
+        //Getting current dogecoin rates from coinmarketcap
+        dogeRatesObject.getRates(getRatesHandler, spref.getString("fiat_list","USD"));
+    }
+
     private static class BalanceHandler extends Handler {
         private final WeakReference<MainActivity> mActivity;
 
@@ -92,12 +106,21 @@ public class MainActivity extends DrawerActivity {
             if (activity != null) {
                 int isAnyWalletsAdded = msg.arg1;
                 // Handle message code
-                if(isAnyWalletsAdded==3){
-                    activity.allWalletsBalanceTextView.setText(Float.toString(activity.walletMemoryObject.allWalletsBalance) + " Đ");
-                    activity.dialog.dismiss();
+                if(isAnyWalletsAdded==2){
+                    activity.walletMemoryObject.COUNT++;
+                    if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
+                        activity.allWalletsBalanceTextView.setText( activity.walletMemoryObject.allWalletsBalance + " Đ");
+                        activity.walletMemoryObject.getBalances();
+                    } else {
+                        activity.allWalletsBalanceTextView.setText(Float.toString(activity.walletMemoryObject.allWalletsBalance) + " Đ");
+                        activity.dialog.dismiss();
+                        activity.walletMemoryObject.COUNT = 0;
+                    }
                 } else if (isAnyWalletsAdded==0){
                     activity.allWalletsBalanceTextView.setText("0" + " Đ");
                     activity.dialog.dismiss();
+                }  else if (isAnyWalletsAdded==-1){
+                    activity.makeSnackbar("Error.");
                 }
             }
         }
@@ -136,6 +159,7 @@ public class MainActivity extends DrawerActivity {
             refreshRates();
             walletMemoryObject.allWalletsBalance = 0;
             walletMemoryObject.getBalances();
+            allWalletsBalanceTextView.setText( "Refreshing...");
         } else {
             dogeRatesObject.readRatesFromOffline();
             updateRatesInView();
@@ -143,17 +167,7 @@ public class MainActivity extends DrawerActivity {
             allWalletsBalanceTextView.setText( allWalletsBalanceString + " Đ");
         }
     }
-    private void getTextViews(){
-        dogeRatesTextView = findViewById(R.id.doge_rate);
-        hourChangeTextView = findViewById(R.id.hour_change);
-        dailyChangeTextView = findViewById(R.id.daily_change);
-        weeklyChangeTextView = findViewById(R.id.weekly_change);
-        marketCapTextView = findViewById(R.id.market_cap);
-        volumeTextView = findViewById(R.id.volume);
-        totalSupplyTextView = findViewById(R.id.total_supply);
-        lastUpdateTextView = findViewById(R.id.last_update);
-        allWalletsBalanceTextView = findViewById(R.id.textView8);
-    }
+
 
     private void checkAllExchangeTrendColors(){
         checkTrendColor(dogeRatesObject.hourChangeRate, hourChangeTextView);
@@ -180,20 +194,19 @@ public class MainActivity extends DrawerActivity {
         else logo.setVisibility(View.VISIBLE);
     }
 
-    //Refresh button - selects response for clicking refresh - refresh_rates
-    //Refresh rates - calling getRates from doge_rates class
-    //Update_rates - update rates in view
-    public void refreshButton(View view) {
-            dialog.show();
-            refreshRates();
-            walletMemoryObject.allWalletsBalance = 0;
-            walletMemoryObject.getBalances();
+
+    private void getTextViews(){
+        dogeRatesTextView = findViewById(R.id.doge_rate);
+        hourChangeTextView = findViewById(R.id.hour_change);
+        dailyChangeTextView = findViewById(R.id.daily_change);
+        weeklyChangeTextView = findViewById(R.id.weekly_change);
+        marketCapTextView = findViewById(R.id.market_cap);
+        volumeTextView = findViewById(R.id.volume);
+        totalSupplyTextView = findViewById(R.id.total_supply);
+        lastUpdateTextView = findViewById(R.id.last_update);
+        allWalletsBalanceTextView = findViewById(R.id.textView8);
     }
-    private void refreshRates(){
-        //Getting current dogecoin rates from coinmarketcap
-        dogeRatesObject.getRates(getRatesHandler, spref.getString("fiat_list","USD"));
-    }
-    void updateRatesInView() {
+    private void updateRatesInView() {
         try {
             dogeRatesObject.saveRatesToOffline();
             dogeRatesObject.makeCommasOnRates(); //we add spaces to total supply, volume and market cap to make it clearly

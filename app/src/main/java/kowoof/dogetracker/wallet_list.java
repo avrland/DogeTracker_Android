@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,10 +58,8 @@ public class wallet_list extends DrawerActivity {
 
     //TODO better organize this variables
     private wallet_memory walletMemoryObject; //object for saving and reading wallets fro memory
-    private wallet_balance walletBalanceHandler = new wallet_balance(); //object for getting wallet balances
-    private String walletName, walletAddress, walletBalance;
-    private int count = 0, walletsAmount = 0, dogesFiat = 1;
-    private float totalDoges = 0;
+    private String walletName, walletAddress;
+    private int dogesFiat = 1;
     private FloatingActionMenu floatMenu;
     private SwipeRefreshLayout mSwipeRefreshView;
     private Toolbar toolbar;
@@ -91,8 +90,6 @@ public class wallet_list extends DrawerActivity {
 
         //Find listView and populate it
         populateList();
-
-        showTooltips();
     }
     public void onResume() {
         super.onResume();  // Always call the superclass method first
@@ -122,8 +119,7 @@ public class wallet_list extends DrawerActivity {
         }
         if (id == R.id.refresh) {
             mSwipeRefreshView.setRefreshing(true);
-//            refreshBalances();
-            NewGetBalance();
+            refreshAllWalletsBalances();
         }
         if (id == R.id.dollars) {
             if(dogesFiat == 1) {
@@ -141,33 +137,6 @@ public class wallet_list extends DrawerActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    //we show here total balance on to toolbar
-    public void showTotalBalanceInFiatOnToolbar(float total){
-        //we change here current fiat currency symbol
-        doge_rates local_doge = new doge_rates(wallet_list.this);
-
-        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
-        String totalFiatDogeString = Float.toString(totalFiatBalance);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
-        dogesFiat = 2;
-    }
-    public void showTotalBalanceInDogesOnToolbar(float total){
-        //we change here current fiat currency symbol
-        String totalDogeString = Float.toString(total);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
-        dogesFiat = 1;
-    }
-
-    public void setToolbar(){
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.myWalletsMenuText));
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, " ","Đ"));
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     public void fabButtonsHandler(){
         floatMenu = findViewById(R.id.floatingMenu);
@@ -191,7 +160,19 @@ public class wallet_list extends DrawerActivity {
             }
         });
     }
-    public void goToWalletViewHandler(){
+    public void useSwipeRefreshHandler(){
+        mSwipeRefreshView = findViewById(R.id.swiperefresh);
+        mSwipeRefreshView.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        refreshAllWalletsBalances();
+                    }
+                }
+        );
+    }
+
+    private void goToWalletViewHandler(){
         //Go to specific wallet view when you click on stuff on list
         list = findViewById(R.id.wallets);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -213,19 +194,86 @@ public class wallet_list extends DrawerActivity {
             }
         });
     }
-    public void useSwipeRefreshHandler(){
-        mSwipeRefreshView = findViewById(R.id.swiperefresh);
-        mSwipeRefreshView.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        refreshBalances();
-                    }
-                }
-        );
+    private void getWalletNameAddress(int number){
+        try {
+            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
+            JSONObject jsonObject = new_array.getJSONObject(number);
+            walletName = jsonObject.getString("title");
+            walletAddress = jsonObject.getString("address");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
-        //return float of total balance in doges
-    void populateList(){
+
+    //we show here total balance on to toolbar
+    public void setToolbar(){
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.myWalletsMenuText));
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, " ","Đ"));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+    public void showTotalBalanceInFiatOnToolbar(float total){
+        //we change here current fiat currency symbol
+        doge_rates local_doge = new doge_rates(wallet_list.this);
+
+        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
+        String totalFiatDogeString = Float.toString(totalFiatBalance);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
+        dogesFiat = 2;
+    }
+    public void showTotalBalanceInDogesOnToolbar(float total){
+        //we change here current fiat currency symbol
+        String totalDogeString = Float.toString(total);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
+        dogesFiat = 1;
+    }
+
+    //Stuff needed to fetch new data
+    private void refreshAllWalletsBalances(){
+        walletMemoryObject.getBalances();
+    }
+    private static class WalletMemoryHandler extends Handler {
+        private final WeakReference<wallet_list> mActivity;
+
+        private WalletMemoryHandler(wallet_list activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_list activity = mActivity.get();
+            if (activity != null) {
+                int response = msg.arg1;
+                if(response==1){
+                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.getString(R.string.loadingBalanceText));
+                } else if (response==2){
+                    Log.d("Wallet name: ", activity.walletMemoryObject.WALLET_NAME);
+                    Log.d("Wallet address: ", activity.walletMemoryObject.WALLET_ADDRESS);
+                    Log.d("Wallet balance: ", activity.walletMemoryObject.WALLET_BALANCE);
+                    Log.d("Count: : ", Integer.toString(activity.walletMemoryObject.COUNT));
+
+                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
+                    activity.walletMemoryObject.COUNT++;
+                    if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
+                        //We still have wallets to update, so we order another update
+                        activity.walletMemoryObject.getBalances(); //if there are still wallets to read, get another
+                    } else {
+                        //Finished getting all balances, so we send info we're ready
+                        activity.mSwipeRefreshView.setRefreshing(false);
+                        activity.walletMemoryObject.COUNT = 0;
+                    }
+                } else if (response==0){
+                    activity.mSwipeRefreshView.setRefreshing(false);
+                }
+            }
+        }
+    }
+
+    //ListView managment section
+    private void populateList(){
         clearWalletsList();
         //prepare all balances float handler
         float total_balance_f = 0, current_wallet_f = 0;
@@ -255,94 +303,19 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
-    void clearWalletsList(){
+    private void clearWalletsList(){
         adapter = new wallet_list_create(wallet_list.this, walletNameArray, balanceArray);
         walletNameArray.clear();
         balanceArray.clear();
         list.setAdapter(adapter);
     }
-
-    private static class WalletListHandler extends Handler {
-        private final WeakReference<wallet_list> mActivity;
-
-        private WalletListHandler(wallet_list activity) {
-            mActivity = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            wallet_list activity = mActivity.get();
-            if (activity != null) {
-                try {
-                    activity.walletBalance = activity.walletBalanceHandler.balance; //get single wallet balance when you get it from json query
-                    activity.walletMemoryObject.saveToWallet(activity.walletName, activity.walletAddress , activity.walletBalance, activity.count ); //save it to json
-                    activity.updateSingleRow(activity.count, activity.walletName, activity.walletBalance + " Đ"); //we update signle row in listview
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                activity.count++;
-                if(activity.count < activity.walletsAmount){
-                    activity.refreshBalances(); //if there are still wallets to read, get another
-                } else {
-                    activity.count = 0; //if no, just fill listview
-                    activity.populateList();
-                    activity.mSwipeRefreshView.setRefreshing(false);
-                    activity.finishedUpdateFlag = 1;
-                }
-            }
-        }
-    }
-
-    //We get here new all wallet balances, checking and updating in view them one by one,
-    void refreshBalances(){
-        if(isNetworkAvailable()) {
-            finishedUpdateFlag = 0;
-            //We create handler to wait for get exchange rates
-            Handler handler = new WalletListHandler(this);
-            try {
-                JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
-                walletsAmount = new_array.length();
-                try {
-                    JSONObject jsonObject = new_array.getJSONObject(count);
-                    walletName = jsonObject.getString("title");
-                    walletAddress = jsonObject.getString("address");
-                    updateSingleRow(count, walletName, getString(R.string.loadingBalanceText));
-                    //send get balance query with current address, wait in handler for response
-                    walletBalanceHandler.getWalletBalance(this, handler, walletAddress);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        } else {
-            makeSnackbar(getString(R.string.noConnectionText));
-            mSwipeRefreshView.setRefreshing(false);
-        }
-    }
-
-    //Single listview row update
-    public void updateSingleRow(int position, String title, String balance){
+    private void updateSingleRow(int position, String title, String balance){
         View v = list.getChildAt(position - list.getFirstVisiblePosition());
         if(v == null) return;
         TextView title2 = v.findViewById(R.id.wallet_name); // title
         title2.setText(title);
         TextView title22 = v.findViewById(R.id.wallet_doges); // notice
         title22.setText(balance);
-    }
-
-    //read wallet name and address by position
-    void getWalletNameAddress(int number){
-        try {
-            JSONArray new_array = new JSONArray(walletMemoryObject.readAllWallets());
-            JSONObject jsonObject = new_array.getJSONObject(number);
-            walletName = jsonObject.getString("title");
-            walletAddress = jsonObject.getString("address");
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     //toast function to get it a little bit shorter
@@ -352,35 +325,4 @@ public class wallet_list extends DrawerActivity {
         snackbar.show();
     }
 
-    private void showTooltips(){
-
-    }
-
-    private static class WalletMemoryHandler extends Handler {
-        private final WeakReference<wallet_list> mActivity;
-
-        private WalletMemoryHandler(wallet_list activity) {
-            mActivity = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            wallet_list activity = mActivity.get();
-            if (activity != null) {
-                int response = msg.arg1;
-                if(response==1){
-                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, "LOADING TEST...");
-                } else if (response==2){
-                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
-                } else if (response==3){
-                    activity.mSwipeRefreshView.setRefreshing(false);
-                } else if (response==10){
-                    activity.makeSnackbar("O kurwa problem :(");
-                }
-            }
-        }
-    }
-    private void NewGetBalance(){
-        walletMemoryObject.getBalances();
-    }
 }

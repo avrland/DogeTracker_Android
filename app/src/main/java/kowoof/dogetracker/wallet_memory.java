@@ -83,25 +83,20 @@ public class wallet_memory {
                     activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE);
                     activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
 
+                    Log.i("Wallet name: ", activity.WALLET_NAME);
+                    Log.i("Wallet address: ", activity.WALLET_ADDRESS);
+                    Log.i("Wallet name: ", activity.WALLET_BALANCE);
+                    Log.i("Count: : ", Integer.toString(activity.COUNT));
+
                     Message news2 = new Message();
                     news2.arg1 = 2;
                     activity.externalBalanceGetHandler.sendMessage(news2);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Message news2 = new Message();
+                    news2.arg1 = -1;
+                    activity.externalBalanceGetHandler.sendMessage(news2);
                 }
                 activity.allWalletsBalance = activity.allWalletsBalance + activity.currentWalletBalance;
-                activity.COUNT++;
-                //After we saved new wallet balance, we have two possibilities what to do
-                if (activity.COUNT < activity.wallets_amount) {
-                    //We still have wallets to update, so we order another update
-                    activity.getBalances(); //if there are still wallets to read, get another
-                } else {
-                    //Finished getting all balances, so we send info we're ready
-                    Message news = new Message();
-                    news.arg1 = 3;
-                    activity.externalBalanceGetHandler.sendMessage(news);
-                    activity.COUNT = 0;
-                }
             }
         }
     }
@@ -116,7 +111,6 @@ public class wallet_memory {
 
     public void getBalances(){
         try {
-
             JSONArray new_array = new JSONArray(readAllWallets());
             wallets_amount = new_array.length();
             if(wallets_amount > 0) {
@@ -128,7 +122,7 @@ public class wallet_memory {
                     walletBalanceObject.getWalletBalance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
 
                     Message news = new Message();
-                    news.arg1 = 1;
+                    news.arg1 = 1; //send information that we've started fetching data for this wallet
                     externalBalanceGetHandler.sendMessage(news);
                 } catch (JSONException e) {
                     e.printStackTrace();
