@@ -1,23 +1,20 @@
 package kowoof.dogetracker;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.ListPreference;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 import hotchemi.android.rate.AppRate;
 import hotchemi.android.rate.OnClickButtonListener;
 
@@ -34,7 +31,6 @@ public class MainActivity extends DrawerActivity {
     //We create doge_rates object and handler to make getting exchange rates wow
     private doge_rates dogeRatesObject;
     private Handler getRatesHandler = new Handler();
-    private Handler balanceHandler = new Handler();
     private TextView dogeRatesTextView, hourChangeTextView, dailyChangeTextView,
             weeklyChangeTextView, marketCapTextView, volumeTextView,
             totalSupplyTextView, lastUpdateTextView, allWalletsBalanceTextView;
@@ -49,7 +45,7 @@ public class MainActivity extends DrawerActivity {
         spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 
         //We create handler with WeakReference to wait for get exchange rates
-        balanceHandler = new BalanceHandler(this);
+        Handler balanceHandler = new BalanceHandler(this);
         getRatesHandler = new GetRatesHandler(this);
 
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
@@ -58,6 +54,9 @@ public class MainActivity extends DrawerActivity {
         getTextViews();
         startup_refresh();
         rateAppReminder();
+
+        dialog.setCancelable(false);
+        dialog.setMessage(getString(R.string.gettingRatesText));
     }
     //we check and apply settings here
     @Override
@@ -68,29 +67,21 @@ public class MainActivity extends DrawerActivity {
         checkAllExchangeTrendColors();
 
         refreshRates();
-        dialog.setCancelable(false);
-        dialog.setMessage(getString(R.string.gettingRatesText));
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        //todo make sure if it's required now
-        getRatesHandler.removeCallbacksAndMessages(null);
-        balanceHandler.removeCallbacksAndMessages(null);
     }
 
     //Refresh button - selects response for clicking refresh - refresh_rates
     //Refresh rates - calling getRates from doge_rates class
     public void refreshButton(View view) {
-        dialog.show();
-        refreshRates();
-        walletMemoryObject.allWalletsBalance = 0;
-        walletMemoryObject.getBalances();
-        allWalletsBalanceTextView.setText( "Refreshing...");
+        launchRefreshBalanceProcess();
     }
     private void refreshRates(){
         //Getting current dogecoin rates from coinmarketcap
         dogeRatesObject.getRates(getRatesHandler, spref.getString("fiat_list","USD"));
+        getFiatBalance();
     }
 
     private static class BalanceHandler extends Handler {
@@ -109,10 +100,10 @@ public class MainActivity extends DrawerActivity {
                 if(isAnyWalletsAdded==2){
                     activity.walletMemoryObject.COUNT++;
                     if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
-                        activity.allWalletsBalanceTextView.setText( activity.walletMemoryObject.allWalletsBalance + " Đ");
+                        activity.allWalletsBalanceTextView.setText( activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
                         activity.walletMemoryObject.getBalances();
                     } else {
-                        activity.allWalletsBalanceTextView.setText(Float.toString(activity.walletMemoryObject.allWalletsBalance) + " Đ");
+                        activity.allWalletsBalanceTextView.setText(Float.toString(activity.walletMemoryObject.allWalletsBalance) + " Đ = " + activity.getFiatBalance());
                         activity.dialog.dismiss();
                         activity.walletMemoryObject.COUNT = 0;
                     }
@@ -155,19 +146,25 @@ public class MainActivity extends DrawerActivity {
         boolean auto_wallets_refresh = spref.getBoolean("wallets_auto_refresh", false);
         if(auto_wallets_refresh && isNetworkAvailable()) {
             //Refresh exchange rates every startup
-            dialog.show();
-            refreshRates();
-            walletMemoryObject.allWalletsBalance = 0;
-            walletMemoryObject.getBalances();
-            allWalletsBalanceTextView.setText( "Refreshing...");
+            launchRefreshBalanceProcess();
         } else {
-            dogeRatesObject.readRatesFromOffline();
-            updateRatesInView();
-            String allWalletsBalanceString = String.valueOf(walletMemoryObject.calculateAllWalletsBalance());
-            allWalletsBalanceTextView.setText( allWalletsBalanceString + " Đ");
+            readDataFromOffline();
         }
     }
 
+    private void launchRefreshBalanceProcess(){
+        dialog.show();
+        refreshRates();
+        walletMemoryObject.allWalletsBalance = 0;
+        walletMemoryObject.getBalances();
+        allWalletsBalanceTextView.setText( "Refreshing...");
+    }
+    private void readDataFromOffline(){
+        dogeRatesObject.readRatesFromOffline();
+        updateRatesInView();
+        String allWalletsBalanceString = String.valueOf(walletMemoryObject.calculateAllWalletsBalance());
+        allWalletsBalanceTextView.setText( allWalletsBalanceString + " Đ = " + getFiatBalanceOffline());
+    }
 
     private void checkAllExchangeTrendColors(){
         checkTrendColor(dogeRatesObject.hourChangeRate, hourChangeTextView);
@@ -193,7 +190,6 @@ public class MainActivity extends DrawerActivity {
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
-
 
     private void getTextViews(){
         dogeRatesTextView = findViewById(R.id.doge_rate);
@@ -232,6 +228,26 @@ public class MainActivity extends DrawerActivity {
             totalSupplyTextView.setText(getString(R.string.totalSupplyText, errorText, ""));
             lastUpdateTextView.setText(getString(R.string.lastUpdateText, errorText));
         }
+    }
+    private String getFiatBalance(){
+        Float fiatBalance = walletMemoryObject.allWalletsBalance * Float.parseFloat(dogeRatesObject.dogeFiatRate);
+        String fiatSymbol = dogeRatesObject.getFiatSymbol();
+        return cutDecimalPlacesToTwo(String.valueOf(fiatBalance)) + " " + fiatSymbol;
+    }
+    private String getFiatBalanceOffline(){
+        Float fiatBalance = walletMemoryObject.calculateAllWalletsBalance() * Float.parseFloat(dogeRatesObject.dogeFiatRate);
+        cutDecimalPlacesToTwo(String.valueOf(fiatBalance));
+        String fiatSymbol = dogeRatesObject.getFiatSymbol();
+        return cutDecimalPlacesToTwo(String.valueOf(fiatBalance))  + " " + fiatSymbol;
+    }
+
+    private String cutDecimalPlacesToTwo(String FiatBalance){
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        DecimalFormat df = new DecimalFormat("#.##");
+        symbols.setDecimalSeparator('.');
+        df.setDecimalFormatSymbols(symbols);
+        FiatBalance = df.format(Float.parseFloat(FiatBalance));
+        return FiatBalance;
     }
 
     private void rateAppReminder(){

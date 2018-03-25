@@ -39,7 +39,7 @@ public class wallet_view extends DrawerActivity {
 
     private static final String qrReadingURL = "https://dogechain.info/api/v1/address/qrcode/";
 
-    private String viewedWalletName, viewedWalletAddress;
+    private String viewedWalletName, viewedWalletAddress, viewedWalletBalance;
     private int viewedWalletId;
     private wallet_balance walletBalanceObject = new wallet_balance();
     private wallet_memory walletMemoryObject;
@@ -51,26 +51,16 @@ public class wallet_view extends DrawerActivity {
         //Prepare view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.title_activity_wallet_view));
-        toolbar.setSubtitle("");
-
-        TextView walletNameTextView = findViewById(R.id.wallet_name);
-        TextView walletAddressTextView = findViewById(R.id.wallet_address);
-        walletNameTextView.setText(viewedWalletName);
-        if(viewedWalletName.equals(viewedWalletAddress)) walletNameTextView.setText("");
-        walletAddressTextView.setText(viewedWalletAddress);
-        walletMemoryObject = new wallet_memory(getApplicationContext());
+        setToolbar();
+        insertWalletInfoIntoView();
         removeWalletButtonHandler();
-        //We create handler to wait for get exchange rates
+
+        walletMemoryObject = new wallet_memory(getApplicationContext());
         getBalanceHandler = new WalletViewHandler(this);
 
-        //Get single wallet balance
-        getBalance();
-
-        //QR code download&set section
-        ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
+        if(viewedWalletAddress.equals("Virtual")){
+            handleVirtualWallet();
+        } else handleRealWallet();
     }
     // Letting come back home
     @Override
@@ -99,6 +89,22 @@ public class wallet_view extends DrawerActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    private void getWalletInfo(){
+        Bundle wallet_list_feedback = getIntent().getExtras();
+        if (wallet_list_feedback != null)
+        {
+            viewedWalletName = wallet_list_feedback.getString("wallet_name");
+            viewedWalletAddress = wallet_list_feedback.getString("wallet_address");
+            viewedWalletId = wallet_list_feedback.getInt("wallet_id");
+            viewedWalletBalance = wallet_list_feedback.getString("wallet_balance");
+        }
+    }
+    private void setToolbar(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.title_activity_wallet_view));
+        toolbar.setSubtitle("");
+    }
     private void checkLogoSetting(){
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
@@ -106,33 +112,7 @@ public class wallet_view extends DrawerActivity {
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
-
-    private static class WalletViewHandler extends Handler {
-        private final WeakReference<wallet_view> mActivity;
-
-        private WalletViewHandler(wallet_view activity) {
-            mActivity = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            wallet_view activity = mActivity.get();
-            if (activity != null) {
-                activity.showBalance();
-            }
-        }
-    }
-
-    public void getWalletInfo(){
-        Bundle wallet_list_feedback = getIntent().getExtras();
-        if (wallet_list_feedback != null)
-        {
-            viewedWalletName = wallet_list_feedback.getString("wallet_name");
-            viewedWalletAddress = wallet_list_feedback.getString("wallet_address");
-            viewedWalletId = wallet_list_feedback.getInt("wallet_id");
-        }
-    }
-    public void removeWalletButtonHandler(){
+    private void removeWalletButtonHandler(){
         //Set button for deleting wallet (just from viewer, not really lol)
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -167,16 +147,53 @@ public class wallet_view extends DrawerActivity {
             }
         });
     }
+    private void insertWalletInfoIntoView(){
+        TextView walletNameTextView = findViewById(R.id.wallet_name);
+        TextView walletAddressTextView = findViewById(R.id.wallet_address);
+        walletNameTextView.setText(viewedWalletName);
+        if(viewedWalletName.equals(viewedWalletAddress)) walletNameTextView.setText("");
+        walletAddressTextView.setText(viewedWalletAddress);
+    }
 
-    public void getBalance(){
+    private static class WalletViewHandler extends Handler {
+        private final WeakReference<wallet_view> mActivity;
+
+        private WalletViewHandler(wallet_view activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_view activity = mActivity.get();
+            if (activity != null) {
+                activity.showBalance();
+            }
+        }
+    }
+    private void handleRealWallet(){
+        //Get single wallet balance
+        getBalance();
+        //QR code download&set section
+        ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
+        Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
+    }
+    private void handleVirtualWallet(){
+        walletBalanceObject.balance = viewedWalletBalance;
+        showBalance();
+        ImageView dogecoinLogo = findViewById(R.id.imageView2);
+        dogecoinLogo.setImageResource(R.drawable.dogecoin_logo);
+    }
+    private void getBalance(){
         walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);
     }
-    public void showBalance(){
+
+
+    private void showBalance(){
         TextView walletBalanceTextView = findViewById(R.id.balance);
         walletBalanceTextView.setText(walletBalanceObject.balance + " Đ");
         balanceInFiat();
     }
-    public void balanceInFiat(){
+    private void balanceInFiat(){
         doge_rates dogeRateObject = new doge_rates(getApplicationContext());
         float fiatDogeFloat = dogeRateObject.getDogeFiatRate();
         float balanceFloat = Float.parseFloat(walletBalanceObject.balance);
@@ -188,14 +205,18 @@ public class wallet_view extends DrawerActivity {
     }
     //Copy wallet address by clicking qr code
     public void copyWalletAddress(View view) {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("label", viewedWalletAddress);
-        clipboard.setPrimaryClip(clip);
+        if(!viewedWalletAddress.equals("Virtual")) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", viewedWalletAddress);
+            clipboard.setPrimaryClip(clip);
 
-        ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);
-        Snackbar snackbar = Snackbar
-                .make(layout, getString(R.string.addressCopiedText), Snackbar.LENGTH_SHORT);
-        snackbar.show();
+            ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);
+            Snackbar snackbar = Snackbar
+                    .make(layout, getString(R.string.addressCopiedText), Snackbar.LENGTH_SHORT);
+            snackbar.show();
+        } else {
+            makeSnackbar("Such wow, virtual wallet, no need to copy address.");
+        }
     }
 
 }

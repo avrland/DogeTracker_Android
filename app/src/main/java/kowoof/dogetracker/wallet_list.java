@@ -58,14 +58,12 @@ public class wallet_list extends DrawerActivity {
 
     //TODO better organize this variables
     private wallet_memory walletMemoryObject; //object for saving and reading wallets fro memory
-    private String walletName, walletAddress;
+    private String walletName, walletAddress, walletBalance;
     private int dogesFiat = 1;
     private FloatingActionMenu floatMenu;
     private SwipeRefreshLayout mSwipeRefreshView;
     private Toolbar toolbar;
     int finishedUpdateFlag = 1;
-
-    private Handler balanceHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,19 +71,14 @@ public class wallet_list extends DrawerActivity {
         setContentView(R.layout.activity_wallet_list);
         finishedUpdateFlag = 1;
         setToolbar();
-        //we add it the same stuff as in DrawerActivity because it's getting overwritten and hamburger button doesn't works
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        setDrawer();
 
         fabButtonsHandler();
         goToWalletViewHandler();
         useSwipeRefreshHandler();
 
         //Give wallet memory 'handler' current context
-        balanceHandler = new WalletMemoryHandler(this);
+        Handler balanceHandler = new WalletMemoryHandler(this);
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
 
         //Find listView and populate it
@@ -186,6 +179,7 @@ public class wallet_list extends DrawerActivity {
                     passWalletInfo.putExtra("wallet_id", position);
                     passWalletInfo.putExtra("wallet_name", walletName);
                     passWalletInfo.putExtra("wallet_address", walletAddress);
+                    passWalletInfo.putExtra("wallet_balance", walletBalance);
                     startActivity(passWalletInfo);
                     finish();
                 } else {
@@ -200,6 +194,7 @@ public class wallet_list extends DrawerActivity {
             JSONObject jsonObject = new_array.getJSONObject(number);
             walletName = jsonObject.getString("title");
             walletAddress = jsonObject.getString("address");
+            walletBalance = jsonObject.getString("notice");
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -207,14 +202,14 @@ public class wallet_list extends DrawerActivity {
     }
 
     //we show here total balance on to toolbar
-    public void setToolbar(){
+    private void setToolbar(){
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.myWalletsMenuText));
         toolbar.setSubtitle(getString(R.string.totalBalanceText, " ","Đ"));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-    public void showTotalBalanceInFiatOnToolbar(float total){
+    private void showTotalBalanceInFiatOnToolbar(float total){
         //we change here current fiat currency symbol
         doge_rates local_doge = new doge_rates(wallet_list.this);
 
@@ -224,13 +219,22 @@ public class wallet_list extends DrawerActivity {
         toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
         dogesFiat = 2;
     }
-    public void showTotalBalanceInDogesOnToolbar(float total){
+    private void showTotalBalanceInDogesOnToolbar(float total){
         //we change here current fiat currency symbol
         String totalDogeString = Float.toString(total);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
         dogesFiat = 1;
     }
+    private void setDrawer(){
+        //we add it the same stuff as in DrawerActivity because it's getting overwritten and hamburger button doesn't works
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
 
     //Stuff needed to fetch new data
     private void refreshAllWalletsBalances(){
@@ -255,6 +259,7 @@ public class wallet_list extends DrawerActivity {
                     Log.d("Wallet balance: ", activity.walletMemoryObject.WALLET_BALANCE);
                     Log.d("Count: : ", Integer.toString(activity.walletMemoryObject.COUNT));
 
+                    String addedListViewBalance = activity.walletMemoryObject.WALLET_BALANCE + " Đ";
                     if(!activity.walletMemoryObject.WALLET_ADDRESS.equals("Virtual")) {
                         activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
                     } else activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ (Virtual)");
