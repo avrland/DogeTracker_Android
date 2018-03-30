@@ -6,6 +6,7 @@
 * added all wallet balance (in dogecoin and fiat) in main view 
 * added simple help view
 * added rate app pop-up window (will be showed if you use app enough)
+* added virtual wallets support
 * multi language support is coming really soon
 
 ## v1.1
