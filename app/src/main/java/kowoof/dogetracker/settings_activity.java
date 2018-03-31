@@ -24,8 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.squareup.haha.perflib.Main;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -51,40 +49,18 @@ public class settings_activity extends AppCompatActivity {
                 .replace(R.id.settings_layout, new GeneralPreferenceFragment())
                 .commit();
 
+        final SharedPreferences sp2 = PreferenceManager.getDefaultSharedPreferences(this);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                dogeRatesObject.getRates(getRatesHandler, sp2.getString("fiat_list","USD"));
             }
         });
+
+        //We create dogeRates object and handler to wait for get exchange rates (before we quit settings)
         dogeRatesObject = new doge_rates(this);
-        //We create handler to wait for get exchange rates
         getRatesHandler = new GetRatesHandler(this);
     }
-
-
-    private static class GetRatesHandler extends Handler {
-        private final WeakReference<settings_activity> mActivity;
-
-        private GetRatesHandler(settings_activity activity) {
-            mActivity = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            settings_activity activity = mActivity.get();
-            if (activity != null) {
-                if(msg.arg1==1)      activity.dogeRatesObject.getCurrentRefreshTime();
-                else if(msg.arg1==2){
-                    activity.dogeRatesObject.getRecentRefreshTime();
-                    Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(), activity.getString(R.string.connectionErrorText), Snackbar.LENGTH_SHORT);
-                    mySnackbar.show();
-                }
-                activity.finish();
-            }
-        }
-    }
-
 
     @Override
     public void onPause() {
@@ -110,7 +86,27 @@ public class settings_activity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private static class GetRatesHandler extends Handler {
+        private final WeakReference<settings_activity> mActivity;
 
+        private GetRatesHandler(settings_activity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            settings_activity activity = mActivity.get();
+            if (activity != null) {
+                if(msg.arg1==1)      activity.dogeRatesObject.getCurrentRefreshTime();
+                else if(msg.arg1==2){
+                    activity.dogeRatesObject.getRecentRefreshTime();
+                    Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(), activity.getString(R.string.connectionErrorText), Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                }
+                activity.finish();
+            }
+        }
+    }
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
         @Override

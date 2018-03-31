@@ -32,6 +32,7 @@ public class wallet_add_virtual extends AppCompatActivity {
         setContentView(R.layout.activity_wallet_add_virtual);
         setToolbar();
         addWalletFabHandler();
+        focusOnNameEditText();
 
         walletMemoryObject = new wallet_memory(getApplicationContext());
     }
@@ -86,6 +87,7 @@ public class wallet_add_virtual extends AppCompatActivity {
 
                 EditText walletNameEditText = findViewById(R.id.editText10);
                 addedVirtualWalletName = walletNameEditText.getText().toString();
+                walletNameEditText.requestFocus();
                 EditText virtualWalletBalance = findViewById(R.id.editText11);
                 addedVirtualWalletBalance = virtualWalletBalance.getText().toString();
                 ifNameEmptyAddAddressAsName();
@@ -104,7 +106,10 @@ public class wallet_add_virtual extends AppCompatActivity {
     private void ifNameEmptyAddAddressAsName(){
         if(addedVirtualWalletName.trim().length() == 0) addedVirtualWalletName = "Virtual wallet";
     }
-
+    private void focusOnNameEditText(){
+        EditText walletNameEditText = findViewById(R.id.editText10);
+        walletNameEditText.requestFocus();
+    }
 
 
     //toast function to get it a little bit shorter

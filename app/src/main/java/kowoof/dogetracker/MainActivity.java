@@ -49,7 +49,7 @@ public class MainActivity extends DrawerActivity {
 
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
         dogeRatesObject = new doge_rates(this);
-        
+
         prepareProgressDialog();
         getTextViews();
         startup_refresh();

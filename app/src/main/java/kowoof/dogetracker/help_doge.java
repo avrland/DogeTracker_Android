@@ -28,10 +28,15 @@ public class help_doge extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help_doge);
-
     }
 
 
-
-
+    public void sendEmailToAuthor(View view) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("plain/text");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "marcinpopko@outlook.com" });
+        intent.putExtra(Intent.EXTRA_SUBJECT, "DogeTracker app question/suggestion");
+        intent.putExtra(Intent.EXTRA_TEXT, "Such wow!");
+        startActivity(Intent.createChooser(intent, ""));
+    }
 }

@@ -116,7 +116,7 @@ public class doge_rates {
 
         public void readRatesFromOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-            dogeFiatRate       = rates.getString(dogeFiatRateOffline, "doge_rate_offline");
+            dogeFiatRate       = rates.getString(dogeFiatRateOffline, "0");
             hourChangeRate     = rates.getString(hourChangeRateOffline, "hour_change_offline");
             dailyChangeRate    = rates.getString(dailyChangeRateOffline, "daily_change_offline");
             weeklyChangeRate   = rates.getString(weeklyChangeRateOffline, "weekly_change_offline");

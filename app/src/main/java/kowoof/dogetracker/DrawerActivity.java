@@ -40,7 +40,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         super.setContentView(fullLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("DogeTracker");
-        toolbar.setSubtitle("v1.2 dev");
+        toolbar.setSubtitle("v1.3 dev");
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
