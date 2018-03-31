@@ -27,20 +27,15 @@ import org.json.JSONObject;
 
 public class wallet_balance {
     String balance, success;
-    private ProgressDialog dialog;
     private static String url = "https://dogechain.info/api/v1/address/balance/";
 
     //We download here json response, leaving a information everything is ready to update view
     public void getWalletBalance(final Context currentContext, final Handler walletBalanceHandler, String address){
-        dialog = new ProgressDialog(currentContext);
-//        dialog.setMessage("Loading....");
-//        dialog.show();
 
         StringRequest request = new StringRequest(url + address, new Response.Listener<String>() {
             @Override
             public void onResponse(String string) {
                 parseJsonData(string);
-                dialog.dismiss();
                 //We're ready, leave messenge for handler to refresh_rates in view
                 //It doesn't matter now what kind of messege we send.
                 Message news = new Message();
@@ -51,7 +46,6 @@ public class wallet_balance {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 //If something went wrong, we leave messege with error
-                dialog.dismiss();
             }
         });
         RequestQueue rQueue = Volley.newRequestQueue(currentContext);
@@ -67,5 +61,4 @@ public class wallet_balance {
             e.printStackTrace();
         }
     }
-
 }

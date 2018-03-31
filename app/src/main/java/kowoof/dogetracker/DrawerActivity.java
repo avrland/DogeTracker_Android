@@ -18,6 +18,9 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
+
 /**
  * Created by Marcin on 11.02.2018.
  * Copyright © 2017 Marcin Popko. All rights reserved.
@@ -37,7 +40,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         super.setContentView(fullLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("DogeTracker");
-        toolbar.setSubtitle("v1.1");
+        toolbar.setSubtitle("v1.2 dev");
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -48,7 +51,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         navigationView.setNavigationItemSelectedListener(this);
         //End of preparing default drawer view section
     }
-
 
     //We close drawer here with pressing back button
     @Override
@@ -102,10 +104,10 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             //finish();
         }
         else if (id == R.id.help_doge) {
-//            Intent i = new Intent(getApplicationContext(), help_doge.class);
-//            startActivity(i);
-//            finish();
-            makeSnackbar("Coming soon.");
+            Intent i = new Intent(getApplicationContext(), help_doge.class);
+            startActivity(i);
+            finish();
+//            makeSnackbar("Coming soon.");
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -12,5 +12,6 @@
         android:icon="@android:drawable/ic_menu_info_details"
         android:orderInCategory="100"
         android:title="Dollars"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        />
 </menu>

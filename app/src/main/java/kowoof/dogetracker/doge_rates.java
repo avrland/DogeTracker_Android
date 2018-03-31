@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -25,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Currency;
 
 /**
  * Created by Marcin on 10.01.2018.
@@ -38,7 +40,7 @@ public class doge_rates {
                 totalSupplyRate, lastRefreshRate;
         private static ProgressDialog DIALOG;
         private static String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
-        private static Context CURRENT_CONTEXT;
+        private Context CURRENT_CONTEXT;
 
         //we store exchange rates stuff into memory
         private static final String PREFS_FILE = "Offline_exchange_rates";
@@ -59,14 +61,11 @@ public class doge_rates {
         //We download here json response, leaving a information everything is ready to update view
         public void getRates(final Handler handler, final String fiatCurrency){
             DIALOG = new ProgressDialog(CURRENT_CONTEXT);
-//            DIALOG.setMessage("Loading....");
-//            DIALOG.show();
 
             StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency.toLowerCase(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
                     parseJsonData(string, fiatCurrency.toLowerCase());
-//                    DIALOG.dismiss();
                     //We're ready, leave messenge for handler to refresh_rates in view
                     //It doesn't matter now what kind of messege we send.
                     Message news = new Message();
@@ -81,7 +80,6 @@ public class doge_rates {
                     news.arg1 = 0;
                     handler.sendMessage(news);
                     readRatesFromOffline();
-//                    DIALOG.dismiss();
                 }
             });
             RequestQueue rQueue = Volley.newRequestQueue(CURRENT_CONTEXT);
@@ -95,11 +93,7 @@ public class doge_rates {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 dogeFiatRate       = jsonobject.getString("price_" + fiat_currency);
                 //we want 4 decimal places with dot as a separator
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                DecimalFormat df = new DecimalFormat("#.####");
-                symbols.setDecimalSeparator('.');
-                df.setDecimalFormatSymbols(symbols);
-                dogeFiatRate = df.format(Float.parseFloat(dogeFiatRate)).toString();
+                dogeFiatRate = cutDecimalPlacesToFour(dogeFiatRate);
                 hourChangeRate     = jsonobject.getString("percent_change_1h");
                 dailyChangeRate    = jsonobject.getString("percent_change_24h");
                 weeklyChangeRate   = jsonobject.getString("percent_change_7d");
@@ -111,6 +105,15 @@ public class doge_rates {
             e.printStackTrace();
         }
         }
+        private String cutDecimalPlacesToFour(String FiatRate){
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            DecimalFormat df = new DecimalFormat("#.####");
+            symbols.setDecimalSeparator('.');
+            df.setDecimalFormatSymbols(symbols);
+            FiatRate = df.format(Float.parseFloat(FiatRate));
+            return FiatRate;
+        }
+
         public void readRatesFromOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             dogeFiatRate       = rates.getString(dogeFiatRateOffline, "doge_rate_offline");
@@ -137,7 +140,7 @@ public class doge_rates {
         public void getCurrentRefreshTime(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
-            DateFormat df = new SimpleDateFormat("d MMM yyyy, HH:mm:ss");
+            DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
             lastRefreshRate =df.format(Calendar.getInstance().getTime());
             editor.putString(lastRefreshOffline, lastRefreshRate);
             editor.apply();
@@ -164,5 +167,15 @@ public class doge_rates {
                 totalSupplyRate = "0";
             }
         }
-
+        public float getDogeFiatRate(){
+            readRatesFromOffline();
+            float fiatDogeFloat = Float.parseFloat(dogeFiatRate);
+            return fiatDogeFloat;
+        }
+        public String getFiatSymbol(){
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(CURRENT_CONTEXT);
+            String fiatCode = sp.getString("fiat_list","USD");
+            Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
+            return usedFiatCurrency.getSymbol();
+        }
 }

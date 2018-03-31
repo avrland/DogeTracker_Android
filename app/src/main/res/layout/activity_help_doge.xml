@@ -4,40 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="kowoof.dogetracker.help_doge"
-    android:fillViewport="true"
     android:layout_gravity="fill_vertical"
-    xmlns:fab="http://schemas.android.com/apk/res-auto">
+    android:fillViewport="true"
+    tools:context="kowoof.dogetracker.help_doge">
 
-    <!--<com.github.clans.fab.FloatingActionMenu-->
-        <!--android:id="@+id/floatingMenu"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--fab:menu_labels_ellipsize="end"-->
-        <!--fab:menu_labels_singleLine="true"-->
-        <!--fab:menu_fab_label="Cancel"-->
-        <!--fab:menu_backgroundColor="#ccffffff"-->
-        <!--fab:menu_animationDelayPerItem="0"-->
-        <!--android:padding="8dp">-->
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="359dp"
+        android:layout_height="231dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="50dp"
+        android:background="@android:drawable/editbox_dropdown_light_frame"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!--<com.github.clans.fab.FloatingActionButton-->
-            <!--android:id="@+id/add_virtual_wallet"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:src="@drawable/fab_add"-->
-            <!--fab:fab_size="mini"-->
-            <!--fab:fab_label="Add virtual wallet"/>-->
-
-        <!--<com.github.clans.fab.FloatingActionButton-->
-            <!--android:id="@+id/add_real_wallet"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:src="@drawable/fab_add"-->
-            <!--fab:fab_size="mini"-->
-            <!--fab:fab_label="Add real wallet"/>-->
-
-    <!--</com.github.clans.fab.FloatingActionMenu>-->
-
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Help panel will be hold here."
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

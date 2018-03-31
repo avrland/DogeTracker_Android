@@ -4,37 +4,27 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PointF;
-import android.icu.util.Currency;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import kowoof.dogetracker.wallet_verify;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -54,60 +44,90 @@ public class wallet_add extends AppCompatActivity {
     private wallet_balance currentWalletBalance = new wallet_balance();
 
     private ProgressDialog addWalletProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_add);
-        setToolbar("Add real wallet", null);
-        EditText walletNameEditText = findViewById(R.id.editText2);
+        setToolbar();
+
+        EditText walletNameEditText = findViewById(R.id.editText10);
         walletNameEditText.requestFocus();
+
         walletMemoryObject = new wallet_memory(getApplicationContext());
+        handler = new WalletMemoryHandler(this);
         addWalletProgressDialog = new ProgressDialog(wallet_add.this);
         addWalletProgressDialog.setCancelable(false);
 
         addWalletFabHandler();
         checkIfQrReceived();
+    }
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        checkLogoSetting();
+    }
+    public void onPause(){
+        super.onPause();
+        addWalletProgressDialog.dismiss();
+    }
+    private void checkLogoSetting(){
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
+        ImageView logo = findViewById(R.id.imageView);
+        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
+        else logo.setVisibility(View.VISIBLE);
+    }
 
-        //We create handler to wait for get exchange rates
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                //todo avoid memory leak
-                super.handleMessage(msg); //don't know it's really needed now
+    private static class WalletMemoryHandler extends Handler {
+        private final WeakReference<wallet_add> mActivity;
+
+        private WalletMemoryHandler(wallet_add activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            wallet_add activity = mActivity.get();
+            if (activity != null) {
                 try {
-                    walletMemoryObject.addToWalletsWithBalance(addedWalletName, addedWalletAddress, currentWalletBalance.balance);
-                    Intent i = new Intent(getApplicationContext(), wallet_list.class);
+                    activity.walletMemoryObject.addToWalletsWithBalance(activity.addedWalletName, activity.addedWalletAddress, activity.currentWalletBalance.balance);
+                    Intent i = new Intent(activity.getApplicationContext(), wallet_list.class);
                     i.putExtra("added_wallet", 1);
-                    startActivity(i);
-                    finish();
+                    activity.startActivity(i);
+                    activity.finish();
                 } catch (JSONException e) {
-                    makeSnackbar("Connection error.");
+                    activity.makeSnackbar("Connection error.");
                 }
             }
-
-        };
+        }
     }
+
     public void addWalletFabHandler(){
         FloatingActionButton addWalletFab = findViewById(R.id.fab);
         //We get here wallet address and name, and save it to SharedPref
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addWalletProgressDialog.setCancelable(false);
-                addWalletProgressDialog.show(wallet_add.this, "Please wait", "Validating address and getting current balance...");
-                EditText walletNameEditText = findViewById(R.id.editText2);
+                addWalletProgressDialog = ProgressDialog.show(wallet_add.this, getString(R.string.pleaseWaitText), getString(R.string.validatingText));
+                EditText walletNameEditText = findViewById(R.id.editText10);
                 addedWalletName = walletNameEditText.getText().toString();
                 EditText walletAddressEditText = findViewById(R.id.editText);
                 addedWalletAddress = walletAddressEditText.getText().toString();
-                if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
-                if(wallet_verify.validateDogecoinAddress(addedWalletAddress)==true){
-                    currentWalletBalance.getWalletBalance(wallet_add.this, handler, addedWalletAddress);
-                } else {
-                    makeSnackbar("Invalid address.");
-                    addWalletProgressDialog.dismiss();
-                }
+                ifNameEmptyAddAddressAsName();
+                verifyWalletAddress();
             }
         });
+    }
+    public void ifNameEmptyAddAddressAsName(){
+        if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
+    }
+    public void verifyWalletAddress(){
+        if(wallet_verify.validateDogecoinAddress(addedWalletAddress)){
+            currentWalletBalance.getWalletBalance(this, handler, addedWalletAddress);
+        } else {
+            addWalletProgressDialog.dismiss();
+            makeSnackbar(getString(R.string.invalidAddressText));
+        }
     }
     public void checkIfQrReceived(){
         //If we use qr code reader, we insert here scanned address
@@ -121,26 +141,12 @@ public class wallet_add extends AppCompatActivity {
             }
         }
     }
-    public void setToolbar(String title, String subtitle){
+    public void setToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(title);
-        if(subtitle != null) getSupportActionBar().setSubtitle(subtitle);
+        getSupportActionBar().setTitle(getString(R.string.addRealWalletText));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
-
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
-        ImageView logo = findViewById(R.id.imageView);
-        if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
-        else logo.setVisibility(View.VISIBLE);
-    }
-    public void onPause(){
-        super.onPause();
-        addWalletProgressDialog.dismiss();
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -195,9 +201,8 @@ public class wallet_add extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), wallet_qr_read.class);
                     startActivity(i);
                 } else {
-                    makeSnackbar("Grant permission to camera to read qr code");
+                    makeSnackbar(getString(R.string.grantPermissionText));
                 }
-                return;
             }
         }
     }

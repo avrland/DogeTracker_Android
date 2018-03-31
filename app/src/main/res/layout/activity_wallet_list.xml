@@ -41,7 +41,7 @@
         fab:menu_backgroundColor="#ccffffff"
         fab:menu_colorNormal="#FF4081"
         fab:menu_colorPressed="#FF4081"
-        fab:menu_fab_label="Cancel"
+        fab:menu_fab_label="@string/cancelText"
         fab:menu_labels_ellipsize="end"
         fab:menu_labels_singleLine="true">
 
@@ -52,7 +52,7 @@
             android:src="@drawable/fab_add"
             app:fab_colorNormal="#FF4081"
             app:fab_colorPressed="#FF4081"
-            fab:fab_label="Add virtual wallet"
+            fab:fab_label="@string/addVirtualWalletText"
             fab:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
@@ -62,7 +62,7 @@
             android:src="@drawable/fab_add"
             app:fab_colorNormal="#FF4081"
             app:fab_colorPressed="#FF4081"
-            fab:fab_label="Add real wallet"
+            fab:fab_label="@string/addRealWalletText"
             fab:fab_size="mini" />
 
     </com.github.clans.fab.FloatingActionMenu>

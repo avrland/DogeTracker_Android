@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="kowoof.dogetracker.wallet_add"
-    tools:showIn="@layout/activity_wallet_add"
-    android:id="@+id/snackbar_layout_add">
+    tools:context="kowoof.dogetracker.wallet_add_virtual"
+    tools:showIn="@layout/activity_wallet_add_virtual">
+
 
     <include
         android:id="@+id/include"
@@ -17,15 +17,17 @@
         tools:layout_editor_absoluteY="8dp"
         tools:ignore="MissingConstraints" />
 
+
+
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editText11"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="textNoSuggestions"
+        android:inputType="number|numberDecimal"
         android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -40,7 +42,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/walletAddressText"
+        android:text="@string/amountOfDogecoinText"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -48,30 +50,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/include" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="pasteWalletAddress"
-        android:text="@string/pasteText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="scanQrCode"
-        android:text="@string/scanQRCodeText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
-
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -92,11 +72,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:ems="10"
-        android:hint="@string/leaveEmptyToAddAddressHereText"
         android:inputType="textNoSuggestions"
         app:layout_constraintBottom_toTopOf="@+id/textView31"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
 
 </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,7 @@ package kowoof.dogetracker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,8 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +32,9 @@ import java.util.List;
  *     }
  */
 
+
 public class wallet_memory {
+    public enum response { OK, }
 
     private static final String PREFS_FILE = "wallets_file";
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
@@ -48,7 +53,7 @@ public class wallet_memory {
     float allWalletsBalance, currentWalletBalance = 0;
 
 
-    Handler balanceReceivedHandler = new Handler();
+    private Handler balanceReceivedHandler = new Handler();
     Handler externalBalanceGetHandler = new Handler();
     //@SuppressLint("HandlerLeak")
     wallet_memory(Context context) {
@@ -57,44 +62,46 @@ public class wallet_memory {
     wallet_memory(Context context, final Handler handler){
         currentContext = context;
         externalBalanceGetHandler = handler;
-        //Plan:
-        //1 - received single wallet
-        //2 - started to getting another
-        //3 - task finished
-        balanceReceivedHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                try {
-                    WALLET_BALANCE = walletBalanceObject.balance; //get single wallet balance when you get it from json query
-                    currentWalletBalance = Float.parseFloat(WALLET_BALANCE);
-                    saveToWallet(WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE, COUNT); //save it to json
-                    Message news = new Message();
-                    news.arg1 = 1;
-                    handler.sendMessage(news);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                allWalletsBalance = allWalletsBalance + currentWalletBalance;
-                COUNT++;
-                if (COUNT < wallets_amount) {
-                    Message news = new Message();
-                    news.arg1 = 2;
-                    handler.sendMessage(news);
-                    getBalances(); //if there are still wallets to read, get another
-                } else {
-                    Message news = new Message();
-                    news.arg1 = 3;
-                    handler.sendMessage(news);
-
-                    COUNT = 0; //if no, just fill listview
-                }
-            }
-        };
-
+        balanceReceivedHandler = new WalletMemoryHandler(this);
     }
 
-    //read all wallets to json object from sharedpreferences into class String
+
+    private static class WalletMemoryHandler extends Handler {
+        private final WeakReference<wallet_memory> mActivity;
+
+        private WalletMemoryHandler(wallet_memory activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+        wallet_memory activity;
+        @Override
+        public void handleMessage(Message msg) {
+            activity = mActivity.get();
+            if (activity != null) {
+                try {
+                    activity.WALLET_BALANCE = activity.walletBalanceObject.balance; //get single wallet balance when you get it from json query
+                    activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
+                    activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE); //parse float for total calculation
+
+                    Log.i("Wallet name: ", activity.WALLET_NAME);
+                    Log.i("Wallet address: ", activity.WALLET_ADDRESS);
+                    Log.i("Wallet name: ", activity.WALLET_BALANCE);
+                    Log.i("Count: : ", Integer.toString(activity.COUNT));
+
+                    Message news2 = new Message();
+                    news2.arg1 = 2;
+                    activity.externalBalanceGetHandler.sendMessage(news2);
+                } catch (JSONException e) {
+                    Message news2 = new Message();
+                    news2.arg1 = -1;
+                    activity.externalBalanceGetHandler.sendMessage(news2);
+                }
+                activity.allWalletsBalance = activity.allWalletsBalance + activity.currentWalletBalance;
+            }
+        }
+    }
+
+
+    //get all wallets to json object from sharedpreferences into class String
     public String readAllWallets() {
         SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
         walletJsonString = settings.getString(KEY_STRING, "[]");
@@ -110,8 +117,21 @@ public class wallet_memory {
                     JSONObject jsonObject = new_array.getJSONObject(COUNT);
                     WALLET_NAME = jsonObject.getString("title");
                     WALLET_ADDRESS = jsonObject.getString("address");
-                    //send get balance query with current address, wait in handler for response
-                    walletBalanceObject.getWalletBalance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
+                    if(!WALLET_ADDRESS.equals("Virtual")) {
+                        //send get balance query with current address, wait in handler for response
+                        walletBalanceObject.getWalletBalance(currentContext, balanceReceivedHandler, WALLET_ADDRESS);
+                        Message news = new Message();
+                        news.arg1 = 1; //send information that we've started fetching data for this wallet
+                        externalBalanceGetHandler.sendMessage(news);
+                    } else {
+                        Log.e("Virtal", "We have one!");
+                        //We have virtual wallet so we don't want to fetch data, just insert info
+                        WALLET_BALANCE = jsonObject.getString("notice");
+                        allWalletsBalance = allWalletsBalance + Float.parseFloat(WALLET_BALANCE);
+                        Message news2 = new Message();
+                        news2.arg1 = 2;
+                        externalBalanceGetHandler.sendMessage(news2);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -171,7 +191,9 @@ public class wallet_memory {
             jsonObj.put("address", wallet_address);
 
         } catch (JSONException e) {
-
+            jsonObj.put("title", "Error");
+            jsonObj.put("notice", "Error");
+            jsonObj.put("address", "Error");
         }
         JSONArray new_array = new JSONArray(readAllWallets());
         new_array.put(position, jsonObj);
@@ -217,4 +239,30 @@ public class wallet_memory {
         return result;
     }
 
+    float calculateAllWalletsBalance(){
+        //prepare all balances float handler
+        float total_balance_f = 0, current_wallet_f = 0;
+        try {
+            JSONArray new_array = new JSONArray(readAllWallets());
+
+            for (int i = 0, count = new_array.length(); i < count; i++) {
+                try {
+                    JSONObject jsonObject = new_array.getJSONObject(i);
+                    try {
+                        current_wallet_f = Float.parseFloat(jsonObject.getString("notice"));
+                    } catch (NumberFormatException e) {
+                        current_wallet_f = 0;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                total_balance_f += current_wallet_f;
+            }
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return total_balance_f;
+    }
 }
