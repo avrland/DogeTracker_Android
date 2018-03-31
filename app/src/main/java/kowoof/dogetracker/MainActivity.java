@@ -41,7 +41,6 @@ public class MainActivity extends DrawerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dialog = new ProgressDialog(MainActivity.this);
         spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 
         //We create handler with WeakReference to wait for get exchange rates
@@ -50,13 +49,12 @@ public class MainActivity extends DrawerActivity {
 
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
         dogeRatesObject = new doge_rates(this);
-
+        
+        prepareProgressDialog();
         getTextViews();
         startup_refresh();
         rateAppReminder();
-
-        dialog.setCancelable(false);
-        dialog.setMessage(getString(R.string.gettingRatesText));
+        checkFirstRun();
     }
     //we check and apply settings here
     @Override
@@ -66,13 +64,18 @@ public class MainActivity extends DrawerActivity {
         checkLogoSetting();
         checkAllExchangeTrendColors();
 
-        refreshRates();
+        checkFirstRun();
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
     }
 
+    private void prepareProgressDialog(){
+        dialog = new ProgressDialog(MainActivity.this);
+        dialog.setCancelable(false);
+        dialog.setMessage(getString(R.string.gettingRatesText));
+    }
     //Refresh button - selects response for clicking refresh - refresh_rates
     //Refresh rates - calling getRates from doge_rates class
     public void refreshButton(View view) {
@@ -81,7 +84,6 @@ public class MainActivity extends DrawerActivity {
     private void refreshRates(){
         //Getting current dogecoin rates from coinmarketcap
         dogeRatesObject.getRates(getRatesHandler, spref.getString("fiat_list","USD"));
-        getFiatBalance();
     }
 
     private static class BalanceHandler extends Handler {
@@ -100,10 +102,10 @@ public class MainActivity extends DrawerActivity {
                 if(isAnyWalletsAdded==2){
                     activity.walletMemoryObject.COUNT++;
                     if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
-                        activity.allWalletsBalanceTextView.setText( activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
+                        activity.allWalletsBalanceTextView.setText(activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
                         activity.walletMemoryObject.getBalances();
                     } else {
-                        activity.allWalletsBalanceTextView.setText(Float.toString(activity.walletMemoryObject.allWalletsBalance) + " Đ = " + activity.getFiatBalance());
+                        activity.allWalletsBalanceTextView.setText(activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
                         activity.dialog.dismiss();
                         activity.walletMemoryObject.COUNT = 0;
                     }
@@ -131,7 +133,7 @@ public class MainActivity extends DrawerActivity {
                 if(onlineMode==1) activity.dogeRatesObject.getCurrentRefreshTime();
                 else if(onlineMode==0){
                     activity.dogeRatesObject.getRecentRefreshTime();
-                    activity.makeSnackbar("Connection error. Showing last updated rates.");
+                    activity.makeSnackbar("Connection error.");
                     activity.dialog.dismiss();
                 }
                 activity.updateRatesInView(); //insert updated rates to layout
@@ -151,13 +153,12 @@ public class MainActivity extends DrawerActivity {
             readDataFromOffline();
         }
     }
-
     private void launchRefreshBalanceProcess(){
         dialog.show();
         refreshRates();
+        allWalletsBalanceTextView.setText( "Refreshing...");
         walletMemoryObject.allWalletsBalance = 0;
         walletMemoryObject.getBalances();
-        allWalletsBalanceTextView.setText( "Refreshing...");
     }
     private void readDataFromOffline(){
         dogeRatesObject.readRatesFromOffline();
@@ -240,7 +241,6 @@ public class MainActivity extends DrawerActivity {
         String fiatSymbol = dogeRatesObject.getFiatSymbol();
         return cutDecimalPlacesToTwo(String.valueOf(fiatBalance))  + " " + fiatSymbol;
     }
-
     private String cutDecimalPlacesToTwo(String FiatBalance){
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         DecimalFormat df = new DecimalFormat("#.##");
@@ -252,8 +252,8 @@ public class MainActivity extends DrawerActivity {
 
     private void rateAppReminder(){
         AppRate.with(this)
-                .setInstallDays(0) // default 10, 0 means install day.
-                .setLaunchTimes(3) // default 10
+                .setInstallDays(1) // default 10, 0 means install day.
+                .setLaunchTimes(10) // default 10
                 .setRemindInterval(2) // default 1
                 .setShowLaterButton(true) // default true
                 .setDebug(false) // default false
@@ -267,5 +267,37 @@ public class MainActivity extends DrawerActivity {
 
         // Show a dialog if meets conditions
         AppRate.showRateDialogIfMeetsConditions(this);
+    }
+
+    private void checkFirstRun() {
+
+        final String PREFS_NAME = "MyPrefsFile";
+        final String PREF_VERSION_CODE_KEY = "version_code";
+        final int DOESNT_EXIST = -1;
+
+        // Get current version code
+        int currentVersionCode = BuildConfig.VERSION_CODE;
+
+        // Get saved version code
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+
+        // Check for first run or upgrade
+        if (currentVersionCode == savedVersionCode) {
+            readDataFromOffline();
+            // This is just a normal run
+            return;
+
+        } else if (savedVersionCode == DOESNT_EXIST) {
+            launchRefreshBalanceProcess();
+            // TODO This is a new install (or the user cleared the shared preferences)
+
+        } else if (currentVersionCode > savedVersionCode) {
+
+            // TODO This is an upgrade
+        }
+
+        // Update the shared preferences with the current version code
+        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
     }
 }
