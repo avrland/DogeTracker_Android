@@ -36,8 +36,6 @@ import java.util.Locale;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.florent37.viewtooltip.ViewTooltip;
-import com.tooltip.Tooltip;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -60,7 +58,6 @@ public class wallet_list extends DrawerActivity {
     private wallet_memory walletMemoryObject; //object for saving and reading wallets fro memory
     private String walletName, walletAddress, walletBalance;
     private int dogesFiat = 1;
-    private FloatingActionMenu floatMenu;
     private SwipeRefreshLayout mSwipeRefreshView;
     private Toolbar toolbar;
     int finishedUpdateFlag = 1;
@@ -132,6 +129,7 @@ public class wallet_list extends DrawerActivity {
         return super.onKeyDown(keyCode, event);
     }
     public void fabButtonsHandler(){
+        FloatingActionMenu floatMenu;
         floatMenu = findViewById(R.id.floatingMenu);
         floatMenu.setClosedOnTouchOutside(true);
         FloatingActionButton realWalletFab = findViewById(R.id.add_real_wallet);
