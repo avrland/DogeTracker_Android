@@ -1,6 +1,7 @@
 package kowoof.dogetracker;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,7 +36,7 @@ public class settings_activity extends AppCompatActivity {
 
     private doge_rates dogeRatesObject;
     private Handler getRatesHandler;
-
+    private ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,17 +46,11 @@ public class settings_activity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        prepareProgressDialog();
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.settings_layout, new GeneralPreferenceFragment())
                 .commit();
-
-        final SharedPreferences sp2 = PreferenceManager.getDefaultSharedPreferences(this);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dogeRatesObject.getRates(getRatesHandler, sp2.getString("fiat_list","USD"));
-            }
-        });
 
         //We create dogeRates object and handler to wait for get exchange rates (before we quit settings)
         dogeRatesObject = new doge_rates(this);
@@ -66,12 +61,10 @@ public class settings_activity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
     }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            dogeRatesObject.getRates(getRatesHandler, sp.getString("fiat_list","USD"));
+            orderGettingNewRates();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -80,8 +73,7 @@ public class settings_activity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-            dogeRatesObject.getRates(getRatesHandler, sp.getString("fiat_list","USD"));
+            orderGettingNewRates();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -97,12 +89,13 @@ public class settings_activity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             settings_activity activity = mActivity.get();
             if (activity != null) {
-                if(msg.arg1==1)      activity.dogeRatesObject.getCurrentRefreshTime();
+                if(msg.arg1==1) activity.dogeRatesObject.getCurrentRefreshTime();
                 else if(msg.arg1==2){
                     activity.dogeRatesObject.getRecentRefreshTime();
                     Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(), activity.getString(R.string.connectionErrorText), Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
+                activity.dialog.dismiss();
                 activity.finish();
             }
         }
@@ -116,5 +109,16 @@ public class settings_activity extends AppCompatActivity {
             setHasOptionsMenu(true);
         }
 
+    }
+
+    private void orderGettingNewRates(){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        dogeRatesObject.getRates(getRatesHandler, sp.getString("fiat_list","USD"));
+        dialog.show();
+    }
+    private void prepareProgressDialog(){
+        dialog = new ProgressDialog(settings_activity.this);
+        dialog.setCancelable(false);
+        dialog.setMessage(getString(R.string.savingSettings));
     }
 }

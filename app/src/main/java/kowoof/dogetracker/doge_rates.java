@@ -36,10 +36,8 @@ import java.util.Currency;
  */
 
 public class doge_rates {
-        String dogeFiatRate, hourChangeRate, dailyChangeRate, weeklyChangeRate, marketCapRate, volumeRate,
+        protected String dogeFiatRate, hourChangeRate, dailyChangeRate, weeklyChangeRate, marketCapRate, volumeRate,
                 totalSupplyRate, lastRefreshRate;
-        private static ProgressDialog DIALOG;
-        private static String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
         private Context CURRENT_CONTEXT;
 
         //we store exchange rates stuff into memory
@@ -60,8 +58,8 @@ public class doge_rates {
 
         //We download here json response, leaving a information everything is ready to update view
         public void getRates(final Handler handler, final String fiatCurrency){
-            DIALOG = new ProgressDialog(CURRENT_CONTEXT);
-
+            ProgressDialog DIALOG = new ProgressDialog(CURRENT_CONTEXT);
+            String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
             StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency.toLowerCase(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
@@ -117,13 +115,13 @@ public class doge_rates {
         public void readRatesFromOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             dogeFiatRate       = rates.getString(dogeFiatRateOffline, "0");
-            hourChangeRate     = rates.getString(hourChangeRateOffline, "hour_change_offline");
-            dailyChangeRate    = rates.getString(dailyChangeRateOffline, "daily_change_offline");
-            weeklyChangeRate   = rates.getString(weeklyChangeRateOffline, "weekly_change_offline");
-            marketCapRate      = rates.getString(marketCapRateOffline, "market_cap_offline");
-            volumeRate          = rates.getString(volumeRateOffline, "volume_offline");
-            totalSupplyRate    = rates.getString(totalSupplyRateOffline, "total_supply_offline");
-            lastRefreshRate    = rates.getString(lastRefreshOffline, "last_refresh_offline");
+            hourChangeRate     = rates.getString(hourChangeRateOffline, "0");
+            dailyChangeRate    = rates.getString(dailyChangeRateOffline, "0");
+            weeklyChangeRate   = rates.getString(weeklyChangeRateOffline, "0");
+            marketCapRate      = rates.getString(marketCapRateOffline, "0");
+            volumeRate          = rates.getString(volumeRateOffline, "0");
+            totalSupplyRate    = rates.getString(totalSupplyRateOffline, "0");
+            lastRefreshRate    = rates.getString(lastRefreshOffline, "unknown");
         }
         public void saveRatesToOffline(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
@@ -147,7 +145,7 @@ public class doge_rates {
         }
         public void getRecentRefreshTime(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-            lastRefreshRate    = rates.getString(lastRefreshOffline, "last_refresh_offline");
+            lastRefreshRate    = rates.getString(lastRefreshOffline, "unknown");
         }
         //we add spaces to so big numbers like market cap, volume and total supply
         public void makeCommasOnRates(){
@@ -177,5 +175,19 @@ public class doge_rates {
             String fiatCode = sp.getString("fiat_list","USD");
             Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
             return usedFiatCurrency.getSymbol();
+        }
+
+        public class ManipulateDogeRatesValues {
+            public void readRatesFromOffline(){
+                SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
+                dogeFiatRate       = rates.getString(dogeFiatRateOffline, "0");
+                hourChangeRate     = rates.getString(hourChangeRateOffline, "0");
+                dailyChangeRate    = rates.getString(dailyChangeRateOffline, "0");
+                weeklyChangeRate   = rates.getString(weeklyChangeRateOffline, "0");
+                marketCapRate      = rates.getString(marketCapRateOffline, "0");
+                volumeRate          = rates.getString(volumeRateOffline, "0");
+                totalSupplyRate    = rates.getString(totalSupplyRateOffline, "0");
+                lastRefreshRate    = rates.getString(lastRefreshOffline, "unknown");
+            }
         }
 }

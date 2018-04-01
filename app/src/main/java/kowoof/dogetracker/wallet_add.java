@@ -42,8 +42,9 @@ public class wallet_add extends AppCompatActivity {
     private Handler handler = new Handler();
     //We create object to get first time balance (next time we'll do it in wallet_list and wallet_view)
     private wallet_balance currentWalletBalance = new wallet_balance();
-
     private ProgressDialog addWalletProgressDialog;
+
+    private static String devDogecoinAddress = "DTvQCPbJ1UwVxdV3Gei9u4FWHpdcGKsWYS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class wallet_add extends AppCompatActivity {
 
         addWalletFabHandler();
         checkIfQrReceived();
+        pasteDevAddressListener();
     }
     public void onResume() {
         super.onResume();  // Always call the superclass method first
@@ -181,6 +183,17 @@ public class wallet_add extends AppCompatActivity {
         EditText editText = findViewById(R.id.editText);
         editText.setText(pastedWalletAddress);
         makeSnackbar("Address pasted.");
+    }
+    private void pasteDevAddressListener(){
+        final EditText editText = findViewById(R.id.editText);
+        editText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                editText.setText(devDogecoinAddress);
+                makeSnackbar("Such wow, dev address, very nice.");
+                return true;
+            }
+        });
     }
 
     //if we want to scan, we go to wallet_qr_read

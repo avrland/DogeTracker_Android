@@ -1,16 +1,24 @@
 package kowoof.dogetracker;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.json.JSONException;
+
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -70,12 +78,12 @@ public class MainActivity extends DrawerActivity {
     public void onDestroy(){
         super.onDestroy();
     }
-
     private void prepareProgressDialog(){
         dialog = new ProgressDialog(MainActivity.this);
         dialog.setCancelable(false);
         dialog.setMessage(getString(R.string.gettingRatesText));
     }
+
     //Refresh button - selects response for clicking refresh - refresh_rates
     //Refresh rates - calling getRates from doge_rates class
     public void refreshButton(View view) {
@@ -101,21 +109,30 @@ public class MainActivity extends DrawerActivity {
                 // Handle message code
                 if(isAnyWalletsAdded==2){
                     activity.walletMemoryObject.COUNT++;
-                    if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
-                        activity.allWalletsBalanceTextView.setText(activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
-                        activity.walletMemoryObject.getBalances();
-                    } else {
-                        activity.allWalletsBalanceTextView.setText(activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
-                        activity.dialog.dismiss();
-                        activity.walletMemoryObject.COUNT = 0;
-                    }
+                    if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) continueRefreshing();
+                    else finishRefreshing();
                 } else if (isAnyWalletsAdded==0){
-                    activity.allWalletsBalanceTextView.setText("0" + " Đ");
-                    activity.dialog.dismiss();
+                    leaveNoWalletsInformation();
                 }  else if (isAnyWalletsAdded==-1){
                     activity.makeSnackbar("Error.");
                 }
             }
+        }
+        private void continueRefreshing(){
+            MainActivity activity = mActivity.get();
+            activity.allWalletsBalanceTextView.setText(activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
+            activity.walletMemoryObject.getBalances();
+        }
+        private void finishRefreshing(){
+            MainActivity activity = mActivity.get();
+            activity.allWalletsBalanceTextView.setText(activity.walletMemoryObject.allWalletsBalance + " Đ = " + activity.getFiatBalance());
+            activity.dialog.dismiss();
+            activity.walletMemoryObject.COUNT = 0;
+        }
+        private void leaveNoWalletsInformation(){
+            MainActivity activity = mActivity.get();
+            activity.allWalletsBalanceTextView.setText(activity.getString(R.string.noWalletsAdded));
+            activity.dialog.dismiss();
         }
     }
     private static class GetRatesHandler extends Handler {
@@ -290,8 +307,7 @@ public class MainActivity extends DrawerActivity {
 
         } else if (savedVersionCode == DOESNT_EXIST) {
             launchRefreshBalanceProcess();
-            // TODO This is a new install (or the user cleared the shared preferences)
-
+            if(!isNetworkAvailable()) firstNoInternetConnectionAlert();
         } else if (currentVersionCode > savedVersionCode) {
 
             // TODO This is an upgrade
@@ -299,5 +315,27 @@ public class MainActivity extends DrawerActivity {
 
         // Update the shared preferences with the current version code
         prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+    }
+    private void firstNoInternetConnectionAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setCancelable(true);
+        builder.setTitle("No internet connection!");
+        builder.setMessage("We need internet to fetch data for wallets and exchange rates. Would you like to turn on WIFI?");
+        builder.setPositiveButton(getString(R.string.confirmText),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                            wifi.setWifiEnabled(true); // true or false to activate/deactivate wifi
+                    }
+                });
+        builder.setNegativeButton(getString(R.string.cancelText), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                makeSnackbar("No internet connection!");
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
