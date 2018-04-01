@@ -6,6 +6,10 @@
         android:key="dt_logo"
         android:title="@string/useDTlogoText" />
     <SwitchPreference
+        android:defaultValue="true"
+        android:key="splash"
+        android:title="@string/useSplash" />
+    <SwitchPreference
         android:defaultValue="false"
         android:key="wallets_auto_refresh"
         android:title="@string/autoRefreshTitleText"

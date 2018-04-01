@@ -37,6 +37,7 @@
     <string name="refreshText">REFRESH</string>
     <string name="remember1dogeText">Remember:  1Đ = 1Đ</string>
     <string name="gettingRatesText">Getting rates and balances.</string>
+    <string name="noWalletsAdded">No wallets added.</string>
 
     <!--DrawerActivity-->
     <string name="exchangeRatesMenuText">Exchange rates</string>
@@ -52,7 +53,7 @@
     <string name="addRealWalletText">Add real wallet</string>
     <string name="cancelText">Cancel</string>
     <string name="waitToFinishUpdateText">Please wait for finishing wallets update.</string>
-    <string name="loadingBalanceText">**Loading balance**</string>
+    <string name="loadingBalanceText">** Loading balance **</string>
     <string name="noConnectionText">No internet connection</string>
 
     <!--wallet_view-->
@@ -73,16 +74,22 @@
     <string name="pleaseWaitText">Please wait</string>
     <string name="validatingText">Validating address and getting current balance.</string>
     <string name="grantPermissionText">Grant permission to camera to read qr code.</string>
+    <string name="holdToAddDevAddress">Hold to paste DT developer address.</string>
 
     <!--wallet_add_virtual-->
     <string name="amountOfDogecoinText">Amount of Dogecoins:</string>
+    <string name="hintWalletName">Virtual wallet if left empty</string>
+    <string name="hintDogecoinAmounth">For example: 1337.332</string>
 
     <!--setting_activity-->
     <string name="useDTlogoText">Use DogeTracker logo in background</string>
+    <string name="useSplash">Use splash screen</string>
     <string name="autoRefreshTitleText">Auto refresh balances and rates</string>
     <string name="autoRefreshSummaryText">Fetch new data every startup</string>
     <string name="colourTrendTitleText">Coloured trend rates (1h, 24h, 7d)</string>
     <string name="colourTrendSummaryText">ON - green/red, OFF - default</string>
     <string name="fiatCurrencyText">FIAT exchange currency</string>
     <string name="title_activity_wallet_add_virtual">Add virtual wallet</string>
+    <string name="savingSettings">Saving and implementation settings...</string>
+
 </resources>

@@ -83,8 +83,6 @@ public class wallet_add_virtual extends AppCompatActivity {
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                makeSnackbar("Such wow! Virtual wallet!");
-
                 EditText walletNameEditText = findViewById(R.id.editText10);
                 addedVirtualWalletName = walletNameEditText.getText().toString();
                 walletNameEditText.requestFocus();
@@ -110,8 +108,6 @@ public class wallet_add_virtual extends AppCompatActivity {
         EditText walletNameEditText = findViewById(R.id.editText10);
         walletNameEditText.requestFocus();
     }
-
-
     //toast function to get it a little bit shorter
     public void makeSnackbar(String snackbar_message){
         Snackbar snackbar = Snackbar

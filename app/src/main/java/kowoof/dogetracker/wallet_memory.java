@@ -34,7 +34,6 @@ import java.util.List;
 
 
 public class wallet_memory {
-    public enum response { OK, }
 
     private static final String PREFS_FILE = "wallets_file";
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
@@ -46,16 +45,13 @@ public class wallet_memory {
 
     String WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE;
 
-
     int COUNT = 0, wallets_amount = 0;
-
     private wallet_balance walletBalanceObject = new wallet_balance(); //object for getting wallet balances
     float allWalletsBalance, currentWalletBalance = 0;
 
-
     private Handler balanceReceivedHandler = new Handler();
     Handler externalBalanceGetHandler = new Handler();
-    //@SuppressLint("HandlerLeak")
+
     wallet_memory(Context context) {
         currentContext = context;
     }
@@ -82,10 +78,10 @@ public class wallet_memory {
                     activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
                     activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE); //parse float for total calculation
 
-                    Log.i("Wallet name: ", activity.WALLET_NAME);
-                    Log.i("Wallet address: ", activity.WALLET_ADDRESS);
-                    Log.i("Wallet name: ", activity.WALLET_BALANCE);
-                    Log.i("Count: : ", Integer.toString(activity.COUNT));
+//                    Log.i("Wallet name: ", activity.WALLET_NAME);
+//                    Log.i("Wallet address: ", activity.WALLET_ADDRESS);
+//                    Log.i("Wallet name: ", activity.WALLET_BALANCE);
+//                    Log.i("Count: : ", Integer.toString(activity.COUNT));
 
                     Message news2 = new Message();
                     news2.arg1 = 2;
@@ -124,7 +120,6 @@ public class wallet_memory {
                         news.arg1 = 1; //send information that we've started fetching data for this wallet
                         externalBalanceGetHandler.sendMessage(news);
                     } else {
-                        Log.e("Virtal", "We have one!");
                         //We have virtual wallet so we don't want to fetch data, just insert info
                         WALLET_BALANCE = jsonObject.getString("notice");
                         allWalletsBalance = allWalletsBalance + Float.parseFloat(WALLET_BALANCE);
@@ -145,22 +140,6 @@ public class wallet_memory {
             e.printStackTrace();
         }
     }
-
-    //I don't think so we need it now
-    public String read_wallet(int number) {
-        SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-        walletJsonString = settings.getString(KEY_STRING, "my string");
-        try {
-            JSONArray new_array = new JSONArray(walletJsonString);
-            JSONObject jsonObject = new_array.getJSONObject(number);
-            WALLET_NAME = jsonObject.getString("title");
-            WALLET_ADDRESS = jsonObject.getString("address");
-            WALLET_BALANCE = jsonObject.getString("notice");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return walletJsonString;
-    }
     //add new wallet
     //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
     public void addToWalletsWithBalance(String wallet_name, String wallet_address, String wallet_balance) throws JSONException {
@@ -172,7 +151,9 @@ public class wallet_memory {
             jsonObj.put("address", wallet_address);
 
         } catch (JSONException e) {
-
+            jsonObj.put("title", "Error");
+            jsonObj.put("notice", "Error");
+            jsonObj.put("address", "Error");
         }
         JSONArray new_array = new JSONArray(readAllWallets());
         new_array.put(jsonObj);
@@ -239,7 +220,7 @@ public class wallet_memory {
         return result;
     }
 
-    float calculateAllWalletsBalance(){
+    public float calculateAllWalletsBalance(){
         //prepare all balances float handler
         float total_balance_f = 0, current_wallet_f = 0;
         try {
@@ -266,3 +247,5 @@ public class wallet_memory {
         return total_balance_f;
     }
 }
+
+

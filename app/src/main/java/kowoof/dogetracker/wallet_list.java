@@ -37,7 +37,6 @@ import java.util.Locale;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.florent37.viewtooltip.ViewTooltip;
-import com.tooltip.Tooltip;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -251,18 +250,9 @@ public class wallet_list extends DrawerActivity {
             wallet_list activity = mActivity.get();
             if (activity != null) {
                 int response = msg.arg1;
-                if(response==1){
-                    activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.getString(R.string.loadingBalanceText));
-                } else if (response==2){
-                    Log.d("Wallet name: ", activity.walletMemoryObject.WALLET_NAME);
-                    Log.d("Wallet address: ", activity.walletMemoryObject.WALLET_ADDRESS);
-                    Log.d("Wallet balance: ", activity.walletMemoryObject.WALLET_BALANCE);
-                    Log.d("Count: : ", Integer.toString(activity.walletMemoryObject.COUNT));
-
-                    String addedListViewBalance = activity.walletMemoryObject.WALLET_BALANCE + " Đ";
-                    if(!activity.walletMemoryObject.WALLET_ADDRESS.equals("Virtual")) {
-                        activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
-                    } else activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ (Virtual)");
+                if(response==1) insertLoadingMessegeInCurrentRow();
+                 else if (response==2){
+                    insertFetchedBalanceInCurrentRow();
                     activity.walletMemoryObject.COUNT++;
                     if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) {
                         //We still have wallets to update, so we order another update
@@ -272,10 +262,21 @@ public class wallet_list extends DrawerActivity {
                         activity.mSwipeRefreshView.setRefreshing(false);
                         activity.walletMemoryObject.COUNT = 0;
                     }
-                } else if (response==0){
+                } else if (response==-1){
                     activity.mSwipeRefreshView.setRefreshing(false);
+                    activity.makeSnackbar("Error.");
                 }
             }
+        }
+        private void insertLoadingMessegeInCurrentRow(){
+            wallet_list activity = mActivity.get();
+            activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.getString(R.string.loadingBalanceText));
+        }
+        private void insertFetchedBalanceInCurrentRow(){
+            wallet_list activity = mActivity.get();
+            if(!activity.walletMemoryObject.WALLET_ADDRESS.equals("Virtual")) {
+                activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ");
+            } else activity.updateSingleRow(activity.walletMemoryObject.COUNT, activity.walletMemoryObject.WALLET_NAME, activity.walletMemoryObject.WALLET_BALANCE + " Đ (Virtual)");
         }
     }
 

@@ -17,10 +17,6 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
-
 /**
  * Created by Marcin on 11.02.2018.
  * Copyright © 2017 Marcin Popko. All rights reserved.
@@ -40,7 +36,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         super.setContentView(fullLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("DogeTracker");
-        toolbar.setSubtitle("v1.3 dev");
+        toolbar.setSubtitle("v1.21");
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
