@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="fill_parent"
+        android:layout_height="85dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="0dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="5dip"
+        android:visibility="visible" >
+
+        <TextView
+            android:id="@+id/wallet_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="Wallet_name"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/wallet_doges"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxEms="20"
+            android:maxLines="2"
+            android:paddingLeft="10dp"
+            android:singleLine="false"
+            android:text="Wallet_doges"
+            android:textColor="#808080"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:visibility="visible" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

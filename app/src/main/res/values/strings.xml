@@ -38,6 +38,7 @@
     <string name="remember1dogeText">Remember:  1Đ = 1Đ</string>
     <string name="gettingRatesText">Getting rates and balances.</string>
     <string name="noWalletsAdded">No wallets added.</string>
+    <string name="refreshingText">**Refreshing**</string>
 
     <!--DrawerActivity-->
     <string name="exchangeRatesMenuText">Exchange rates</string>

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +26,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -163,6 +165,12 @@ public class wallet_view extends DrawerActivity {
         walletAddressTextView.setText(viewedWalletAddress);
     }
 
+    public void viewOnDogechain(View view) {
+        Uri uri = Uri.parse("https://dogechain.info/address/" + viewedWalletAddress);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
     private static class WalletViewHandler extends Handler {
         private final WeakReference<wallet_view> mActivity;
 
@@ -191,6 +199,9 @@ public class wallet_view extends DrawerActivity {
         showBalance();
         ImageView dogecoinLogo = findViewById(R.id.imageView2);
         dogecoinLogo.setImageResource(R.drawable.dogecoin_logo);
+
+        Button seeOnDogechainButton = findViewById(R.id.button4);
+        seeOnDogechainButton.setEnabled(false);
     }
     private void getBalance(){
         walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);

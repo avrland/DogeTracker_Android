@@ -173,7 +173,7 @@ public class MainActivity extends DrawerActivity {
     private void launchRefreshBalanceProcess(){
         dialog.show();
         refreshRates();
-        allWalletsBalanceTextView.setText( "Refreshing...");
+        allWalletsBalanceTextView.setText(getString(R.string.refreshingText));
         walletMemoryObject.allWalletsBalance = 0;
         walletMemoryObject.getBalances();
     }
