@@ -1,3 +1,11 @@
+## v1.3
+* Added "See on Dogechain.info" button
+
+## v1.2.1
+* fixed few worst case scenarios bugs
+* few visual improvements
+* added use splash screen setting
+
 ## v1.2
 * avoided potential memory leaks in non-static handlers
 * added splash screen
