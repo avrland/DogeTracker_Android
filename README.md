@@ -19,10 +19,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * open source (LGPL 3.0 licence)
 
 ## What's new in v1.3?
-*
-*
-*
-
+* Added "See on Dogechain.info" button
 
 ## Requirments
 * Android 5.0 or higher
