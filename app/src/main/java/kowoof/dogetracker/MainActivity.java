@@ -320,6 +320,7 @@ public class MainActivity extends DrawerActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setCancelable(true);
         builder.setTitle("No internet connection!");
+
         builder.setMessage("We need internet to fetch data for wallets and exchange rates. Would you like to turn on WIFI?");
         builder.setPositiveButton(getString(R.string.confirmText),
                 new DialogInterface.OnClickListener() {
