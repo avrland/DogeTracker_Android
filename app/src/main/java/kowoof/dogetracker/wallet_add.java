@@ -182,7 +182,7 @@ public class wallet_add extends AppCompatActivity {
         String pastedWalletAddress = item.getText().toString();
         EditText editText = findViewById(R.id.editText);
         editText.setText(pastedWalletAddress);
-        makeSnackbar("Address pasted.");
+        makeSnackbar(getString(R.string.addressPastedMessege));
     }
     private void pasteDevAddressListener(){
         final EditText editText = findViewById(R.id.editText);
@@ -190,7 +190,7 @@ public class wallet_add extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 editText.setText(devDogecoinAddress);
-                makeSnackbar("Such wow, dev address, very nice.");
+                makeSnackbar(getString(R.string.devAddressPastedMessege));
                 return true;
             }
         });

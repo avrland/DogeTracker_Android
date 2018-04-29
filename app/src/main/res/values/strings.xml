@@ -39,7 +39,8 @@
     <string name="gettingRatesText">Getting rates and balances.</string>
     <string name="noWalletsAdded">No wallets added.</string>
     <string name="refreshingText">**Refreshing**</string>
-
+    <string name="noInternetErrorTitle">No internet connection!</string>
+    <string name="noInternetErrorMessege">We need internet to fetch data for wallets and exchange rates. Would you like to turn on WIFI?</string>
     <!--DrawerActivity-->
     <string name="exchangeRatesMenuText">Exchange rates</string>
     <string name="myWalletsMenuText">My wallets</string>
@@ -76,6 +77,8 @@
     <string name="validatingText">Validating address and getting current balance.</string>
     <string name="grantPermissionText">Grant permission to camera to read qr code.</string>
     <string name="holdToAddDevAddress">Hold to paste DT developer address.</string>
+    <string name="addressPastedMessege">Address pasted.</string>
+    <string name="devAddressPastedMessege">Such wow, dev address, very nice.</string>
 
     <!--wallet_add_virtual-->
     <string name="amountOfDogecoinText">Amount of Dogecoins:</string>

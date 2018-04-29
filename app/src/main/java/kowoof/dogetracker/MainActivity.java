@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -63,6 +64,8 @@ public class MainActivity extends DrawerActivity {
         startup_refresh();
         rateAppReminder();
         checkFirstRun();
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
     //we check and apply settings here
     @Override
@@ -114,7 +117,7 @@ public class MainActivity extends DrawerActivity {
                 } else if (isAnyWalletsAdded==0){
                     leaveNoWalletsInformation();
                 }  else if (isAnyWalletsAdded==-1){
-                    activity.makeSnackbar("Error.");
+                    activity.makeSnackbar(activity.getString(R.string.errorText));
                 }
             }
         }
@@ -319,9 +322,9 @@ public class MainActivity extends DrawerActivity {
     private void firstNoInternetConnectionAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setCancelable(true);
-        builder.setTitle("No internet connection!");
+        builder.setTitle(getString(R.string.noInternetErrorTitle));
 
-        builder.setMessage("We need internet to fetch data for wallets and exchange rates. Would you like to turn on WIFI?");
+        builder.setMessage(getString(R.string.noInternetErrorMessege));
         builder.setPositiveButton(getString(R.string.confirmText),
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -333,7 +336,7 @@ public class MainActivity extends DrawerActivity {
         builder.setNegativeButton(getString(R.string.cancelText), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                makeSnackbar("No internet connection!");
+                makeSnackbar(getString(R.string.noInternetErrorTitle));
             }
         });
         AlertDialog dialog = builder.create();
