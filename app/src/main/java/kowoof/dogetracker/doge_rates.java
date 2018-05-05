@@ -59,11 +59,11 @@ public class doge_rates {
         //We download here json response, leaving a information everything is ready to update view
         public void getRates(final Handler handler, final String fiatCurrency){
             ProgressDialog DIALOG = new ProgressDialog(CURRENT_CONTEXT);
-            String URL = "https://api.coinmarketcap.com/v1/ticker/dogecoin/";
-            StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency.toLowerCase(), new Response.Listener<String>() {
+            String URL = "https://api.coinmarketcap.com/v2/ticker/74/";
+            StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String string) {
-                    parseJsonData(string, fiatCurrency.toLowerCase());
+                    parseJsonData(string, fiatCurrency);
                     //We're ready, leave messenge for handler to refresh_rates in view
                     //It doesn't matter now what kind of messege we send.
                     Message news = new Message();
@@ -83,22 +83,21 @@ public class doge_rates {
             RequestQueue rQueue = Volley.newRequestQueue(CURRENT_CONTEXT);
             rQueue.add(request);
         }
-        //Parse Json exchange rates data
+        //Parse Json exchange rates data - supported for coinmarketcap API V2
         private void parseJsonData(String jsonString, String fiat_currency) {
         try {
-            JSONArray jsonarray = new JSONArray(jsonString);
-            for(int i=0; i < jsonarray.length(); i++) {
-                JSONObject jsonobject = jsonarray.getJSONObject(i);
-                dogeFiatRate       = jsonobject.getString("price_" + fiat_currency);
-                //we want 4 decimal places with dot as a separator
-                dogeFiatRate = cutDecimalPlacesToFour(dogeFiatRate);
-                hourChangeRate     = jsonobject.getString("percent_change_1h");
-                dailyChangeRate    = jsonobject.getString("percent_change_24h");
-                weeklyChangeRate   = jsonobject.getString("percent_change_7d");
-                marketCapRate      = jsonobject.getString("market_cap_" + fiat_currency);
-                volumeRate          = jsonobject.getString("24h_volume_" + fiat_currency);
-                totalSupplyRate    = jsonobject.getString("total_supply");
-            }
+            JSONObject rawJsonResponse = new JSONObject(jsonString);
+            JSONObject data = rawJsonResponse.getJSONObject("data");
+            totalSupplyRate    = data.getString("total_supply");
+            JSONObject quotes = data.getJSONObject("quotes");
+            JSONObject currentCurrencyObject = quotes.getJSONObject(fiat_currency);
+            dogeFiatRate       = currentCurrencyObject.getString("price");
+            dogeFiatRate = cutDecimalPlacesToFour(dogeFiatRate);
+            hourChangeRate     = currentCurrencyObject.getString("percent_change_1h");
+            dailyChangeRate    = currentCurrencyObject.getString("percent_change_24h");
+            weeklyChangeRate   = currentCurrencyObject.getString("percent_change_7d");
+            marketCapRate      = currentCurrencyObject.getString("market_cap");
+            volumeRate         = currentCurrencyObject.getString("volume_24h");
         } catch (JSONException e) {
             e.printStackTrace();
         }

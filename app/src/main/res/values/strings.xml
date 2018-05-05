@@ -88,6 +88,7 @@
     <!--setting_activity-->
     <string name="useDTlogoText">Use DogeTracker logo in background</string>
     <string name="useSplash">Use splash screen</string>
+    <string name="useNightMode">Night mode</string>
     <string name="autoRefreshTitleText">Auto refresh balances and rates</string>
     <string name="autoRefreshSummaryText">Fetch new data every startup</string>
     <string name="colourTrendTitleText">Coloured trend rates (1h, 24h, 7d)</string>

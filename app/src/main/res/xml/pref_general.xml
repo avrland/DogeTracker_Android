@@ -6,6 +6,10 @@
         android:key="dt_logo"
         android:title="@string/useDTlogoText" />
     <SwitchPreference
+        android:defaultValue="false"
+        android:key="nightMode"
+        android:title="@string/useNightMode" />
+    <SwitchPreference
         android:defaultValue="true"
         android:key="splash"
         android:title="@string/useSplash" />

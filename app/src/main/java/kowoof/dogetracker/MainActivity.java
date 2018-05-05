@@ -65,7 +65,7 @@ public class MainActivity extends DrawerActivity {
         rateAppReminder();
         checkFirstRun();
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
     //we check and apply settings here
     @Override
@@ -153,7 +153,7 @@ public class MainActivity extends DrawerActivity {
                 if(onlineMode==1) activity.dogeRatesObject.getCurrentRefreshTime();
                 else if(onlineMode==0){
                     activity.dogeRatesObject.getRecentRefreshTime();
-                    activity.makeSnackbar("Connection error.");
+                    activity.makeSnackbar(activity.getString(R.string.connectionErrorText));
                     activity.dialog.dismiss();
                 }
                 activity.updateRatesInView(); //insert updated rates to layout
