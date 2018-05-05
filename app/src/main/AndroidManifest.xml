@@ -43,9 +43,9 @@
             android:label="@string/title_activity_wallet_qr_read"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".DrawerActivity">
-            android:theme="@style/AppTheme.NoActionBar"
-        </activity>
+        <!--<activity android:name=".DrawerActivity">-->
+            <!--android:theme="@style/AppTheme.NoActionBar"-->
+        <!--</activity>-->
         <activity
             android:name=".help_doge"
             android:screenOrientation="portrait"
@@ -53,9 +53,7 @@
         <activity
             android:name=".settings_activity"
             android:label="@string/title_activity_settings_activity"
-            android:theme="@style/AppTheme.NoActionBar">
-            >
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Splash"
             android:theme="@style/AppTheme.NoActionBar">

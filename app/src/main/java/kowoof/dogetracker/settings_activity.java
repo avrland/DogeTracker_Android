@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -95,6 +96,7 @@ public class settings_activity extends AppCompatActivity {
                     Snackbar mySnackbar = Snackbar.make(activity.getWindow().getDecorView(), activity.getString(R.string.connectionErrorText), Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
+                activity.checkNightModeSetting();
                 activity.dialog.dismiss();
                 activity.finish();
             }
@@ -120,5 +122,14 @@ public class settings_activity extends AppCompatActivity {
         dialog = new ProgressDialog(settings_activity.this);
         dialog.setCancelable(false);
         dialog.setMessage(getString(R.string.savingSettings));
+    }
+    private void checkNightModeSetting(){
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(settings_activity.this);
+        boolean useNightModeSetting = spref.getBoolean("nightMode", false);
+        if(useNightModeSetting){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }

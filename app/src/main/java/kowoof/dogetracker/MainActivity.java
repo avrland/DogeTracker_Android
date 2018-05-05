@@ -64,8 +64,6 @@ public class MainActivity extends DrawerActivity {
         startup_refresh();
         rateAppReminder();
         checkFirstRun();
-
-//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
     //we check and apply settings here
     @Override
@@ -74,7 +72,6 @@ public class MainActivity extends DrawerActivity {
 
         checkLogoSetting();
         checkAllExchangeTrendColors();
-
         checkFirstRun();
     }
     @Override
@@ -211,7 +208,14 @@ public class MainActivity extends DrawerActivity {
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
-
+    private void checkNightModeSetting(){
+        boolean useNightModeSetting = spref.getBoolean("nightMode", false);
+        if(useNightModeSetting){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
     private void getTextViews(){
         dogeRatesTextView = findViewById(R.id.doge_rate);
         hourChangeTextView = findViewById(R.id.hour_change);
