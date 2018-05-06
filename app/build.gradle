@@ -37,4 +37,5 @@ dependencies {
     compile 'com.github.hotchemi:android-rate:1.0.1'
     compile 'com.github.florent37:viewtooltip:1.1.5'
     compile 'com.github.vihtarb:tooltip:0.1.9'
+    implementation 'com.google.zxing:core:3.3.0'
 }

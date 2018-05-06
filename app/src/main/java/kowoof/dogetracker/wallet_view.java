@@ -7,7 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +24,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -32,12 +36,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
 import java.util.Currency;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -122,6 +132,11 @@ public class wallet_view extends DrawerActivity {
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
     }
+    private boolean checkMergedQRCodeSetting(){
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean useMergedQRCodeSetting = spref.getBoolean("mergedQRCode", false);
+        return useMergedQRCodeSetting;
+    }
     private void removeWalletButtonHandler(){
         //Set button for deleting wallet (just from viewer, not really lol)
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -191,7 +206,14 @@ public class wallet_view extends DrawerActivity {
         getBalance();
         //QR code download&set section
         ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
-        Picasso.with(this).load(qrReadingURL + viewedWalletAddress).into(current_wallet_qrcode);
+        if(checkMergedQRCodeSetting()) {
+            Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.dogecoin_logo);
+            Bitmap logo_wyjsciowe = CuteR.Product(viewedWalletAddress, logo, true, 0xFF000000);
+            current_wallet_qrcode.setImageBitmap(logo_wyjsciowe);
+        } else {
+            Bitmap logo_wyjsciowe = CuteR.ProductNormal(viewedWalletAddress, false, 0xFF000000);
+            current_wallet_qrcode.setImageBitmap(logo_wyjsciowe);
+        }
     }
 
     private void handleVirtualWallet(){

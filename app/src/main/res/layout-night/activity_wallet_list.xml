@@ -39,8 +39,8 @@
         app:layout_anchorGravity="bottom|left"
         fab:menu_animationDelayPerItem="0"
         fab:menu_backgroundColor="#cc000000"
-        fab:menu_colorNormal="#FF4081"
-        fab:menu_colorPressed="#FF4081"
+        fab:menu_colorNormal="@color/colorSecondary"
+        fab:menu_colorPressed="@color/colorSecondary"
         fab:menu_fab_label="@string/cancelText"
         fab:menu_labels_ellipsize="end"
         fab:menu_labels_singleLine="true">
@@ -50,8 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/fab_add"
-            app:fab_colorNormal="#FF4081"
-            app:fab_colorPressed="#FF4081"
+            app:fab_colorNormal="@color/colorSecondary"
+            app:fab_colorPressed="@color/colorSecondary"
             fab:fab_label="@string/addVirtualWalletText"
             fab:fab_size="mini" />
 
@@ -60,8 +60,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/fab_add"
-            app:fab_colorNormal="#FF4081"
-            app:fab_colorPressed="#FF4081"
+            app:fab_colorNormal="@color/colorSecondary"
+            app:fab_colorPressed="@color/colorSecondary"
             fab:fab_label="@string/addRealWalletText"
             fab:fab_size="mini" />
 

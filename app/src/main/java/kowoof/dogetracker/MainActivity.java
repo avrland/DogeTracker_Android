@@ -64,6 +64,7 @@ public class MainActivity extends DrawerActivity {
         startup_refresh();
         rateAppReminder();
         checkFirstRun();
+        checkNightModeSetting();
     }
     //we check and apply settings here
     @Override

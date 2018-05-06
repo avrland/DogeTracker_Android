@@ -8,7 +8,13 @@
     <SwitchPreference
         android:defaultValue="false"
         android:key="nightMode"
-        android:title="@string/useNightMode" />
+        android:title="@string/useNightMode"
+        android:summary="For those who love dark themes"/>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="mergedQRCode"
+        android:title="Merged QR Code"
+        android:summary="Use QR code with doge included (experimental)" />
     <SwitchPreference
         android:defaultValue="true"
         android:key="splash"
