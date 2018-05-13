@@ -19,7 +19,10 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * open source (LGPL 3.0 licence)
 
 ## What's new in v1.4?
-* 
+* dark/night mode 
+* QR code generated in app, with sweet doge 
+* color changes to more clearly GUI
+* support for coinmarketcap API v2
 
 ## Requirments
 * Android 5.0 or higher
