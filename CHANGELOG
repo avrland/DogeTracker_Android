@@ -1,3 +1,10 @@
+
+## v1.4
+* dark/night mode
+* QR code generated in app, with sweet doge
+* color changes to more clearly GUI
+* support for coinmarketcap API v2
+
 ## v1.3
 * Added "See on Dogechain.info" button
 
