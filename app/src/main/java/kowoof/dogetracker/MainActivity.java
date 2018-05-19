@@ -45,13 +45,15 @@ public class MainActivity extends DrawerActivity {
             totalSupplyTextView, lastUpdateTextView, allWalletsBalanceTextView;
     private wallet_memory walletMemoryObject;
     private ProgressDialog dialog;
+    private boolean startupAutoRefreshDone;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 
+        spref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         //We create handler with WeakReference to wait for get exchange rates
         Handler balanceHandler = new BalanceHandler(this);
         getRatesHandler = new GetRatesHandler(this);
@@ -61,10 +63,15 @@ public class MainActivity extends DrawerActivity {
 
         prepareProgressDialog();
         getTextViews();
-        startup_refresh();
         rateAppReminder();
+
         checkFirstRun();
         checkNightModeSetting();
+        startup_refresh();
+    }
+    public MainActivity(){
+
+
     }
     //we check and apply settings here
     @Override
@@ -78,6 +85,9 @@ public class MainActivity extends DrawerActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        if ( dialog!=null && dialog.isShowing() ){
+            dialog.cancel();
+        }
     }
     private void prepareProgressDialog(){
         dialog = new ProgressDialog(MainActivity.this);
@@ -163,10 +173,17 @@ public class MainActivity extends DrawerActivity {
     }
 
     private void startup_refresh(){
+        Boolean appStartedNow = false;
+        Bundle appLaunchedFeedback = getIntent().getExtras();
+        if (appLaunchedFeedback != null)
+        {
+            appStartedNow = appLaunchedFeedback.getBoolean("appLaunched");
+        }
         boolean auto_wallets_refresh = spref.getBoolean("wallets_auto_refresh", false);
-        if(auto_wallets_refresh && isNetworkAvailable()) {
+        if(auto_wallets_refresh && isNetworkAvailable() && !startupAutoRefreshDone && appStartedNow) {
             //Refresh exchange rates every startup
             launchRefreshBalanceProcess();
+            startupAutoRefreshDone = true;
         } else {
             readDataFromOffline();
         }
@@ -204,7 +221,7 @@ public class MainActivity extends DrawerActivity {
         }
     }
     private void checkLogoSetting(){
-        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", true);
         ImageView logo = findViewById(R.id.imageView);
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);

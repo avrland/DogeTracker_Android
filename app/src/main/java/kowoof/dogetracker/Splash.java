@@ -33,6 +33,7 @@ public class Splash extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    i.putExtra("appLaunched", true);
                     startActivity(i);
                     finish();
                 }
@@ -43,6 +44,7 @@ public class Splash extends AppCompatActivity {
             imageView.startAnimation(anim);
         } else {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            i.putExtra("appLaunched", true);
             startActivity(i);
             finish();
         }

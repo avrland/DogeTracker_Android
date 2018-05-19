@@ -111,13 +111,13 @@ public class wallet_view extends DrawerActivity {
     }
 
     private void getWalletInfo(){
-        Bundle wallet_list_feedback = getIntent().getExtras();
-        if (wallet_list_feedback != null)
+        Bundle walleListFeedback = getIntent().getExtras();
+        if (walleListFeedback != null)
         {
-            viewedWalletName = wallet_list_feedback.getString("wallet_name");
-            viewedWalletAddress = wallet_list_feedback.getString("wallet_address");
-            viewedWalletId = wallet_list_feedback.getInt("wallet_id");
-            viewedWalletBalance = wallet_list_feedback.getString("wallet_balance");
+            viewedWalletName = walleListFeedback.getString("wallet_name");
+            viewedWalletAddress = walleListFeedback.getString("wallet_address");
+            viewedWalletId = walleListFeedback.getInt("wallet_id");
+            viewedWalletBalance = walleListFeedback.getString("wallet_balance");
         }
     }
     private void setToolbar(){
@@ -134,7 +134,7 @@ public class wallet_view extends DrawerActivity {
     }
     private boolean checkMergedQRCodeSetting(){
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean useMergedQRCodeSetting = spref.getBoolean("mergedQRCode", false);
+        boolean useMergedQRCodeSetting = spref.getBoolean("mergedQRCode", true);
         return useMergedQRCodeSetting;
     }
     private void removeWalletButtonHandler(){
@@ -207,8 +207,8 @@ public class wallet_view extends DrawerActivity {
         //QR code download&set section
         ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
         if(checkMergedQRCodeSetting()) {
-            Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.dogecoin_logo);
-            Bitmap logo_wyjsciowe = CuteR.Product(viewedWalletAddress, logo, true, 0xFF000000);
+            Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.doge_meme);
+            Bitmap logo_wyjsciowe = CuteR.Product(viewedWalletAddress, logo, false, 0xFF000000);
             current_wallet_qrcode.setImageBitmap(logo_wyjsciowe);
         } else {
             Bitmap logo_wyjsciowe = CuteR.ProductNormal(viewedWalletAddress, false, 0xFF000000);

@@ -65,6 +65,7 @@ public class CuteR {
         if (colorful && color != Color.BLACK) {
             QRImage = replaceColor(QRImage, color);
         }
+
         int scale = 5;
         Bitmap scaledQRImage = Bitmap.createScaledBitmap(QRImage, QRImage.getWidth() * scale, QRImage.getHeight() * scale, false);
         int imageSize = 0;
@@ -76,14 +77,9 @@ public class CuteR {
             resizedImage = Bitmap.createScaledBitmap(input, (int)((scaledQRImage.getWidth() - scale  * 4 * 2) * (1.0 * input.getWidth() / input.getHeight())), scaledQRImage.getHeight() - scale  * 4 * 2, false);
             imageSize = resizedImage.getHeight();
         }
-//
-//        if (patternCenters == null || patternCenters.length == 0) {
-//            Log.e(TAG, "patternCenters == null || patternCenters.length == 0");
-//            return null;
-//        }
 
         int[][] pattern = new int[scaledQRImage.getWidth() - scale  * 4 * 2][scaledQRImage.getWidth() - scale  * 4 * 2];
-
+//        int[][] pattern = new int[scaledQRImage.getWidth()][scaledQRImage.getWidth()];
         for (int i = 0; i < patternCenters.length; i++) {
             for (int j = 0; j < patternCenters.length; j++) {
                 if (patternCenters[i] == 6 && patternCenters[j] == patternCenters[patternCenters.length - 1] ||
@@ -346,8 +342,8 @@ public class CuteR {
         if (contentsToEncode == null) {
             return null;
         }
-        Map<EncodeHintType, Object> hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
-        hints.put(EncodeHintType.MARGIN, -1);
+        Map<EncodeHintType, Object> hints = new EnumMap(EncodeHintType.class);
+        hints.put(EncodeHintType.MARGIN, 0);
 
         BitMatrix result;
         QRCode qrCode;
@@ -359,6 +355,11 @@ public class CuteR {
             // Unsupported format
             return null;
         }
+//        int width = result.getWidth();
+//        int height = result.getHeight();
+//        MultiFormatWriter writer = new MultiFormatWriter();
+//        result = writer.encode(contentsToEncode, BarcodeFormat.DATA_MATRIX, width, height, hints);
+
         int width = result.getWidth();
         int height = result.getHeight();
         int[] pixels = new int[width * height];
@@ -372,6 +373,7 @@ public class CuteR {
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
         return bitmap;
     }
+
     private static String guessAppropriateEncoding(CharSequence contents) {
         // Very crude at the moment
         for (int i = 0; i < contents.length(); i++) {

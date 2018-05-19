@@ -2,23 +2,22 @@
     android:parentActivityName=".activities.settings_activity">
 
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="dt_logo"
         android:title="@string/useDTlogoText" />
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="nightMode"
-        android:title="@string/useNightMode"
-        android:summary="For those who love dark themes"/>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="mergedQRCode"
-        android:title="Merged QR Code"
-        android:summary="Use QR code with doge included (experimental)" />
     <SwitchPreference
         android:defaultValue="true"
         android:key="splash"
         android:title="@string/useSplash" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="nightMode"
+        android:title="@string/useNightMode" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mergedQRCode"
+        android:title="@string/mergedQRCodeTitle"
+        android:summary="@string/mergedQRCodeSummary" />
     <SwitchPreference
         android:defaultValue="false"
         android:key="wallets_auto_refresh"
