@@ -6,8 +6,8 @@ android {
         applicationId "kowoof.dogetracker"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 7
-        versionName "dev"
+        versionCode 8
+        versionName "1.4.5_dev"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

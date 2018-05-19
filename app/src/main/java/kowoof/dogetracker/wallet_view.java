@@ -57,8 +57,6 @@ import java.util.Map;
 
 public class wallet_view extends DrawerActivity {
 
-    private static final String qrReadingURL = "https://dogechain.info/api/v1/address/qrcode/";
-
     private String viewedWalletName, viewedWalletAddress, viewedWalletBalance;
     private int viewedWalletId;
     private wallet_balance walletBalanceObject = new wallet_balance();
@@ -77,10 +75,6 @@ public class wallet_view extends DrawerActivity {
 
         walletMemoryObject = new wallet_memory(getApplicationContext());
         getBalanceHandler = new WalletViewHandler(this);
-
-        if(viewedWalletAddress.equals("Virtual")){
-            handleVirtualWallet();
-        } else handleRealWallet();
     }
     // Letting come back home
     @Override
@@ -97,6 +91,9 @@ public class wallet_view extends DrawerActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         checkLogoSetting();
+        if(viewedWalletAddress.equals("Virtual")){
+            handleVirtualWallet();
+        } else handleRealWallet();
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
