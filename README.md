@@ -1,4 +1,4 @@
-# DogeTracker_Android_v1.4
+# DogeTracker_Android_v1.4.5
 <img src="https://github.com/avrland/DogeTracker_Android/blob/master/app/src/main/res/mipmap-mdpi/main_icon.png?raw=true"/>
 
 DogeTracker comes from iOS to Android, wow! 
@@ -18,7 +18,7 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * no ads or in app purchase (I learned quite a lot of Android coding DogeTracker, it's enough profit)
 * open source (LGPL 3.0 licence)
 
-## What's new in v1.4?
+## What's new in v1.4.5?
 * 
 
 ## Requirments
