@@ -13,6 +13,10 @@
             android:icon="@drawable/wallet"
             android:title="My wallets" />
         <item
+            android:id="@+id/nav_backup"
+            android:icon="@drawable/wallet"
+            android:title="Backup" />
+        <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/reddit"
             android:title="Dogecoin Reddit" />

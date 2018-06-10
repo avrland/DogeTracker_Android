@@ -51,6 +51,29 @@ public class wallet_balance {
         RequestQueue rQueue = Volley.newRequestQueue(currentContext);
         rQueue.add(request);
     }
+
+    //We download here json response, leaving a information everything is ready to update view to SINGLE wallet balance info
+    public void getSingleWalletBalance(final Context currentContext, final Handler walletBalanceHandler, String address){
+
+        StringRequest request = new StringRequest(url + address, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String string) {
+                parseJsonData(string);
+                //We're ready, leave messenge for handler to refresh_rates in view
+                //It doesn't matter now what kind of messege we send.
+                Message news = new Message();
+                news.arg1 = 0;
+                walletBalanceHandler.sendMessage(news);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                //If something went wrong, we leave messege with error
+            }
+        });
+        RequestQueue rQueue = Volley.newRequestQueue(currentContext);
+        rQueue.add(request);
+    }
     //Parse Json exchange rates data
     private void parseJsonData(String jsonString) {
         try {

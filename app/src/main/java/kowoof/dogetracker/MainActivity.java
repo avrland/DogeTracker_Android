@@ -1,19 +1,24 @@
 package kowoof.dogetracker;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,7 +49,7 @@ public class MainActivity extends DrawerActivity {
             weeklyChangeTextView, marketCapTextView, volumeTextView,
             totalSupplyTextView, lastUpdateTextView, allWalletsBalanceTextView;
     private wallet_memory walletMemoryObject;
-    private ProgressDialog dialog;
+    private ProgressDialog dialog, quickscandialog;
     private boolean startupAutoRefreshDone;
 
 
@@ -68,6 +73,23 @@ public class MainActivity extends DrawerActivity {
         checkNightModeSetting();
         startup_refresh();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu, this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_toolbar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.quickscan:
+                scanQrCode();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     //we check and apply settings here
     @Override
     public void onResume() {
@@ -76,6 +98,7 @@ public class MainActivity extends DrawerActivity {
         checkLogoSetting();
         checkAllExchangeTrendColors();
         checkFirstRun();
+        checkIfQuickScanDone();
     }
     @Override
     public void onDestroy(){
@@ -121,6 +144,9 @@ public class MainActivity extends DrawerActivity {
                     leaveNoWalletsInformation();
                 }  else if (isAnyWalletsAdded==-1){
                     activity.makeSnackbar(activity.getString(R.string.errorText));
+                } else if (isAnyWalletsAdded==5){ //we got here single wallet balance (for quickscan)
+                    activity.quickscandialog.dismiss();
+                    activity.buildQuickScanDoneDialog();
                 }
             }
         }
@@ -358,5 +384,62 @@ public class MainActivity extends DrawerActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    //if we want to scan, we go to wallet_qr_read
+    public void scanQrCode() {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.CAMERA},
+                1);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Intent i = new Intent(getApplicationContext(), wallet_qr_read.class);
+                    i.putExtra("quickScan", true);
+                    startActivity(i);
+                } else {
+                    makeSnackbar(getString(R.string.grantPermissionText));
+                }
+            }
+        }
+    }
+    private String checkIfQuickScanDone(){
+        //If we use qr code reader, we insert here scanned address
+        Bundle qrReaderMessage = getIntent().getExtras();
+        if(qrReaderMessage!=null) {
+            if(qrReaderMessage.getInt("readed_qr_code")==1) {
+                String scannedAddress = qrReaderMessage.getString("wallet_address");
+                walletMemoryObject.quickScanBalance(scannedAddress);
+                quickscandialog = new ProgressDialog(MainActivity.this);
+                quickscandialog.setCancelable(false);
+                quickscandialog.setTitle("Checking balance");
+                quickscandialog.setMessage("Scanned address: " + scannedAddress);
+                quickscandialog.show();
+                return scannedAddress;
+            }
+        }
+        return getString(R.string.errorText);
+    }
+
+    private void buildQuickScanDoneDialog(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        dialogBuilder.setTitle("Scanned wallet balance");
+        dialogBuilder.setMessage(walletMemoryObject.WALLET_BALANCE + " Đ");
+
+        dialogBuilder.setPositiveButton("Add to my wallets", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+
+        AlertDialog alert = dialogBuilder.create();
+        alert.show();
     }
 }

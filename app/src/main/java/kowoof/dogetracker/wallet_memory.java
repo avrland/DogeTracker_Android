@@ -73,25 +73,28 @@ public class wallet_memory {
         public void handleMessage(Message msg) {
             activity = mActivity.get();
             if (activity != null) {
-                try {
+                int allWalletBalanceRefresh = msg.arg1;
+                if(allWalletBalanceRefresh==0){
                     activity.WALLET_BALANCE = activity.walletBalanceObject.balance; //get single wallet balance when you get it from json query
-                    activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
-                    activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE); //parse float for total calculation
-
-//                    Log.i("Wallet name: ", activity.WALLET_NAME);
-//                    Log.i("Wallet address: ", activity.WALLET_ADDRESS);
-//                    Log.i("Wallet name: ", activity.WALLET_BALANCE);
-//                    Log.i("Count: : ", Integer.toString(activity.COUNT));
-
                     Message news2 = new Message();
-                    news2.arg1 = 2;
+                    news2.arg1 = 5; //send info that you fetched quickScan wallet balance
                     activity.externalBalanceGetHandler.sendMessage(news2);
-                } catch (JSONException e) {
-                    Message news2 = new Message();
-                    news2.arg1 = -1;
-                    activity.externalBalanceGetHandler.sendMessage(news2);
+                } else {
+                    try {
+                        activity.WALLET_BALANCE = activity.walletBalanceObject.balance; //get single wallet balance when you get it from json query
+                        activity.saveToWallet(activity.WALLET_NAME, activity.WALLET_ADDRESS, activity.WALLET_BALANCE, activity.COUNT); //save it to json
+                        activity.currentWalletBalance = Float.parseFloat(activity.WALLET_BALANCE); //parse float for total calculation
+
+                        Message news2 = new Message();
+                        news2.arg1 = 2;
+                        activity.externalBalanceGetHandler.sendMessage(news2);
+                    } catch (JSONException e) {
+                        Message news2 = new Message();
+                        news2.arg1 = -1;
+                        activity.externalBalanceGetHandler.sendMessage(news2);
+                    }
+                    activity.allWalletsBalance = activity.allWalletsBalance + activity.currentWalletBalance;
                 }
-                activity.allWalletsBalance = activity.allWalletsBalance + activity.currentWalletBalance;
             }
         }
     }
@@ -139,6 +142,10 @@ public class wallet_memory {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public void quickScanBalance(String scannedAddress){
+        walletBalanceObject.getSingleWalletBalance(currentContext, balanceReceivedHandler, scannedAddress);
     }
     //add new wallet
     //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences

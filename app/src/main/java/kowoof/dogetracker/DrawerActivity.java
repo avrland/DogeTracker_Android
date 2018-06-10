@@ -34,9 +34,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         frameLayout = fullLayout.findViewById(R.id.drawer_frame);
         getLayoutInflater().inflate(layoutResID, frameLayout, true);
         super.setContentView(fullLayout);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("DogeTracker");
         toolbar.setSubtitle(BuildConfig.VERSION_NAME);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -104,6 +106,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             startActivity(i);
             finish();
 //            makeSnackbar("Coming soon.");
+        }
+        else if (id == R.id.nav_backup) {
+            makeSnackbar("Coming soon.");
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

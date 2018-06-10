@@ -54,7 +54,6 @@ public class wallet_list extends DrawerActivity {
     private ListView list;
     private wallet_list_create adapter;
 
-    //TODO better organize this variables
     private wallet_memory walletMemoryObject; //object for saving and reading wallets fro memory
     private String walletName, walletAddress, walletBalance;
     private int dogesFiat = 1;
