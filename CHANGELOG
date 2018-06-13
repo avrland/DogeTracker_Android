@@ -1,3 +1,9 @@
+## v1.4.1
+* autorefresh crash fix when you have more than few wallets added
+* autorefresh will now happen only when starting app
+* one fix for not changing FIAT currency in wallet view (probably you haven't caught it)
+* experimental support for Kitkat - redditors, please send me feedback
+
 ## v1.4
 * dark/night mode
 * QR code generated in app, with sweet doge
