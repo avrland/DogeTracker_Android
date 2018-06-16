@@ -22,6 +22,8 @@ public class wallet_verify {
     public static boolean validateDogecoinAddress(String addr) {
         if (addr.length() != 34)
             return false;
+        if(!addr.startsWith("D"))
+            return false;
         byte[] decoded = decodeBase58To25Bytes(addr);
         if (decoded == null)
             return false;

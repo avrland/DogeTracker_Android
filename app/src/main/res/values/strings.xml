@@ -98,5 +98,8 @@
     <string name="savingSettings">Saving settings...</string>
     <string name="mergedQRCodeTitle">QR Doged</string>
     <string name="mergedQRCodeSummary">Show QR code with doge included (experimental)</string>
+    <string name="title_activity_on_board">OnBoardActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="app_created_for_lovely_dogecoin_community_by_marcin_popko_u_kowoof_if_you_have_any_suggestions_feel_free_to_write_me">App created for lovely Dogecoin community by Marcin Popko /u/kowoof, if you have any suggestions, feel free to write me!</string>
 
 </resources>

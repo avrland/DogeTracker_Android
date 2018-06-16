@@ -72,7 +72,7 @@ public class wallet_add_virtual extends AppCompatActivity {
     }
     private void checkDTLogoSetting(){
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", false);
+        boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", true);
         ImageView logo = findViewById(R.id.imageView);
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);

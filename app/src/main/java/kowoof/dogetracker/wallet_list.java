@@ -83,7 +83,7 @@ public class wallet_list extends DrawerActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean use_background_logo_setting = spref.getBoolean("dt_logo", false);
+        boolean use_background_logo_setting = spref.getBoolean("dt_logo", true);
         ImageView logo = findViewById(R.id.imageView);
         if(!use_background_logo_setting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);

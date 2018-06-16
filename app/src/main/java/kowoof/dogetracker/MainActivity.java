@@ -51,6 +51,7 @@ public class MainActivity extends DrawerActivity {
     private wallet_memory walletMemoryObject;
     private ProgressDialog dialog, quickscandialog;
     private boolean startupAutoRefreshDone;
+    private String scanned_QRcodeAddress;
 
 
     @Override
@@ -410,22 +411,26 @@ public class MainActivity extends DrawerActivity {
             }
         }
     }
-    private String checkIfQuickScanDone(){
+    private void checkIfQuickScanDone(){
         //If we use qr code reader, we insert here scanned address
         Bundle qrReaderMessage = getIntent().getExtras();
         if(qrReaderMessage!=null) {
             if(qrReaderMessage.getInt("readed_qr_code")==1) {
                 String scannedAddress = qrReaderMessage.getString("wallet_address");
-                walletMemoryObject.quickScanBalance(scannedAddress);
-                quickscandialog = new ProgressDialog(MainActivity.this);
-                quickscandialog.setCancelable(false);
-                quickscandialog.setTitle("Checking balance");
-                quickscandialog.setMessage("Scanned address: " + scannedAddress);
-                quickscandialog.show();
-                return scannedAddress;
+                if(wallet_verify.validateDogecoinAddress(scannedAddress)) {
+                    walletMemoryObject.quickScanBalance(scannedAddress);
+                    quickscandialog = new ProgressDialog(MainActivity.this);
+                    quickscandialog.setCancelable(false);
+                    quickscandialog.setTitle("Checking balance");
+                    quickscandialog.setMessage("Scanned address: " + scannedAddress);
+                    quickscandialog.show();
+                    scanned_QRcodeAddress = scannedAddress;
+                } else {
+                    makeSnackbar("No dogecoin address found.");
+                }
             }
+            getIntent().removeExtra("readed_qr_code");
         }
-        return getString(R.string.errorText);
     }
 
     private void buildQuickScanDoneDialog(){
@@ -435,7 +440,11 @@ public class MainActivity extends DrawerActivity {
 
         dialogBuilder.setPositiveButton("Add to my wallets", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
+                Intent i = new Intent(getApplicationContext(), wallet_add.class);
+                i.putExtra("wallet_address", scanned_QRcodeAddress); //show wallet_view what wallet I wanna see
+                i.putExtra("readed_qr_code", 1); //show wallet_view what wallet I wanna see
+                startActivity(i);
+                finish();
             }
         });
 

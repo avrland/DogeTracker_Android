@@ -27,7 +27,7 @@ public class wallet_qr_read extends AppCompatActivity implements QRCodeReaderVie
         // Use this function to enable/disable decoding
         qrCodeReaderView.setQRDecodingEnabled(true);
         // Use this function to change the autofocus interval (default is 5 secs)
-        qrCodeReaderView.setAutofocusInterval(1000L);
+        qrCodeReaderView.setAutofocusInterval(500L);
         // Use this function to set back camera preview
         qrCodeReaderView.setBackCamera();
     }
