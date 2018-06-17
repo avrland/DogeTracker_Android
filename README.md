@@ -19,7 +19,8 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * open source (LGPL 3.0 licence)
 
 ## What's new in v1.4.5?
-* 
+* quick scan feature - scan and check dogecoin address and balance direclty from main screen
+* new screens in help section
 
 ## Requirments
 * Android 5.0 or higher
