@@ -58,5 +58,4 @@ public class wallet_verify {
             throw new IllegalStateException(e);
         }
     }
-
 }
