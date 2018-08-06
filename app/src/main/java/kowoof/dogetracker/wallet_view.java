@@ -239,7 +239,6 @@ public class wallet_view extends DrawerActivity {
         walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);
     }
 
-
     private void showBalance(){
         TextView walletBalanceTextView = findViewById(R.id.balance);
         walletBalanceTextView.setText(walletBalanceObject.balance + " Đ");
@@ -255,6 +254,5 @@ public class wallet_view extends DrawerActivity {
         TextView walletFiatBalanceTextView = findViewById(R.id.doge_in_dollars);
         walletFiatBalanceTextView.setText(fiatDogeStringWithSymbol);
     }
-
 }
 
