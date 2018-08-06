@@ -59,7 +59,6 @@ public class doge_rates {
 
         //We download here json response, leaving a information everything is ready to update view
         public void getRates(final Handler handler, final String fiatCurrency){
-            ProgressDialog DIALOG = new ProgressDialog(CURRENT_CONTEXT);
             String URL = "https://api.coinmarketcap.com/v2/ticker/74/";
             StringRequest request = new StringRequest(URL + "?convert=" + fiatCurrency, new Response.Listener<String>() {
                 @Override

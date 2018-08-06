@@ -39,12 +39,10 @@ public class wallet_memory {
     private static final String KEY_STRING = "WALLET_ADDRESS_STORE";
     private static final int PREFS_MODE = Context.MODE_PRIVATE;
 
-    private String walletJsonString;
     private JSONObject jsonObj = new JSONObject();
     private Context currentContext;
 
     String WALLET_NAME, WALLET_ADDRESS, WALLET_BALANCE;
-
     int COUNT = 0, wallets_amount = 0;
     private wallet_balance walletBalanceObject = new wallet_balance(); //object for getting wallet balances
     float allWalletsBalance, currentWalletBalance = 0;
@@ -60,7 +58,6 @@ public class wallet_memory {
         externalBalanceGetHandler = handler;
         balanceReceivedHandler = new WalletMemoryHandler(this);
     }
-
 
     private static class WalletMemoryHandler extends Handler {
         private final WeakReference<wallet_memory> mActivity;
@@ -98,15 +95,12 @@ public class wallet_memory {
             }
         }
     }
-
-
     //get all wallets to json object from sharedpreferences into class String
     public String readAllWallets() {
         SharedPreferences settings = currentContext.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-        walletJsonString = settings.getString(KEY_STRING, "[]");
+        String walletJsonString = settings.getString(KEY_STRING, "[]");
         return walletJsonString;
     }
-
     public void getBalances(){
         try {
             JSONArray new_array = new JSONArray(readAllWallets());
@@ -143,10 +137,10 @@ public class wallet_memory {
             e.printStackTrace();
         }
     }
-
     public void quickScanBalance(String scannedAddress){
         walletBalanceObject.getSingleWalletBalance(currentContext, balanceReceivedHandler, scannedAddress);
     }
+
     //add new wallet
     //it uses wallet_name and wallet_address arguments, adds to current wallet list from sharepreferences
     public void addToWalletsWithBalance(String wallet_name, String wallet_address, String wallet_balance) throws JSONException {
@@ -169,7 +163,6 @@ public class wallet_memory {
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
-
     //save to specific place in json
     public void saveToWallet(String wallet_name, String wallet_address, String wallet_balance, int position) throws JSONException {
         jsonObj = new JSONObject();
@@ -191,7 +184,6 @@ public class wallet_memory {
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
-
     //remove wallet
     public void removeWallet(int wallet_id) throws JSONException {
         JSONArray new_array = new JSONArray(readAllWallets());
@@ -202,7 +194,6 @@ public class wallet_memory {
         editor.putString(KEY_STRING, new_array.toString());
         editor.apply();
     }
-
     //addition methods to remove_wallet
     private static JSONArray remove(final int idx, final JSONArray from) {
         final List<JSONObject> objs = asList(from);
@@ -214,7 +205,6 @@ public class wallet_memory {
         }
         return ja;
     }
-
     private static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
         final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);

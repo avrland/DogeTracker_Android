@@ -155,7 +155,7 @@ public class wallet_view extends DrawerActivity {
                                     startActivity(i);
                                     finish();
                                 } catch (JSONException e) {
-
+                                    makeSnackbar("Wallet remove error.");
                                 }
                             }
                         });
@@ -181,6 +181,20 @@ public class wallet_view extends DrawerActivity {
         Uri uri = Uri.parse("https://dogechain.info/address/" + viewedWalletAddress);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
+    }
+    public void copyWalletAddress(View view) {
+        if(!viewedWalletAddress.equals("Virtual")) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", viewedWalletAddress);
+            clipboard.setPrimaryClip(clip);
+
+            ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);
+            Snackbar snackbar = Snackbar
+                    .make(layout, getString(R.string.addressCopiedText), Snackbar.LENGTH_SHORT);
+            snackbar.show();
+        } else {
+            makeSnackbar("Such wow, virtual wallet, no need to copy address.");
+        }
     }
 
     private static class WalletViewHandler extends Handler {
@@ -212,7 +226,6 @@ public class wallet_view extends DrawerActivity {
             current_wallet_qrcode.setImageBitmap(logo_wyjsciowe);
         }
     }
-
     private void handleVirtualWallet(){
         walletBalanceObject.balance = viewedWalletBalance;
         showBalance();
@@ -242,20 +255,6 @@ public class wallet_view extends DrawerActivity {
         TextView walletFiatBalanceTextView = findViewById(R.id.doge_in_dollars);
         walletFiatBalanceTextView.setText(fiatDogeStringWithSymbol);
     }
-    //Copy wallet address by clicking qr code
-    public void copyWalletAddress(View view) {
-        if(!viewedWalletAddress.equals("Virtual")) {
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("label", viewedWalletAddress);
-            clipboard.setPrimaryClip(clip);
 
-            ConstraintLayout layout = findViewById(R.id.snackbar_layout_view);
-            Snackbar snackbar = Snackbar
-                    .make(layout, getString(R.string.addressCopiedText), Snackbar.LENGTH_SHORT);
-            snackbar.show();
-        } else {
-            makeSnackbar("Such wow, virtual wallet, no need to copy address.");
-        }
-    }
 }
 

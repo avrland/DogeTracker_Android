@@ -72,12 +72,95 @@ public class wallet_add extends AppCompatActivity {
         super.onPause();
         addWalletProgressDialog.dismiss();
     }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent i = new Intent(getApplicationContext(), wallet_list.class);
+            startActivity(i);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    // Letting come back home
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+            Intent i = new Intent(getApplicationContext(), wallet_list.class);
+            startActivity(i);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setToolbar(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getString(R.string.addRealWalletText));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
     private void checkLogoSetting(){
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean useBackgroundLogoSetting = spref.getBoolean("dt_logo", true);
         ImageView logo = findViewById(R.id.imageView);
         if(!useBackgroundLogoSetting) logo.setVisibility(View.INVISIBLE);
         else logo.setVisibility(View.VISIBLE);
+    }
+    private void addWalletFabHandler(){
+        FloatingActionButton addWalletFab = findViewById(R.id.fab);
+        //We get here wallet address and name, and save it to SharedPref
+        addWalletFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addWalletProgressDialog = ProgressDialog.show(wallet_add.this, getString(R.string.pleaseWaitText), getString(R.string.validatingText));
+                EditText walletNameEditText = findViewById(R.id.editText10);
+                addedWalletName = walletNameEditText.getText().toString();
+                EditText walletAddressEditText = findViewById(R.id.editText);
+                addedWalletAddress = walletAddressEditText.getText().toString();
+                ifNameEmptyAddAddressAsName();
+                verifyWalletAddress();
+            }
+        });
+    }
+    private void checkIfQrReceived(){
+        //If we use qr code reader, we insert here scanned address
+        Bundle qrReaderMessage = getIntent().getExtras();
+        if(qrReaderMessage!=null) {
+            int checkIfReadedQr = qrReaderMessage.getInt("readed_qr_code");
+            if (checkIfReadedQr==1) {
+                addedWalletAddress = qrReaderMessage.getString("wallet_address");
+                EditText editText = findViewById(R.id.editText);
+                editText.setText(addedWalletAddress);
+            }
+        }
+    }
+    private void pasteDevAddressListener(){
+        final EditText editText = findViewById(R.id.editText);
+        editText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                editText.setText(devDogecoinAddress);
+                makeSnackbar(getString(R.string.devAddressPastedMessege));
+                return true;
+            }
+        });
+    }
+    public void pasteWalletAddress(View view) {
+        ClipboardManager clipboard=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+        ClipData abc = clipboard.getPrimaryClip();
+        ClipData.Item item = abc.getItemAt(0);
+        String pastedWalletAddress = item.getText().toString();
+        EditText editText = findViewById(R.id.editText);
+        editText.setText(pastedWalletAddress);
+        makeSnackbar(getString(R.string.addressPastedMessege));
+    }
+    public void scanQrCode(View view) {
+        ActivityCompat.requestPermissions(wallet_add.this,
+                new String[]{Manifest.permission.CAMERA},
+                1);
     }
 
     private static class WalletMemoryHandler extends Handler {
@@ -103,23 +186,6 @@ public class wallet_add extends AppCompatActivity {
             }
         }
     }
-
-    public void addWalletFabHandler(){
-        FloatingActionButton addWalletFab = findViewById(R.id.fab);
-        //We get here wallet address and name, and save it to SharedPref
-        addWalletFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addWalletProgressDialog = ProgressDialog.show(wallet_add.this, getString(R.string.pleaseWaitText), getString(R.string.validatingText));
-                EditText walletNameEditText = findViewById(R.id.editText10);
-                addedWalletName = walletNameEditText.getText().toString();
-                EditText walletAddressEditText = findViewById(R.id.editText);
-                addedWalletAddress = walletAddressEditText.getText().toString();
-                ifNameEmptyAddAddressAsName();
-                verifyWalletAddress();
-            }
-        });
-    }
     public void ifNameEmptyAddAddressAsName(){
         if(addedWalletName.trim().length() == 0) addedWalletName = addedWalletAddress;
     }
@@ -131,77 +197,8 @@ public class wallet_add extends AppCompatActivity {
             makeSnackbar(getString(R.string.invalidAddressText));
         }
     }
-    public void checkIfQrReceived(){
-        //If we use qr code reader, we insert here scanned address
-        Bundle qrReaderMessage = getIntent().getExtras();
-        if(qrReaderMessage!=null) {
-            int checkIfReadedQr = qrReaderMessage.getInt("readed_qr_code");
-            if (checkIfReadedQr==1) {
-                addedWalletAddress = qrReaderMessage.getString("wallet_address");
-                EditText editText = findViewById(R.id.editText);
-                editText.setText(addedWalletAddress);
-            }
-        }
-    }
-    public void setToolbar(){
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(getString(R.string.addRealWalletText));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent i = new Intent(getApplicationContext(), wallet_list.class);
-            startActivity(i);
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
-    // Letting come back home
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
-            Intent i = new Intent(getApplicationContext(), wallet_list.class);
-            startActivity(i);
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    //if we have address copied to clipboard, we can paste it here
-    public void pasteWalletAddress(View view) {
-        ClipboardManager clipboard=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
-        ClipData abc = clipboard.getPrimaryClip();
-        ClipData.Item item = abc.getItemAt(0);
-        String pastedWalletAddress = item.getText().toString();
-        EditText editText = findViewById(R.id.editText);
-        editText.setText(pastedWalletAddress);
-        makeSnackbar(getString(R.string.addressPastedMessege));
-    }
-    private void pasteDevAddressListener(){
-        final EditText editText = findViewById(R.id.editText);
-        editText.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                editText.setText(devDogecoinAddress);
-                makeSnackbar(getString(R.string.devAddressPastedMessege));
-                return true;
-            }
-        });
-    }
-
-    //if we want to scan, we go to wallet_qr_read
-    public void scanQrCode(View view) {
-        ActivityCompat.requestPermissions(wallet_add.this,
-                new String[]{Manifest.permission.CAMERA},
-                1);
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {

@@ -91,11 +91,9 @@ public class MainActivity extends DrawerActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    //we check and apply settings here
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-
         checkLogoSetting();
         checkAllExchangeTrendColors();
         checkFirstRun();
@@ -325,79 +323,6 @@ public class MainActivity extends DrawerActivity {
         return FiatBalance;
     }
 
-    private void rateAppReminder(){
-        AppRate.with(this)
-                .setInstallDays(1) // default 10, 0 means install day.
-                .setLaunchTimes(10) // default 10
-                .setRemindInterval(2) // default 1
-                .setShowLaterButton(true) // default true
-                .setDebug(false) // default false
-                .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
-                    @Override
-                    public void onClickButton(int which) {
-                        Log.d(MainActivity.class.getName(), Integer.toString(which));
-                    }
-                })
-                .monitor();
-
-        // Show a dialog if meets conditions
-        AppRate.showRateDialogIfMeetsConditions(this);
-    }
-
-    private void checkFirstRun() {
-
-        final String PREFS_NAME = "MyPrefsFile";
-        final String PREF_VERSION_CODE_KEY = "version_code";
-        final int DOESNT_EXIST = -1;
-
-        // Get current version code
-        int currentVersionCode = BuildConfig.VERSION_CODE;
-
-        // Get saved version code
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
-
-        // Check for first run or upgrade
-        if (currentVersionCode == savedVersionCode) {
-            readDataFromOffline();
-            // This is just a normal run
-            return;
-
-        } else if (savedVersionCode == DOESNT_EXIST) {
-            launchRefreshBalanceProcess();
-            if(!isNetworkAvailable()) firstNoInternetConnectionAlert();
-        } else if (currentVersionCode > savedVersionCode) {
-
-            // TODO This is an upgrade
-        }
-
-        // Update the shared preferences with the current version code
-        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
-    }
-    private void firstNoInternetConnectionAlert(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setCancelable(true);
-        builder.setTitle(getString(R.string.noInternetErrorTitle));
-
-        builder.setMessage(getString(R.string.noInternetErrorMessege));
-        builder.setPositiveButton(getString(R.string.confirmText),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                            WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                            wifi.setWifiEnabled(true); // true or false to activate/deactivate wifi
-                    }
-                });
-        builder.setNegativeButton(getString(R.string.cancelText), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                makeSnackbar(getString(R.string.noInternetErrorTitle));
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     //if we want to scan, we go to wallet_qr_read
     public void scanQrCode() {
         ActivityCompat.requestPermissions(MainActivity.this,
@@ -443,7 +368,6 @@ public class MainActivity extends DrawerActivity {
             getIntent().removeExtra("readed_qr_code");
         }
     }
-
     private void buildQuickScanDoneDialog(){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
         dialogBuilder.setTitle(getString(R.string.scanned_wallet_balance));
@@ -461,5 +385,76 @@ public class MainActivity extends DrawerActivity {
 
         AlertDialog alert = dialogBuilder.create();
         alert.show();
+    }
+
+    private void rateAppReminder(){
+        AppRate.with(this)
+                .setInstallDays(1) // default 10, 0 means install day.
+                .setLaunchTimes(10) // default 10
+                .setRemindInterval(2) // default 1
+                .setShowLaterButton(true) // default true
+                .setDebug(false) // default false
+                .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
+                    @Override
+                    public void onClickButton(int which) {
+                        Log.d(MainActivity.class.getName(), Integer.toString(which));
+                    }
+                })
+                .monitor();
+
+        // Show a dialog if meets conditions
+        AppRate.showRateDialogIfMeetsConditions(this);
+    }
+    private void checkFirstRun() {
+        final String PREFS_NAME = "MyPrefsFile";
+        final String PREF_VERSION_CODE_KEY = "version_code";
+        final int DOESNT_EXIST = -1;
+
+        // Get current version code
+        int currentVersionCode = BuildConfig.VERSION_CODE;
+
+        // Get saved version code
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+
+        // Check for first run or upgrade
+        if (currentVersionCode == savedVersionCode) {
+            readDataFromOffline();
+            // This is just a normal run
+            return;
+
+        } else if (savedVersionCode == DOESNT_EXIST) {
+            launchRefreshBalanceProcess();
+            if(!isNetworkAvailable()) firstNoInternetConnectionAlert();
+        } else if (currentVersionCode > savedVersionCode) {
+
+            // TODO This is an upgrade
+        }
+
+        // Update the shared preferences with the current version code
+        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+    }
+    private void firstNoInternetConnectionAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setCancelable(true);
+        builder.setTitle(getString(R.string.noInternetErrorTitle));
+
+        builder.setMessage(getString(R.string.noInternetErrorMessege));
+        builder.setPositiveButton(getString(R.string.confirmText),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                        wifi.setWifiEnabled(true); // true or false to activate/deactivate wifi
+                    }
+                });
+        builder.setNegativeButton(getString(R.string.cancelText), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                makeSnackbar(getString(R.string.noInternetErrorTitle));
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

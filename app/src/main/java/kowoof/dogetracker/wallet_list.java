@@ -127,7 +127,41 @@ public class wallet_list extends DrawerActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    public void fabButtonsHandler(){
+    //we show here total balance on to toolbar
+    private void setToolbar(){
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.myWalletsMenuText));
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, " ","Đ"));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+    private void showTotalBalanceInFiatOnToolbar(float total){
+        //we change here current fiat currency symbol
+        doge_rates local_doge = new doge_rates(wallet_list.this);
+
+        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
+        String totalFiatDogeString = Float.toString(totalFiatBalance);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
+        dogesFiat = 2;
+    }
+    private void showTotalBalanceInDogesOnToolbar(float total){
+        //we change here current fiat currency symbol
+        String totalDogeString = Float.toString(total);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
+        dogesFiat = 1;
+    }
+    private void setDrawer(){
+        //we add it the same stuff as in DrawerActivity because it's getting overwritten and hamburger button doesn't works
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void fabButtonsHandler(){
         FloatingActionMenu floatMenu;
         floatMenu = findViewById(R.id.floatingMenu);
         floatMenu.setClosedOnTouchOutside(true);
@@ -150,7 +184,7 @@ public class wallet_list extends DrawerActivity {
             }
         });
     }
-    public void useSwipeRefreshHandler(){
+    private void useSwipeRefreshHandler(){
         mSwipeRefreshView = findViewById(R.id.swiperefresh);
         mSwipeRefreshView.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
@@ -197,41 +231,6 @@ public class wallet_list extends DrawerActivity {
             e.printStackTrace();
         }
     }
-
-    //we show here total balance on to toolbar
-    private void setToolbar(){
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.myWalletsMenuText));
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, " ","Đ"));
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-    private void showTotalBalanceInFiatOnToolbar(float total){
-        //we change here current fiat currency symbol
-        doge_rates local_doge = new doge_rates(wallet_list.this);
-
-        float totalFiatBalance = local_doge.getDogeFiatRate() * total;
-        String totalFiatDogeString = Float.toString(totalFiatBalance);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalFiatDogeString,local_doge.getFiatSymbol()));
-        dogesFiat = 2;
-    }
-    private void showTotalBalanceInDogesOnToolbar(float total){
-        //we change here current fiat currency symbol
-        String totalDogeString = Float.toString(total);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(getString(R.string.totalBalanceText, totalDogeString,"Đ"));
-        dogesFiat = 1;
-    }
-    private void setDrawer(){
-        //we add it the same stuff as in DrawerActivity because it's getting overwritten and hamburger button doesn't works
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-    }
-
 
     //Stuff needed to fetch new data
     private void refreshAllWalletsBalances(){
