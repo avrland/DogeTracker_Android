@@ -112,6 +112,23 @@ public class MainActivity extends DrawerActivity {
         dialog = new ProgressDialog(MainActivity.this);
         dialog.setCancelable(false);
         dialog.setMessage(getString(R.string.gettingRatesText));
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //TODO add possibility to abort refreshing
+//        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "ABORT", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                walletMemoryObject.COUNT = walletMemoryObject.wallets_amount;
+//                readDataFromOffline();
+//                dialog.dismiss();
+//            }
+//        });
+    }
+    private void launchRefreshBalanceProcess(){
+        dialog.show();
+        dialog.setProgress(0);
+        refreshRates();
+        allWalletsBalanceTextView.setText(getString(R.string.refreshingText));
+        walletMemoryObject.allWalletsBalance = 0;
+        walletMemoryObject.getBalances();
     }
 
     //Refresh button - selects response for clicking refresh - refresh_rates
@@ -139,6 +156,7 @@ public class MainActivity extends DrawerActivity {
                 // Handle message code
                 if(isAnyWalletsAdded==2){
                     activity.walletMemoryObject.COUNT++;
+                    activity.dialog.incrementProgressBy(100/activity.walletMemoryObject.wallets_amount);
                     if (activity.walletMemoryObject.COUNT < activity.walletMemoryObject.wallets_amount) continueRefreshing();
                     else finishRefreshing();
                 } else if (isAnyWalletsAdded==0){
@@ -209,13 +227,6 @@ public class MainActivity extends DrawerActivity {
         } else {
             readDataFromOffline();
         }
-    }
-    private void launchRefreshBalanceProcess(){
-        dialog.show();
-        refreshRates();
-        allWalletsBalanceTextView.setText(getString(R.string.refreshingText));
-        walletMemoryObject.allWalletsBalance = 0;
-        walletMemoryObject.getBalances();
     }
     private void readDataFromOffline(){
         dogeRatesObject.readRatesFromOffline();
@@ -421,12 +432,12 @@ public class MainActivity extends DrawerActivity {
                     walletMemoryObject.quickScanBalance(scannedAddress);
                     quickscandialog = new ProgressDialog(MainActivity.this);
                     quickscandialog.setCancelable(false);
-                    quickscandialog.setTitle("Checking balance");
-                    quickscandialog.setMessage("Scanned address: " + scannedAddress);
+                    quickscandialog.setTitle(getString(R.string.checking_balance));
+                    quickscandialog.setMessage(getString(R.string.scanned_address) + scannedAddress);
                     quickscandialog.show();
                     scanned_QRcodeAddress = scannedAddress;
                 } else {
-                    makeSnackbar("No dogecoin address found.");
+                    makeSnackbar(getString(R.string.no_dogecoin_address));
                 }
             }
             getIntent().removeExtra("readed_qr_code");
@@ -435,10 +446,10 @@ public class MainActivity extends DrawerActivity {
 
     private void buildQuickScanDoneDialog(){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
-        dialogBuilder.setTitle("Scanned wallet balance");
+        dialogBuilder.setTitle(getString(R.string.scanned_wallet_balance));
         dialogBuilder.setMessage(walletMemoryObject.WALLET_BALANCE + " Đ");
 
-        dialogBuilder.setPositiveButton("Add to my wallets", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(getString(R.string.add_to_my_wallets), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Intent i = new Intent(getApplicationContext(), wallet_add.class);
                 i.putExtra("wallet_address", scanned_QRcodeAddress); //show wallet_view what wallet I wanna see

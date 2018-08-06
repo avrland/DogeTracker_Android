@@ -41,6 +41,11 @@
     <string name="refreshingText">**Refreshing**</string>
     <string name="noInternetErrorTitle">No internet connection!</string>
     <string name="noInternetErrorMessege">We need internet to fetch data for wallets and exchange rates. Would you like to turn on WIFI?</string>
+    <string name="checking_balance">Checking balance</string>
+    <string name="scanned_address">Scanned address:</string>
+    <string name="no_dogecoin_address">No dogecoin address found.</string>
+    <string name="scanned_wallet_balance">Scanned wallet balance</string>
+    <string name="add_to_my_wallets">Add to my wallets</string>
     <!--DrawerActivity-->
     <string name="exchangeRatesMenuText">Exchange rates</string>
     <string name="myWalletsMenuText">My wallets</string>
@@ -101,5 +106,4 @@
     <string name="title_activity_on_board">OnBoardActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="app_created_for_lovely_dogecoin_community_by_marcin_popko_u_kowoof_if_you_have_any_suggestions_feel_free_to_write_me">App created for lovely Dogecoin community by Marcin Popko /u/kowoof, if you have any suggestions, feel free to write me!</string>
-
 </resources>

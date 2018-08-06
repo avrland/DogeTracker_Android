@@ -123,16 +123,16 @@
 
     <Button
         android:id="@+id/button4"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:onClick="viewOnDogechain"
         android:text="View on dogechain.info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:onClick="viewOnDogechain"/>
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
 </android.support.constraint.ConstraintLayout>

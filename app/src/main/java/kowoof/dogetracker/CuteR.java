@@ -54,7 +54,6 @@ public class CuteR {
     public static Bitmap Product(String txt, Bitmap input, boolean colorful, int color){
         Log.d(TAG, "Product start input input.getWidth(): " + input.getWidth() + " input.getHeight(): " + input.getHeight());
 
-
         Bitmap QRImage = null;
         try {
             QRImage = encodeAsBitmap(txt);
@@ -66,7 +65,7 @@ public class CuteR {
             QRImage = replaceColor(QRImage, color);
         }
 
-        int scale = 5;
+        int scale = 10; //Reduce time of making qr code, we have fixed scalling
         Bitmap scaledQRImage = Bitmap.createScaledBitmap(QRImage, QRImage.getWidth() * scale, QRImage.getHeight() * scale, false);
         int imageSize = 0;
         Bitmap resizedImage = null;
@@ -99,7 +98,7 @@ public class CuteR {
         }
 
         Bitmap blackWhite = resizedImage;
-        if (colorful == false) {
+        if (!colorful) {
             blackWhite = convertBlackWhiteFull(blackWhite);
         }
 
@@ -126,7 +125,7 @@ public class CuteR {
         return scaledQRImage;
     }
 
-    public static Bitmap convertBlackWhiteFull(Bitmap blackWhite) {
+    private static Bitmap convertBlackWhiteFull(Bitmap blackWhite) {
         blackWhite = createContrast(blackWhite, 50, 30);
         blackWhite = ConvertToBlackAndWhite(blackWhite);
         blackWhite = convertGreyImgByFloyd2(blackWhite);

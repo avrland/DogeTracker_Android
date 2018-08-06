@@ -8,7 +8,6 @@ import android.widget.EditText;
 
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
-import com.squareup.haha.perflib.Main;
 
 /**
  * Created by Marcin on 11.02.2018.

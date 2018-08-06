@@ -27,6 +27,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Created by Marcin on 10.01.2018.
@@ -137,7 +138,7 @@ public class doge_rates {
         public void getCurrentRefreshTime(){
             SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
             SharedPreferences.Editor editor = rates.edit();
-            DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
             lastRefreshRate =df.format(Calendar.getInstance().getTime());
             editor.putString(lastRefreshOffline, lastRefreshRate);
             editor.apply();
