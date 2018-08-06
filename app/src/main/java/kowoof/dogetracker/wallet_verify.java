@@ -49,6 +49,7 @@ public class wallet_verify {
         return result;
     }
 
+
     private static byte[] sha256(byte[] data) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
