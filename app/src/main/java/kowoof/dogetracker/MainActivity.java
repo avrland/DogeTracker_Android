@@ -324,7 +324,7 @@ public class MainActivity extends DrawerActivity {
     }
 
     //if we want to scan, we go to wallet_qr_read
-    public void scanQrCode() {
+    private void scanQrCode() {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.CAMERA},
                 1);

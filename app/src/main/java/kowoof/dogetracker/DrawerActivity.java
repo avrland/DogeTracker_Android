@@ -105,7 +105,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             Intent i = new Intent(getApplicationContext(), help_doge.class);
             startActivity(i);
             finish();
-//            makeSnackbar("Coming soon.");
         }
         else if (id == R.id.nav_backup) {
             makeSnackbar("Coming soon.");

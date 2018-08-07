@@ -13,24 +13,16 @@ import java.util.ArrayList;
 /**
  * Created by Marcin on 11.02.2018.
  * Copyright © 2017 Marcin Popko. All rights reserved.
- */
-
-/**
  * We implement here listView and his items
  */
 public class wallet_list_create extends BaseAdapter {
-    private Activity activity;
     private static ArrayList title,notice;
     private static LayoutInflater inflater = null;
 
-    public wallet_list_create(Activity a, ArrayList b, ArrayList bod) {
-        activity = a;
+    wallet_list_create(Activity a, ArrayList b, ArrayList bod) {
         title = b;
-        notice=bod;
-
-        inflater = (LayoutInflater) activity
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        notice = bod;
+        inflater = (LayoutInflater) a.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public int getCount() {

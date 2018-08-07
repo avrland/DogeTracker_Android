@@ -20,11 +20,9 @@ public class Splash extends AppCompatActivity {
     }
 
     private void checkSplashSettings(){
-        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(Splash.this);
-        boolean useSplashScreen = spref.getBoolean("splash", true);
-        if(useSplashScreen){
+        if(checkSplashScreenSetting()){
             setContentView(R.layout.activity_splash);
-            imageView= findViewById(R.id.imageView2); // Declare an imageView to show the animation.
+            imageView = findViewById(R.id.imageView2); // Declare an imageView to show the animation.
             anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in); // Create the animation.
             anim.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -33,10 +31,7 @@ public class Splash extends AppCompatActivity {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                    i.putExtra("appLaunched", true);
-                    startActivity(i);
-                    finish();
+                    startMainActivity();
                 }
                 @Override
                 public void onAnimationRepeat(Animation animation) {
@@ -44,10 +39,19 @@ public class Splash extends AppCompatActivity {
             });
             imageView.startAnimation(anim);
         } else {
-            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            i.putExtra("appLaunched", true);
-            startActivity(i);
-            finish();
+            startMainActivity();
         }
+    }
+
+    private void startMainActivity(){
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        i.putExtra("appLaunched", true);
+        startActivity(i);
+        finish();
+    }
+    private boolean checkSplashScreenSetting(){
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(Splash.this);
+        boolean useSplashScreen = spref.getBoolean("splash", true);
+        return useSplashScreen;
     }
 }

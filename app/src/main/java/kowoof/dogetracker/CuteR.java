@@ -71,7 +71,6 @@ public class CuteR {
         }
 
         int[][] pattern = new int[scaledQRImage.getWidth() - scale  * 4 * 2][scaledQRImage.getWidth() - scale  * 4 * 2];
-//        int[][] pattern = new int[scaledQRImage.getWidth()][scaledQRImage.getWidth()];
         for (int i = 0; i < patternCenters.length; i++) {
             for (int j = 0; j < patternCenters.length; j++) {
                 if (!(patternCenters[i] == 6 && patternCenters[j] == patternCenters[patternCenters.length - 1] ||
@@ -176,11 +175,6 @@ public class CuteR {
             // Unsupported format
             return null;
         }
-//        int width = result.getWidth();
-//        int height = result.getHeight();
-//        MultiFormatWriter writer = new MultiFormatWriter();
-//        result = writer.encode(contentsToEncode, BarcodeFormat.DATA_MATRIX, width, height, hints);
-
         int width = result.getWidth();
         int height = result.getHeight();
         int[] pixels = new int[width * height];

@@ -175,18 +175,4 @@ public class doge_rates {
             Currency usedFiatCurrency  = Currency.getInstance(fiatCode);
             return usedFiatCurrency.getSymbol();
         }
-
-        public class ManipulateDogeRatesValues {
-            public void readRatesFromOffline(){
-                SharedPreferences rates = CURRENT_CONTEXT.getSharedPreferences(PREFS_FILE, PREFS_MODE);
-                dogeFiatRate       = rates.getString(dogeFiatRateOffline, "0");
-                hourChangeRate     = rates.getString(hourChangeRateOffline, "0");
-                dailyChangeRate    = rates.getString(dailyChangeRateOffline, "0");
-                weeklyChangeRate   = rates.getString(weeklyChangeRateOffline, "0");
-                marketCapRate      = rates.getString(marketCapRateOffline, "0");
-                volumeRate          = rates.getString(volumeRateOffline, "0");
-                totalSupplyRate    = rates.getString(totalSupplyRateOffline, "0");
-                lastRefreshRate    = rates.getString(lastRefreshOffline, "unknown");
-            }
-        }
 }
