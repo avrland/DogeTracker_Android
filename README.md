@@ -19,7 +19,8 @@ A simplistic approach to keep track of your Dogecoins and Dogecoin in general. J
 * open source (LGPL 3.0 licence)
 
 ## What's new in v1.5?
-* 
+* progress bar instead of spinner
+* empty clipboard no longer make app crashing when trying to paste address
 
 ## Requirments
 * Android 5.0 or higher
