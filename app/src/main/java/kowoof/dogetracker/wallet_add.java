@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 /**
  * Created by Marcin on 11.02.2018.
@@ -149,13 +150,17 @@ public class wallet_add extends AppCompatActivity {
         });
     }
     public void pasteWalletAddress(View view) {
-        ClipboardManager clipboard=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
-        ClipData abc = clipboard.getPrimaryClip();
-        ClipData.Item item = abc.getItemAt(0);
-        String pastedWalletAddress = item.getText().toString();
-        EditText editText = findViewById(R.id.editText);
-        editText.setText(pastedWalletAddress);
-        makeSnackbar(getString(R.string.addressPastedMessege));
+        try {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData abc = Objects.requireNonNull(clipboard).getPrimaryClip();
+            ClipData.Item item = abc.getItemAt(0);
+            String pastedWalletAddress = item.getText().toString();
+            EditText editText = findViewById(R.id.editText);
+            editText.setText(pastedWalletAddress);
+            makeSnackbar(getString(R.string.addressPastedMessege));
+        } catch (NullPointerException e){
+            makeSnackbar(getString(R.string.emptyClipboardMessege));
+        }
     }
     public void scanQrCode(View view) {
         ActivityCompat.requestPermissions(wallet_add.this,

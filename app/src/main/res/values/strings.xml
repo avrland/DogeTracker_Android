@@ -84,6 +84,7 @@
     <string name="holdToAddDevAddress">Hold to paste DT developer address.</string>
     <string name="addressPastedMessege">Address pasted.</string>
     <string name="devAddressPastedMessege">Such wow, dev address, very nice.</string>
+    <string name="emptyClipboardMessege">Error: probably empty clipboard.</string>
 
     <!--wallet_add_virtual-->
     <string name="amountOfDogecoinText">Amount of Dogecoins:</string>
