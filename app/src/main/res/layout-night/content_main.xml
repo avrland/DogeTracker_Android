@@ -226,7 +226,8 @@
         android:layout_height="match_parent"
         android:visibility="visible"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="98dp" />
+        tools:layout_editor_absoluteY="98dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/textView3"

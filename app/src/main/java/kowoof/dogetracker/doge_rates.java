@@ -99,7 +99,13 @@ public class doge_rates {
             marketCapRate      = currentCurrencyObject.getString("market_cap");
             volumeRate         = currentCurrencyObject.getString("volume_24h");
         } catch (JSONException e) {
-            e.printStackTrace();
+            totalSupplyRate    = "Error";
+            dogeFiatRate = "Error";
+            hourChangeRate     = "Error";
+            dailyChangeRate    = "Error";
+            weeklyChangeRate   = "Error";
+            marketCapRate      = "Error";
+            volumeRate         = "Error";
         }
         }
         private String cutDecimalPlacesToFour(String FiatRate){

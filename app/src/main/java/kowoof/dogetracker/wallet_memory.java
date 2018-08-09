@@ -207,7 +207,7 @@ public class wallet_memory {
     }
     private static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
-        final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);
+        final ArrayList<JSONObject> result = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
             final JSONObject obj = ja.optJSONObject(i);
             if (obj != null) {

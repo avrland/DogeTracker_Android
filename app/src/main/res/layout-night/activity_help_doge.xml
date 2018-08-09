@@ -56,7 +56,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/help1" />
+                        app:srcCompat="@drawable/help1"
+                        tools:ignore="ContentDescription" />
 
                     <ImageView
                         android:id="@+id/imageView8"
@@ -70,7 +71,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageView7"
-                        app:srcCompat="@drawable/help2" />
+                        app:srcCompat="@drawable/help2"
+                        tools:ignore="ContentDescription" />
 
                 </android.support.constraint.ConstraintLayout>
 
