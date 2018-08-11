@@ -70,7 +70,7 @@ public class wallet_view extends DrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_view);
         setToolbar();
-        insertWalletInfoIntoView();
+        insertSavedWalletInfoIntoView();
         removeWalletButtonHandler();
 
         walletMemoryObject = new wallet_memory(getApplicationContext());
@@ -169,12 +169,16 @@ public class wallet_view extends DrawerActivity {
             }
         });
     }
-    private void insertWalletInfoIntoView(){
+    private void insertSavedWalletInfoIntoView(){
         TextView walletNameTextView = findViewById(R.id.wallet_name);
         TextView walletAddressTextView = findViewById(R.id.wallet_address);
         walletNameTextView.setText(viewedWalletName);
         if(viewedWalletName.equals(viewedWalletAddress)) walletNameTextView.setText("");
         walletAddressTextView.setText(viewedWalletAddress);
+
+        TextView walletBalanceTextView = findViewById(R.id.balance);
+        walletBalanceTextView.setText(viewedWalletBalance + " Đ");
+        balanceInFiat(viewedWalletBalance);
     }
 
     public void viewOnDogechain(View view) {
@@ -214,7 +218,7 @@ public class wallet_view extends DrawerActivity {
     }
     private void handleRealWallet(){
         //Get single wallet balance
-        getBalance();
+//        getBalance();
         //QR code download&set section
         ImageView current_wallet_qrcode = findViewById(R.id.imageView2);
         if(checkMergedQRCodeSetting()) {
@@ -235,19 +239,20 @@ public class wallet_view extends DrawerActivity {
         Button seeOnDogechainButton = findViewById(R.id.button4);
         seeOnDogechainButton.setEnabled(false);
     }
+
+
     private void getBalance(){
         walletBalanceObject.getWalletBalance(this, getBalanceHandler, viewedWalletAddress);
     }
-
     private void showBalance(){
         TextView walletBalanceTextView = findViewById(R.id.balance);
         walletBalanceTextView.setText(walletBalanceObject.balance + " Đ");
-        balanceInFiat();
+        balanceInFiat(walletBalanceObject.balance);
     }
-    private void balanceInFiat(){
+    private void balanceInFiat(String dogeAmount){
         doge_rates dogeRateObject = new doge_rates(getApplicationContext());
         float fiatDogeFloat = dogeRateObject.getDogeFiatRate();
-        float balanceFloat = Float.parseFloat(walletBalanceObject.balance);
+        float balanceFloat = Float.parseFloat(dogeAmount);
         float totalFiatBalanceFloat = fiatDogeFloat * balanceFloat;
         String fiatDogeStringWithSymbol = Float.toString(totalFiatBalanceFloat) + " " + dogeRateObject.getFiatSymbol();
 

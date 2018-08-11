@@ -46,7 +46,6 @@ public class CuteR {
 
     public static Bitmap Product(String txt, Bitmap input, boolean colorful, int color){
         Log.d(TAG, "Product start input input.getWidth(): " + input.getWidth() + " input.getHeight(): " + input.getHeight());
-
         Bitmap QRImage = null;
         try {
             QRImage = encodeAsBitmap(txt);
