@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/quickscan"
+        android:icon="@drawable/qrcode_scan_white"
+        android:orderInCategory="100"
+        android:title="Quick scan"
+        app:showAsAction="ifRoom" />
+</menu>
