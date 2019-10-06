@@ -4,11 +4,10 @@ import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.EditText;
 
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
-import com.squareup.haha.perflib.Main;
+
 
 /**
  * Created by Marcin on 11.02.2018.

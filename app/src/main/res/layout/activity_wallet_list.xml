@@ -9,7 +9,6 @@
     tools:context="kowoof.dogetracker.wallet_list">
 
     <include
-        android:id="@+id/include2"
         layout="@layout/content_wallet_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

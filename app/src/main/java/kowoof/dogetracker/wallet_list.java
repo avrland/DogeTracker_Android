@@ -42,7 +42,7 @@ import com.github.clans.fab.FloatingActionMenu;
  * Copyright © 2017 Marcin Popko. All rights reserved.
  *
  * In wallet list we load current saved wallets into listView, calculating total balance
- * We also can change balance from doges to $ by klicking R.id.dollars
+ * We also can change balance from doges to $ by clicking R.id.dollars
  * If we click R.id.refresh, we get new fresh balances using dogechain.info API
  * with request made with wallet_balance object. We'll save balance with wallet_memory object.
  */
@@ -76,7 +76,6 @@ public class wallet_list extends DrawerActivity {
         //Give wallet memory 'handler' current context
         Handler balanceHandler = new WalletMemoryHandler(this);
         walletMemoryObject = new wallet_memory(getApplicationContext(), balanceHandler);
-
         //Find listView and populate it
         populateList();
     }
